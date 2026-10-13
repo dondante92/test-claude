@@ -121,6 +121,8 @@
     "anxiete academique": "anxiété en lien avec les études",
     "pression academique": "stress lié aux études",
     "epuisement academique": "épuisement (en lien avec les études)",
+    "stress academique": "stress lié aux études",
+    "fonctionnement academique": "retentissement sur son fonctionnement / difficultés dans les études",
     "recrudescence emotionnelle": "décrire le fait (ex. : elle pleure davantage)",
     "mise en mots du vecu": "on continue à explorer les difficultés actuelles",
     "bien integre": "décrire le fait concret (fonction occupée, activité, réseau)",
@@ -132,9 +134,6 @@
 
   "avertissements": {
     "_lisezmoi": "Expressions signalées pour vérification (pas bloquantes).",
-    "stress academique": "ARBITRAGE OUVERT (voir ARBITRAGES.md, A4)",
-    "retentissement academique": "admis dans le répertoire (branche TDAH) ; ailleurs, préférer « retentissement sur son fonctionnement »",
-    "fonctionnement academique": "ARBITRAGE OUVERT (voir ARBITRAGES.md, A4)",
     "vulnerabilite": "seulement avec un fait concret",
     "important": "adjectif d'intensité : un fait le porte-t-il ?",
     "importante": "adjectif d'intensité : un fait le porte-t-il ?",

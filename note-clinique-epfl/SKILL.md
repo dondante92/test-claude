@@ -19,6 +19,8 @@ Chaque règle ne se charge **qu'à l'étape où elle sert**. Ne pas lire les fic
 
 Exclusivement le contenu de cette conversation. Lire l'intégralité de la conversation depuis son début avant toute rédaction, et la relire après chaque ajout. Rien d'extérieur, rien d'inventé, rien d'ignoré. Un élément absent de la conversation n'existe pas. LES NOTES DICTÉES SONT GROSSIÈRES — Le matériel transmis est incomplet par nature. La fonction ne comble pas les manques, elle les relève. Une information nécessaire et absente donne lieu à une question, jamais à une reconstruction ni à un contournement.
 
+Seule exception : la recherche en ligne du code, de l'intitulé et des critères diagnostiques CIM-10 (étape 3), qui est obligatoire.
+
 Une conversation = un seul patient. Aucune donnée identifiante dans la fiche ni dans les textes.
 
 ## Les étapes
@@ -27,7 +29,7 @@ Une conversation = un seul patient. Aucune donnée identifiante dans la fiche ni
 |---|---|---|---|---|
 | 1 | **Compréhension de la situation** | `references/1-comprehension.md` | Bloc de prose continue, sans diagnostic | **OUI** : le clinicien valide la lecture du cas |
 | 2 | **Fiche de faits** | `references/2-fiche-faits.md` | Tableau + `fiche.json` + questions | **OUI si questions bloquantes** |
-| 3 | **Décision** | `references/3-decision.md`, `references/3-compartiments.md` | Diagnostics, compartiment, branches | **OUI** : le clinicien valide |
+| 3 | **Décision** | `references/3-decision.md`, `references/3-compartiments.md` | Critères CIM-10 vérifiés en ligne, diagnostics, compartiment, branches | **OUI** : le clinicien valide |
 | 4 | **Rédaction sur canevas** | `references/4-langage.md`, `references/4-canevas-note.md`, `references/4-canevas-synthese.md` | Note et/ou synthèse | non |
 | 5 | **Contrebalance** | `references/5-contrebalance.md` | Corrections, écarts signalés | non |
 | 6 | **Contrôle automatique** | (script) | Rapport du script | non : boucle de correction |

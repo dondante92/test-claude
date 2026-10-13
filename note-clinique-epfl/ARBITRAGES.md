@@ -60,24 +60,15 @@ J'ai compris la confrontation compréhension ↔ note dans les deux sens (votre 
 
 ## Ouverts : votre décision est nécessaire
 
-**A4. « Stress académique », « retentissement académique », « fonctionnement académique ».**
-- Notes de suite et premier entretien (anciennes versions) : à éviter.
-- Fonction 3 de relecture : « exemples admis ».
-- Votre répertoire (branche trouble du déficit de l'attention) : « avec un retentissement [académique] ».
-→ Actuellement : « anxiété / pression / épuisement académique » sont **interdits** ; les trois autres déclenchent un **avertissement**.
-Recommandation : garder « retentissement académique » (il est dans votre répertoire), remplacer « stress académique » par « stress lié aux études », éviter « fonctionnement académique ».
-☐ Recommandation  ☐ Autre : …
-
-**A8. Notes de suite (hors de cette version 1).**
-- `note_de_suite` : 2 à 4 phrases ; idées suicidaires seulement si présentes au départ.
-- `suivi_en_cours` : « régime de transmission » développé ; idées suicidaires mentionnées à chaque entretien.
-Ces deux textes s'opposent. À trancher avant de construire le module « notes de suite ».
-☐ Court par défaut  ☐ Transmission par défaut  ☐ Les deux, au choix à chaque note
-
-**A9. Relevé de données et supervision IPB (hors de cette version 1).**
+**A9. Relevé de données et supervision IPB (hors de cette version 1, pour information).**
 Le relevé de données **déduit** (« si rien → non »), alors que la note **n'invente jamais**. C'est légitime pour un usage statistique, à condition que ce soit un outil séparé avec ses propres règles. La supervision IPB (Document 2) est un outil pédagogique : un skill à part, avec les textes de référence joints.
 
-**A10. Vérification du code CIM-10 en ligne.**
-Votre règle « rien d'extérieur à la conversation » et votre règle « vérifier le code en ligne » se contredisent.
-Recommandation : la recherche en ligne est autorisée **pour le code et l'intitulé seulement**. Sans accès web, l'IA propose et vous confirmez.
-☐ Recommandation  ☐ Autre : …
+---
+
+## Tranchés par vous
+
+| # | Sujet | Décision |
+|---|---|---|
+| A4 | « stress / fonctionnement / retentissement académique » | « retentissement académique » est gardé (il est dans le répertoire). « stress académique » devient « stress lié aux études ». « fonctionnement académique », « anxiété / pression / épuisement académique » sont interdits (contrôlés par le script). |
+| A8 | Notes de suite | Module à part, traité séparément. Le choix entre format court et format de transmission se fera à ce moment-là. |
+| A10 | Vérification CIM-10 | Recherche en ligne **obligatoire** pour le code, l'intitulé **et les critères diagnostiques**, avant de retenir tout diagnostic. Sans accès web, le diagnostic reste en attente. |
