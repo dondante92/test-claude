@@ -1,0 +1,85 @@
+{
+  "_lisezmoi": "Fiche de faits d'un patient. Chaque champ : etat = PRESENT | ABSENT | NON_EXPLORE ; valeur = le fait (mots du clinicien) ; source = entretien où il apparaît (E1, E2...). ABSENT = exploré et négatif. NON_EXPLORE = pas dans les notes. Aucune donnée identifiante (pas de nom, pas de date de naissance).",
+
+  "patient.genre":            {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "patient.age":              {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "patient.origine":          {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "patient.arrivee_suisse":   {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "patient.cursus":           {"etat": "NON_EXPLORE", "valeur": "année, niveau (bachelor/master/doctorat), filière en toutes lettres", "source": ""},
+  "patient.mode_arrivee":     {"etat": "NON_EXPLORE", "valeur": "de lui-même/d'elle-même | sur les conseils de ... | adressé(e) par ...", "source": ""},
+  "motif":                    {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+
+  "cadre.type":               {"etat": "NON_EXPLORE", "valeur": "investigation psychiatrique | intervention psychodynamique brève", "source": ""},
+  "cadre.nb_seances":         {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "cadre.participation":      {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "cadre.complements":        {"etat": "ABSENT", "valeur": "entretiens diagnostiques ciblés, 5e entretien semi-structuré...", "source": ""},
+  "cadre.interruption":       {"etat": "ABSENT", "valeur": "", "source": ""},
+
+  "aigu.symptomes": [
+    {"libelle": "", "depuis": "", "mode": "apparition | apparition progressive | majoration | réapparition | recrudescence", "etat_final": "amende | attenue | persistant | stable | majore | non_documente", "source": "E1"}
+  ],
+  "aigu.facteur_crise":       {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "aigu.retentissement":      {"etat": "NON_EXPLORE", "valeur": "faits concrets qui montrent l'atteinte du fonctionnement", "source": ""},
+  "aigu.delimitation":        {"etat": "NON_EXPLORE", "valeur": "ce qui est préservé en dehors de l'épisode", "source": ""},
+  "aigu.mesures":             {"etat": "NON_EXPLORE", "valeur": "arrêt de travail du ... au ...", "source": ""},
+  "aigu.idees_suicidaires":   {"etat": "NON_EXPLORE", "valeur": "si PRESENT : actives/passives, scénario, intention, plan, temporalité, facteurs protecteurs", "source": ""},
+  "aigu.premiere_fois":       {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+
+  "chronique.elements": [
+    {"libelle": "", "anciennete": "depuis l'adolescence | depuis l'enfance | de longue date", "spheres": "", "retentissement": "", "etat_final": "persistant | attenue | non_documente", "source": ""}
+  ],
+
+  "psychosocial.lieu_naissance":       {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.lieu_croissance":      {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.fratrie":              {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.relations_familiales": {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.social":               {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.sentimental":          {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "psychosocial.logement":             {"etat": "NON_EXPLORE", "valeur": "seulement si problème clinique", "source": ""},
+  "psychosocial.financier":            {"etat": "NON_EXPLORE", "valeur": "seulement si cela éclaire le tableau", "source": ""},
+
+  "antecedents.premiere_consultation": {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "antecedents.suivis":                {"etat": "NON_EXPLORE", "valeur": "type, dates, contexte, traitement", "source": ""},
+  "antecedents.hospitalisations":      {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "antecedents.psychotropes":          {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "antecedents.anamnese_familiale":    {"etat": "NON_EXPLORE", "valeur": "lien de parenté sans identifier la personne", "source": ""},
+  "antecedents.consommations":         {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "antecedents.geste_suicidaire":      {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "somatique":                         {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+
+  "status.tenue":            {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.attitude":         {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.vigilance":        {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.contact":          {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.discours":         {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.pensee":           {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.thymie":           {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.appetit":          {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.sommeil":          {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.anxiete":          {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.substances":       {"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+  "status.idees_suicidaires":{"etat": "NON_EXPLORE", "valeur": "", "source": "E1"},
+
+  "fin.idees_suicidaires":   {"etat": "NON_EXPLORE", "valeur": "à remplir seulement si des idées suicidaires étaient présentes au départ : amendées / persistantes / ...", "source": ""},
+
+  "instruments": [
+    {"nom": "", "resultat": "", "source": ""}
+  ],
+
+  "decision": {
+    "diagnostic_provisoire": {"intitule": "", "code": ""},
+    "diagnostic_final":      {"intitule": "", "code": ""},
+    "evaluation_poursuivie": true,
+    "compartiment": "adaptation_seul | code_z | adaptation_traits | personnalite | neurodev | non_conclusif",
+    "branches": {
+      "chronique": "aucune | A | B | C | D",
+      "diagnostic": 0,
+      "supplementaires": [],
+      "evolution": 0,
+      "issue": 0
+    },
+    "indication_psychotherapie": false,
+    "souhait_patient": false,
+    "orientation_realisee": false
+  }
+}

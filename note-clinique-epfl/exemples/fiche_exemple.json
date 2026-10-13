@@ -1,0 +1,285 @@
+{
+  "_lisezmoi": "CAS ENTIÈREMENT FICTIF, pour tester la chaîne. Aucune donnée réelle.",
+  "patient.genre": {
+    "etat": "PRESENT",
+    "valeur": "F",
+    "source": "E1"
+  },
+  "patient.age": {
+    "etat": "PRESENT",
+    "valeur": "22 ans",
+    "source": "E1"
+  },
+  "patient.origine": {
+    "etat": "PRESENT",
+    "valeur": "française",
+    "source": "E1"
+  },
+  "patient.arrivee_suisse": {
+    "etat": "PRESENT",
+    "valeur": "venue en Suisse pour ses études",
+    "source": "E1"
+  },
+  "patient.cursus": {
+    "etat": "PRESENT",
+    "valeur": "troisième année de bachelor en génie mécanique",
+    "source": "E1"
+  },
+  "patient.mode_arrivee": {
+    "etat": "PRESENT",
+    "valeur": "d'elle-même",
+    "source": "E1"
+  },
+  "motif": {
+    "etat": "PRESENT",
+    "valeur": "difficultés depuis une rupture sentimentale",
+    "source": "E1"
+  },
+  "cadre.type": {
+    "etat": "PRESENT",
+    "valeur": "intervention psychodynamique brève",
+    "source": "E1"
+  },
+  "cadre.nb_seances": {
+    "etat": "PRESENT",
+    "valeur": "4",
+    "source": "E4"
+  },
+  "cadre.participation": {
+    "etat": "PRESENT",
+    "valeur": "ponctuelle et investie",
+    "source": "E4"
+  },
+  "cadre.complements": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "cadre.interruption": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "aigu.symptomes": [
+    {
+      "libelle": "symptomatologie anxieuse avec ruminations",
+      "depuis": "six semaines",
+      "mode": "apparition progressive",
+      "etat_final": "persistant",
+      "source": "E1"
+    },
+    {
+      "libelle": "symptomatologie dépressive (tristesse, perte d'intérêt)",
+      "depuis": "six semaines",
+      "mode": "apparition progressive",
+      "etat_final": "attenue",
+      "source": "E1"
+    },
+    {
+      "libelle": "difficultés d'endormissement",
+      "depuis": "un mois",
+      "mode": "apparition",
+      "etat_final": "amende",
+      "source": "E1"
+    }
+  ],
+  "aigu.facteur_crise": {
+    "etat": "PRESENT",
+    "valeur": "rupture sentimentale à l'initiative de son compagnon, deux mois avant",
+    "source": "E1"
+  },
+  "aigu.retentissement": {
+    "etat": "PRESENT",
+    "valeur": "elle n'arrive plus à suivre les cours et a renoncé à une session d'examens",
+    "source": "E1"
+  },
+  "aigu.delimitation": {
+    "etat": "PRESENT",
+    "valeur": "fonctionnement antérieur préservé, pas de difficulté de ce type auparavant",
+    "source": "E1"
+  },
+  "aigu.mesures": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "aigu.idees_suicidaires": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "aigu.premiere_fois": {
+    "etat": "PRESENT",
+    "valeur": "oui",
+    "source": "E1"
+  },
+  "chronique.elements": [],
+  "psychosocial.lieu_naissance": {
+    "etat": "PRESENT",
+    "valeur": "Lyon",
+    "source": "E1"
+  },
+  "psychosocial.lieu_croissance": {
+    "etat": "PRESENT",
+    "valeur": "Lyon",
+    "source": "E1"
+  },
+  "psychosocial.fratrie": {
+    "etat": "PRESENT",
+    "valeur": "cadette d'une fratrie de deux",
+    "source": "E1"
+  },
+  "psychosocial.relations_familiales": {
+    "etat": "PRESENT",
+    "valeur": "globalement bonnes",
+    "source": "E1"
+  },
+  "psychosocial.social": {
+    "etat": "PRESENT",
+    "valeur": "bon cercle social",
+    "source": "E1"
+  },
+  "psychosocial.sentimental": {
+    "etat": "PRESENT",
+    "valeur": "célibataire depuis la rupture",
+    "source": "E1"
+  },
+  "psychosocial.logement": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "psychosocial.financier": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.premiere_consultation": {
+    "etat": "PRESENT",
+    "valeur": "oui",
+    "source": "E1"
+  },
+  "antecedents.suivis": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.hospitalisations": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.psychotropes": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.anamnese_familiale": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.consommations": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "antecedents.geste_suicidaire": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "somatique": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.tenue": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.attitude": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.vigilance": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.contact": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.discours": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.pensee": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.thymie": {
+    "etat": "PRESENT",
+    "valeur": "abaissée, affects congruents et labiles, larmes par moments",
+    "source": "E1"
+  },
+  "status.appetit": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.sommeil": {
+    "etat": "PRESENT",
+    "valeur": "perturbé par des difficultés d'endormissement",
+    "source": "E1"
+  },
+  "status.anxiete": {
+    "etat": "PRESENT",
+    "valeur": "anxiété modérée en lien avec la rupture",
+    "source": "E1"
+  },
+  "status.substances": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": "E1"
+  },
+  "status.idees_suicidaires": {
+    "etat": "ABSENT",
+    "valeur": "",
+    "source": "E1"
+  },
+  "fin.idees_suicidaires": {
+    "etat": "NON_EXPLORE",
+    "valeur": "",
+    "source": ""
+  },
+  "instruments": [],
+  "decision": {
+    "diagnostic_provisoire": {
+      "intitule": "trouble de l'adaptation",
+      "code": "F43.2"
+    },
+    "diagnostic_final": {
+      "intitule": "trouble de l'adaptation avec réaction mixte anxieuse et dépressive",
+      "code": "F43.22"
+    },
+    "evaluation_poursuivie": true,
+    "compartiment": "adaptation_seul",
+    "branches": {
+      "chronique": "aucune",
+      "diagnostic": 2,
+      "supplementaires": [],
+      "evolution": 2,
+      "issue": 1
+    },
+    "indication_psychotherapie": true,
+    "souhait_patient": true,
+    "orientation_realisee": true
+  }
+}
