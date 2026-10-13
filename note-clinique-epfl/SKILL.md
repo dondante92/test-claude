@@ -28,7 +28,7 @@ Une conversation = un seul patient. Aucune donnée identifiante dans la fiche ni
 | # | Étape | Charger | Produit | Arrêt ? |
 |---|---|---|---|---|
 | 1 | **Compréhension de la situation** | `references/1-comprehension.md` | Bloc de prose continue, sans diagnostic | **OUI** : le clinicien valide la lecture du cas |
-| 2 | **Fiche de faits** | `references/2-fiche-faits.md` | Tableau + `fiche.json` + questions | **OUI si questions bloquantes** |
+| 2 | **Fiche de faits** | `references/2-fiche-faits.md` | Tableau + `fiche.json` + questions (`controle.py fiche fiche.json --sans-decision`) | **OUI si questions bloquantes** |
 | 3 | **Décision** | `references/3-decision.md`, `references/3-compartiments.md` | Critères CIM-10 vérifiés en ligne, diagnostics, compartiment, branches | **OUI** : le clinicien valide |
 | 4 | **Rédaction sur canevas** | `references/4-langage.md`, `references/4-canevas-note.md`, `references/4-canevas-synthese.md` | Note et/ou synthèse | non |
 | 5 | **Contrebalance** | `references/5-contrebalance.md` | Corrections, écarts signalés | non |

@@ -66,7 +66,7 @@ def etat(fiche, cle):
     return v.get("etat") if isinstance(v, dict) else None
 
 
-def controler_fiche(fiche, regles, r):
+def controler_fiche(fiche, regles, r, sans_decision=False):
     # 1. États valides et règle NON_EXPLORE
     for cle, regle in regles["champs"].items():
         if cle.startswith("_"):
@@ -96,7 +96,7 @@ def controler_fiche(fiche, regles, r):
     for s in symptomes:
         if not s.get("depuis", "").strip():
             r.questions.append(f"temporalité du symptôme « {s['libelle']} » (aucun symptôme sans ancrage temporel)")
-        if s.get("etat_final") in (None, "", "non_documente"):
+        if not sans_decision and s.get("etat_final") in (None, "", "non_documente"):
             r.avert(f"symptôme « {s['libelle']} » sans destin documenté dans l'évolution")
 
     # 3. Cohérences de base
@@ -107,6 +107,8 @@ def controler_fiche(fiche, regles, r):
         r.avert("idées suicidaires : état différent entre plan aigu et status (rapporté ≠ observé ?)")
 
     # 4. Décisions (étape 3)
+    if sans_decision:
+        return
     d = fiche.get("decision", {})
     comp = d.get("compartiment", "")
     b = d.get("branches", {})
@@ -333,6 +335,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("fiche")
     f.add_argument("fiche")
+    f.add_argument("--sans-decision", action="store_true", help="étape 2 : contrôler les faits seulement, avant les décisions")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
     t.add_argument("--type", choices=["note", "synthese"], required=True)
@@ -347,7 +350,7 @@ def main():
 
     if a.cmd == "fiche":
         fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8"))
-        controler_fiche(fiche, regles, r)
+        controler_fiche(fiche, regles, r, a.sans_decision)
         sys.exit(r.afficher("CONTRÔLE DE LA FICHE ET DES DÉCISIONS"))
 
     texte = pathlib.Path(a.fichier).read_text(encoding="utf-8")

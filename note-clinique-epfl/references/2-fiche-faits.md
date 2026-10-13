@@ -15,7 +15,7 @@
    | Idées suicidaires | NON EXPLORÉ | — | — |
 
 2. **Pour le contrôle** : le fichier `fiche.json` (même contenu), puis lancer :
-   `python3 scripts/controle.py fiche fiche.json`
+   `python3 scripts/controle.py fiche fiche.json --sans-decision` (les décisions viennent à l'étape 3)
 
 3. **Les questions** que le script renvoie, en un seul bloc :
    - **questions bloquantes** : à poser **avant** toute rédaction ;
