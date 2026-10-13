@@ -56,6 +56,14 @@ Dans un skill, tout se passe dans la même conversation. La vérification (étap
 J'ai compris la confrontation compréhension ↔ note dans les deux sens (votre étape 2). Si vous pensiez aussi à autre chose, comme la règle de non-suppression en contrepoids du filtre de pertinence, à me préciser.
 ☐ OK  ☐ Préciser : …
 
+**A12. Nouveau compartiment « trouble chronique constitué » (proposé après le premier cas réel).**
+Aucun des six compartiments ne couvre un trouble constitué ancien hors personnalité et neurodéveloppement (trichotillomanie, trouble obsessionnel-compulsif, trouble anxieux ancien…).
+→ **Ajouté provisoirement** dans `scripts/regles.json` (`trouble_chronique`) : note avec plan chronique branche D ; plan aigu = ce qui a changé récemment ; synthèse branche diagnostique 1. À ne pas écrire : présenter la majoration récente comme le début du trouble.
+☐ OK  ☐ À modifier : …
+
+**A13. Nombre de séances.** Passé de « bloquant » à « en attente » : il ne sert qu'à la note de fin et à la synthèse.
+☐ OK
+
 ---
 
 ## Ouverts : votre décision est nécessaire
