@@ -55,3 +55,15 @@ assert "/*__CONTROLES__*/" in gabarit
 gabarit = gabarit.replace("/*__CONTROLES__*/", controles)
 sortie.write_text(gabarit.replace("/*__DONNEES__*/", charge), encoding="utf-8")
 print(f"Écrit : {sortie} ({sortie.stat().st_size // 1024} Ko)")
+
+# Version claude.ai (Artifact) : même page, sans le squelette HTML (ajouté à la publication),
+# limitée à l'abonnement Claude et à la démo (la page ne peut joindre aucun autre serveur).
+donnees["artefact"] = True
+charge_art = json.dumps(donnees, ensure_ascii=False).replace("</", "<\\/")
+art = gabarit.replace("/*__DONNEES__*/", charge_art)
+debut, fin = art.index("<title>"), art.index("</head>")
+corps = art[art.index("<body>") + len("<body>"):art.rindex("</body>")]
+art = '<meta name="claude:viewport-fit-sides" content="cover">\n' + art[debut:fin].strip() + "\n" + corps.strip() + "\n"
+sortie_art = ICI / "note-clinique-claude.html"
+sortie_art.write_text(art, encoding="utf-8")
+print(f"Écrit : {sortie_art} ({sortie_art.stat().st_size // 1024} Ko)")

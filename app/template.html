@@ -16,16 +16,24 @@
     --fond: #161615; --carte: #201f1d; --texte: #ecebe7; --doux: #a3a19b; --bord: #3a3935;
     --accent: #6fb0dd; --accent-texte: #0d1b25; --ok: #7cc49a; --ok-fond: #1d2e23;
     --att: #e6b85c; --att-fond: #33290f; --err: #ef8f87; --err-fond: #3a1d1b; --mark: #6b5713;
+    color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+    --fond: #161615; --carte: #201f1d; --texte: #ecebe7; --doux: #a3a19b; --bord: #3a3935;
+    --accent: #6fb0dd; --accent-texte: #0d1b25; --ok: #7cc49a; --ok-fond: #1d2e23;
+    --att: #e6b85c; --att-fond: #33290f; --err: #ef8f87; --err-fond: #3a1d1b; --mark: #6b5713;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--fond); color: var(--texte); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--bord); background: var(--carte); position: sticky; top: 0; z-index: 5; }
+header { display: flex; align-items: center; gap: 12px; padding-block: 12px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--bord); background: var(--carte); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; flex-wrap: wrap; }
 header h1 { font-size: 17px; margin: 0; flex: 1; }
 header .fournisseur { color: var(--doux); font-size: 13px; }
-.bandeau { padding: 8px 20px; font-size: 13px; background: var(--att-fond); color: var(--att); border-bottom: 1px solid var(--bord); }
-main { display: grid; grid-template-columns: 360px 1fr; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } }
+.bandeau { padding-block: 8px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); font-size: 13px; background: var(--att-fond); color: var(--att); border-bottom: 1px solid var(--bord); }
+main { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 20px; padding-block: 20px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); max-width: 1400px; margin: 0 auto; }
+@media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+.bandeau.demo { background: var(--accent); color: var(--accent-texte); font-weight: 600; }
 section.carte, .etape { background: var(--carte); border: 1px solid var(--bord); border-radius: 10px; padding: 16px; }
 #entree { position: sticky; top: 76px; align-self: start; }
 @media (max-width: 900px) { #entree { position: static; } }
@@ -83,7 +91,8 @@ dialog::backdrop { background: rgba(0,0,0,.35); }
   <span class="fournisseur" id="etiquette-fournisseur"></span>
   <button id="ouvrir-reglages">Réglages IA</button>
 </header>
-<div class="bandeau">Données de patients : anonymiser (ni nom, ni date de naissance). Les notes sont envoyées au fournisseur d'IA choisi ; vérifier que le CHUV l'autorise. Avec un modèle local, rien ne quitte l'ordinateur. Rien n'est enregistré par cette page.</div>
+<div class="bandeau demo" id="bandeau-demo" hidden>MODE DÉMO : aucune IA. La page montre toujours le même cas fictif ; vos notes ne sont pas utilisées. Choisissez un fournisseur dans « Réglages IA » pour traiter vos notes.</div>
+<div class="bandeau" id="bandeau-confidentialite">Données de patients : anonymiser (ni nom, ni date de naissance). Les notes sont envoyées au fournisseur d'IA choisi ; vérifier que le CHUV l'autorise. Avec un modèle local, rien ne quitte l'ordinateur. Rien n'est enregistré par cette page.</div>
 
 <main>
   <section class="carte" id="entree">
@@ -111,6 +120,7 @@ dialog::backdrop { background: rgba(0,0,0,.35); }
     <h2>Réglages IA</h2>
     <label for="fournisseur">Fournisseur</label>
     <select id="fournisseur">
+      <option value="sample">Claude, votre abonnement (page ouverte dans claude.ai)</option>
       <option value="demo">Démo (cas fictif, sans IA)</option>
       <option value="anthropic">Claude (Anthropic)</option>
       <option value="openai">OpenAI</option>
@@ -148,13 +158,15 @@ const { plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, n
    FOURNISSEURS D'IA — Claude, OpenAI, modèle local compatible OpenAI, démo
    ========================================================================= */
 const CFG = 'note-clinique-reglages';
-const DEFAUTS = { demo: { modele: '' }, anthropic: { modele: 'claude-sonnet-5-5' }, openai: { modele: '' }, local: { modele: '', url: 'http://localhost:11434/v1' } };
-let cfg = Object.assign({ fournisseur: 'demo', modele: '', url: '', cle: '', memoriser: false, web: true }, (() => { try { return JSON.parse(localStorage.getItem(CFG)) || {}; } catch { return {}; } })());
+const DEFAUTS = { sample: { modele: '' }, demo: { modele: '' }, anthropic: { modele: 'claude-sonnet-5-5' }, openai: { modele: '' }, local: { modele: '', url: 'http://localhost:11434/v1' } };
+const DANS_CLAUDE = typeof window.claude?.use === 'function';
+let cfg = Object.assign({ fournisseur: DANS_CLAUDE ? 'sample' : 'demo', modele: '', url: '', cle: '', memoriser: false, web: true }, (() => { try { return JSON.parse(localStorage.getItem(CFG)) || {}; } catch { return {}; } })());
 
 function enregistrerCfg() {
   const copie = { ...cfg }; if (!cfg.memoriser) delete copie.cle;
   try { localStorage.setItem(CFG, JSON.stringify(copie)); } catch { /* stockage indisponible : réglages pour cette session seulement */ }
-  $('#etiquette-fournisseur').textContent = { demo: 'Démo (sans IA)', anthropic: 'Claude', openai: 'OpenAI', local: 'Modèle local' }[cfg.fournisseur] + (cfg.modele ? ' · ' + cfg.modele : '');
+  $('#bandeau-demo').hidden = cfg.fournisseur !== 'demo';
+  $('#etiquette-fournisseur').textContent = { sample: 'Claude (abonnement)', demo: 'Démo (sans IA)', anthropic: 'Claude (API)', openai: 'OpenAI', local: 'Modèle local' }[cfg.fournisseur] + (cfg.modele ? ' · ' + cfg.modele : '');
 }
 
 function journal(m) { const j = $('#journal'); j.textContent = `${new Date().toLocaleTimeString()}  ${m}\n` + j.textContent; }
@@ -163,10 +175,32 @@ async function appelIA(tag, system, user, { web = false, max = 8000 } = {}) {
   const t0 = performance.now();
   let texte;
   if (cfg.fournisseur === 'demo') texte = await demo(tag, user);
+  else if (cfg.fournisseur === 'sample') texte = await appelAbonnement(tag, system, user);
   else if (cfg.fournisseur === 'anthropic') texte = await appelClaude(system, user, web && cfg.web, max);
   else texte = await appelOpenAI(system, user);
   journal(`${tag} — ${Math.round(performance.now() - t0)} ms, ${texte.length} caractères reçus`);
   return texte;
+}
+
+const ERREURS_ABONNEMENT = {
+  not_granted: "Vous n'avez pas autorisé cette page à utiliser Claude. Rechargez la page pour qu'elle vous le redemande.",
+  sampling_disabled: "Claude n'est pas disponible pour ce compte.",
+  rate_limited: 'Limite d\'utilisation atteinte pour le moment. Réessayez plus tard.',
+  session_expired: 'Votre session a expiré : reconnectez-vous à claude.ai.',
+  prompt_too_large: 'Les notes sont trop longues pour un seul appel : raccourcissez-les.',
+  refused: 'Claude a refusé de traiter ce contenu.',
+};
+async function appelAbonnement(tag, system, user) {
+  const sample = DANS_CLAUDE ? await window.claude.use('sample') : null;
+  if (!sample) throw new Error("Ce mode fonctionne seulement quand la page est ouverte dans claude.ai. Ailleurs, choisissez un autre fournisseur.");
+  const niveau = /^(etape1|etape4|etape7)/.test(tag) ? 'complex' : 'default';
+  try {
+    const r = await sample(system + '\n\n==================== DONNÉES ====================\n\n' + user, { modelTier: niveau, cache: false });
+    if (r.truncated) journal(`${tag} : réponse coupée (trop longue)`);
+    return r.text;
+  } catch (e) {
+    throw new Error(ERREURS_ABONNEMENT[e.code] || `Claude n'a pas pu répondre (${e.code || 'erreur'}). Réessayez.`);
+  }
 }
 
 async function appelClaude(system, user, web, max) {
@@ -473,7 +507,7 @@ const surligner = t => esc(t).replace(/\[À COMPLÉTER[^\]]*\]/g, m => `<mark>${
 function aCompleter() { return [...new Set(((S.note || '') + '\n' + (S.synthese || '')).match(/\[À COMPLÉTER[^\]]*\]/g) || [])]; }
 function afficher7() {
   const f = S.final || {}, an = f.anomalies || {};
-  const textes = [['note', 'Note du premier entretien'], ['synthese', 'Synthèse']].filter(([t]) => S[t]).map(([t, titre]) => `<h2>${titre}</h2><div class="texte-final" id="final-${t}">${surligner(S[t])}</div><div class="actions"><button class="primaire" data-act="copier" data-t="${t}">Copier pour le dossier</button><button data-act="telecharger" data-t="${t}">Télécharger (.txt Latin-1)</button></div>`).join('');
+  const textes = [['note', 'Note du premier entretien'], ['synthese', 'Synthèse']].filter(([t]) => S[t]).map(([t, titre]) => `<h2>${titre}</h2><div class="texte-final" id="final-${t}">${surligner(S[t])}</div><div class="actions"><button class="primaire" data-act="copier" data-t="${t}">Copier pour le dossier</button>${D.artefact ? '' : `<button data-act="telecharger" data-t="${t}">Télécharger (.txt Latin-1)</button>`}</div>`).join('');
   const champs = aCompleter().map((m, i) => `<div class="question"><strong>${esc(m.slice(1, -1).replace(/^À COMPLÉTER\s*:\s*/, ''))}</strong><input data-ac="${i}" data-m="${esc(m)}" placeholder="Votre réponse (vide = laisser en attente)"></div>`).join('');
   const qs = (f.incertains || []).map((q, i) => `<div class="question"><strong>${esc(q.question)}</strong><div class="options">${(q.options || []).map(o => `<label><input type="radio" name="q${i}" value="${esc(o)}">${esc(o)}</label>`).join('')}<label><input type="radio" name="q${i}" value="__autre">Autre : <input data-autre="${i}" style="margin-left:6px"></label></div></div>`).join('');
   badge(7, champs || qs ? 'questions ouvertes' : 'terminé', champs || qs ? 'valider' : 'ok');
@@ -524,11 +558,15 @@ $('#lancer').onclick = () => {
   if (!$('#notes').value.trim()) { $('#notes').focus(); return; }
   initEtapes(); S.notes = $('#notes').value.trim(); executer(1, etape1);
 };
-$('#effacer').onclick = () => { if (confirm('Effacer les notes et tout le travail en cours ?')) { $('#notes').value = ''; initEtapes(); } };
+$('#effacer').onclick = e => {
+  const b = e.currentTarget;
+  if (b.dataset.armer !== '1') { b.dataset.armer = '1'; b.textContent = "Confirmer l'effacement"; setTimeout(() => { b.dataset.armer = ''; b.textContent = 'Tout effacer'; }, 4000); return; }
+  b.dataset.armer = ''; b.textContent = 'Tout effacer'; $('#notes').value = ''; initEtapes();
+};
 
 function majChampsFournisseur() {
   const f = $('#fournisseur').value;
-  $('#champs-fournisseur').style.display = f === 'demo' ? 'none' : '';
+  $('#champs-fournisseur').style.display = ['demo', 'sample'].includes(f) ? 'none' : '';
   $('#bloc-url').style.display = f === 'local' ? '' : 'none';
   $('#bloc-web').style.display = f === 'anthropic' ? '' : 'none';
   $('#cle').placeholder = f === 'local' ? 'facultative pour un serveur local' : '';
@@ -546,6 +584,9 @@ $('#reglages').addEventListener('close', () => {
   enregistrerCfg();
 });
 
+// Dans claude.ai, la page ne peut joindre aucun autre serveur : seuls l'abonnement Claude et la démo y fonctionnent.
+if (D.artefact) { document.querySelectorAll('#fournisseur option').forEach(o => { if (!['sample', 'demo'].includes(o.value)) o.remove(); }); if (!['sample', 'demo'].includes(cfg.fournisseur)) cfg.fournisseur = DANS_CLAUDE ? 'sample' : 'demo'; }
+if (D.artefact) $('#bandeau-confidentialite').textContent = "Données de patients : anonymiser (ni nom, ni date de naissance). Les notes sont traitées par Claude avec votre propre compte claude.ai, comme dans une conversation. Rien n'est enregistré par cette page.";
 initEtapes(); enregistrerCfg();
 if (cfg.fournisseur === 'demo') $('#notes').placeholder = "Mode démo : écrivez n'importe quoi et cliquez sur Lancer pour voir le parcours complet sur un cas fictif.";
 </script>
