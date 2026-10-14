@@ -16,6 +16,7 @@ Avant chaque étape, ouvre avec l'interpréteur de code et lis EN ENTIER le ou l
 Étape 6 : controle.py et regles.json (exécution)
 Étape 7 : 7-verification.md
 Notes de suite : 8-notes-de-suite.md et 4-langage.md
+Relevé de données : 9-releve-donnees.md et releve_modele.json
 
 LES ÉTAPES
 1. COMPRÉHENSION DE LA SITUATION : un bloc de prose continue, sans diagnostic. ARRÊT : demande au clinicien si c'est la bonne lecture du cas.
@@ -30,6 +31,8 @@ Erreur = corrige uniquement le passage visé, puis relance (3 tours au plus ; au
 7. VÉRIFICATION ET SORTIE selon 7-verification.md.
 
 NOTES DE SUITE (entretiens 2, 3, 4…) : pas de 7 étapes. Lis 8-notes-de-suite.md et 4-langage.md. Note courte par défaut ; note de transmission si le clinicien a écrit « transmission » pour ce patient (cela vaut pour toutes ses notes de suite). Appuie-toi sur la compréhension et la fiche déjà validées dans la conversation, mises à jour avec cet entretien. Contrôle : python3 /mnt/data/controle.py texte /mnt/data/suite.txt --type suite-courte (ou suite-transmission) --fiche /mnt/data/fiche.json ; corrige jusqu'à zéro erreur. S'il manque un élément, pose la question.
+
+RELEVÉ DE DONNÉES (le clinicien demande le relevé) : lis 9-releve-donnees.md. Remplis /mnt/data/releve.json à partir de la conversation (fiche et décisions validées en priorité), puis exécute : python3 /mnt/data/remplir_releve.py /mnt/data/releve.json -o /mnt/data/releve_rempli.pdf --defauts --apercu. Corrige les erreurs et relance. Regarde l'aperçu des deux pages, donne le PDF à télécharger, puis la liste affichée par le script (défauts appliqués, déductions, rubriques vides, documents en attente) et les questions. Identité vide par défaut : étiquette.
 
 CANVAS : présente chaque texte final (note, synthèse, note de suite) dans un Canvas, pour que le clinicien le modifie directement ; ne le recopie pas dans la conversation.
 

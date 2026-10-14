@@ -1,0 +1,19 @@
+{
+ "_lisezmoi": "CAS ENTIÈREMENT FICTIF (même cas que fiche_exemple.json).",
+ "choix": {
+  "sexe": "F", "langue_consultation": "fr", "annees_suisse": "3-4", "niveau_etudes": "bachelor",
+  "deplacement_etudes": "étranger", "mode_venue": "internet", "mode_rdv": "mail EPFL",
+  "motif_principal": "problème relationnel", "difficultes_relationnelles": "sentimental",
+  "situation_echec": "non", "type_travail": "IPB", "decision": "transmission privé"
+ },
+ "textes": {
+  "consultant": "Dr X", "nationalite": "française", "langue_maternelle": "français",
+  "faculte_section": "génie mécanique", "nb_consultations": "4",
+  "diagnostic_principal_axe1": "F43.22 Trouble de l'adaptation avec réaction mixte anxieuse et dépressive"
+ },
+ "deductions": {
+  "annees_suisse": "venue pour le bachelor, en 3e année",
+  "langue_maternelle": "a grandi en France",
+  "mode_venue": "démarche spontanée, sans autre orientation mentionnée"
+ }
+}

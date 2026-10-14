@@ -1,0 +1,1525 @@
+{
+ "_lisezmoi": "Généré par outils/positions_releve.py depuis releve/releve_vierge.pdf (version LG 06.08.2021). Ne pas modifier à la main.",
+ "choix": {
+  "sexe": {
+   "F": {
+    "page": 1,
+    "boite": [
+     101.8,
+     572.6,
+     106.8,
+     583.7
+    ]
+   },
+   "M": {
+    "page": 1,
+    "boite": [
+     126.0,
+     572.6,
+     135.4,
+     583.7
+    ]
+   }
+  },
+  "etat_civil": {
+   "célibataire": {
+    "page": 1,
+    "boite": [
+     106.9,
+     499.5,
+     157.1,
+     509.7
+    ]
+   },
+   "marié(e)": {
+    "page": 1,
+    "boite": [
+     178.6,
+     499.5,
+     219.4,
+     509.7
+    ]
+   },
+   "divorcé(e)": {
+    "page": 1,
+    "boite": [
+     241.0,
+     499.5,
+     289.8,
+     509.7
+    ]
+   },
+   "veuf(ve)": {
+    "page": 1,
+    "boite": [
+     311.3,
+     499.5,
+     351.0,
+     509.7
+    ]
+   },
+   "partenarié(e)": {
+    "page": 1,
+    "boite": [
+     372.4,
+     499.5,
+     435.4,
+     509.7
+    ]
+   }
+  },
+  "enfants": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     106.9,
+     471.8,
+     121.6,
+     482.0
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     143.2,
+     471.8,
+     161.6,
+     482.0
+    ]
+   }
+  },
+  "langue_consultation": {
+   "fr": {
+    "page": 1,
+    "boite": [
+     405.2,
+     444.2,
+     411.9,
+     454.4
+    ]
+   },
+   "ang": {
+    "page": 1,
+    "boite": [
+     427.1,
+     444.2,
+     445.5,
+     454.4
+    ]
+   },
+   "all": {
+    "page": 1,
+    "boite": [
+     460.9,
+     444.2,
+     471.8,
+     454.4
+    ]
+   },
+   "it": {
+    "page": 1,
+    "boite": [
+     487.1,
+     444.2,
+     492.6,
+     454.4
+    ]
+   },
+   "esp": {
+    "page": 1,
+    "boite": [
+     508.0,
+     444.2,
+     525.6,
+     454.4
+    ]
+   },
+   "autre": {
+    "page": 1,
+    "boite": [
+     540.9,
+     444.2,
+     566.0,
+     454.4
+    ]
+   }
+  },
+  "echange": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     156.5,
+     416.5,
+     171.2,
+     426.7
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     192.7,
+     416.5,
+     211.1,
+     426.7
+    ]
+   }
+  },
+  "annees_suisse": {
+   "<1": {
+    "page": 1,
+    "boite": [
+     423.4,
+     416.5,
+     436.0,
+     426.7
+    ]
+   },
+   "1-2": {
+    "page": 1,
+    "boite": [
+     451.4,
+     416.5,
+     467.3,
+     426.7
+    ]
+   },
+   "3-4": {
+    "page": 1,
+    "boite": [
+     482.6,
+     416.5,
+     498.5,
+     426.7
+    ]
+   },
+   ">5": {
+    "page": 1,
+    "boite": [
+     513.7,
+     416.5,
+     526.3,
+     426.7
+    ]
+   },
+   "né CH": {
+    "page": 1,
+    "boite": [
+     541.4,
+     416.5,
+     572.7,
+     426.7
+    ]
+   }
+  },
+  "situation_economique": {
+   "dépendance parents": {
+    "page": 1,
+    "boite": [
+     163.2,
+     388.9,
+     263.5,
+     399.1
+    ]
+   },
+   "bourse": {
+    "page": 1,
+    "boite": [
+     284.9,
+     388.9,
+     318.5,
+     399.1
+    ]
+   },
+   "activité prof.": {
+    "page": 1,
+    "boite": [
+     340.0,
+     388.9,
+     399.2,
+     399.1
+    ]
+   },
+   "assistanat (assistant-doctorant)": {
+    "page": 1,
+    "boite": [
+     420.7,
+     388.9,
+     573.5,
+     399.1
+    ]
+   },
+   "dépendance conjoint": {
+    "page": 1,
+    "boite": [
+     48.3,
+     370.3,
+     149.9,
+     380.5
+    ]
+   }
+  },
+  "etudes": {
+   "UNIL": {
+    "page": 1,
+    "boite": [
+     88.1,
+     342.5,
+     113.2,
+     352.7
+    ]
+   },
+   "EPFL": {
+    "page": 1,
+    "boite": [
+     134.5,
+     342.5,
+     161.9,
+     352.7
+    ]
+   }
+  },
+  "niveau_etudes": {
+   "CMS": {
+    "page": 1,
+    "boite": [
+     165.0,
+     314.9,
+     189.4,
+     325.1
+    ]
+   },
+   "EFLE": {
+    "page": 1,
+    "boite": [
+     245.0,
+     314.9,
+     272.5,
+     325.1
+    ]
+   },
+   "bachelor": {
+    "page": 1,
+    "boite": [
+     294.1,
+     314.9,
+     336.1,
+     325.1
+    ]
+   },
+   "master": {
+    "page": 1,
+    "boite": [
+     351.4,
+     314.9,
+     385.1,
+     325.1
+    ]
+   },
+   "doctorat": {
+    "page": 1,
+    "boite": [
+     400.4,
+     314.9,
+     440.0,
+     325.1
+    ]
+   },
+   "MAN": {
+    "page": 1,
+    "boite": [
+     455.4,
+     314.9,
+     479.9,
+     325.1
+    ]
+   }
+  },
+  "situation_echec": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     142.3,
+     287.2,
+     157.0,
+     297.4
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     178.6,
+     287.2,
+     197.0,
+     297.4
+    ]
+   }
+  },
+  "echecs_anterieurs": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     444.9,
+     287.2,
+     459.6,
+     297.4
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     481.1,
+     287.2,
+     499.4,
+     297.4
+    ]
+   }
+  },
+  "deplacement_etudes": {
+   "non": {
+    "page": 1,
+    "boite": [
+     179.8,
+     259.6,
+     198.2,
+     269.8
+    ]
+   },
+   "autre canton": {
+    "page": 1,
+    "boite": [
+     213.5,
+     259.6,
+     274.6,
+     269.8
+    ]
+   },
+   "étranger": {
+    "page": 1,
+    "boite": [
+     289.8,
+     259.6,
+     330.8,
+     269.8
+    ]
+   }
+  },
+  "mode_venue": {
+   "internet": {
+    "page": 1,
+    "boite": [
+     181.7,
+     232.0,
+     218.4,
+     242.2
+    ]
+   },
+   "SASME (unil)": {
+    "page": 1,
+    "boite": [
+     239.8,
+     232.0,
+     305.7,
+     242.2
+    ]
+   },
+   "SOC (unil)": {
+    "page": 1,
+    "boite": [
+     327.2,
+     232.0,
+     378.4,
+     242.2
+    ]
+   },
+   "Accueil santé (unil)": {
+    "page": 1,
+    "boite": [
+     399.8,
+     232.0,
+     492.7,
+     242.2
+    ]
+   },
+   "SAE (epfl)": {
+    "page": 1,
+    "boite": [
+     514.2,
+     232.0,
+     564.3,
+     242.2
+    ]
+   },
+   "Pt santé (epfl)": {
+    "page": 1,
+    "boite": [
+     36.0,
+     213.3,
+     104.6,
+     223.5
+    ]
+   },
+   "prof.": {
+    "page": 1,
+    "boite": [
+     126.0,
+     213.3,
+     147.9,
+     223.5
+    ]
+   },
+   "Ψ pays d’origine": {
+    "page": 1,
+    "boite": [
+     163.3,
+     213.3,
+     243.4,
+     225.6
+    ]
+   },
+   "MT": {
+    "page": 1,
+    "boite": [
+     264.8,
+     213.3,
+     280.6,
+     223.5
+    ]
+   },
+   "pair(e)": {
+    "page": 1,
+    "boite": [
+     302.1,
+     213.3,
+     333.8,
+     223.5
+    ]
+   },
+   "proches (FA, amis)": {
+    "page": 1,
+    "boite": [
+     355.3,
+     213.3,
+     448.2,
+     223.5
+    ]
+   },
+   "autre": {
+    "page": 1,
+    "boite": [
+     469.7,
+     213.3,
+     494.8,
+     223.5
+    ]
+   }
+  },
+  "mode_rdv": {
+   "réception SASME": {
+    "page": 1,
+    "boite": [
+     231.8,
+     185.7,
+     318.5,
+     195.9
+    ]
+   },
+   "mail UNIL": {
+    "page": 1,
+    "boite": [
+     333.7,
+     185.7,
+     382.1,
+     195.9
+    ]
+   },
+   "mail EPFL": {
+    "page": 1,
+    "boite": [
+     397.3,
+     185.7,
+     448.1,
+     195.9
+    ]
+   },
+   "mail via guichet": {
+    "page": 1,
+    "boite": [
+     500.1,
+     185.7,
+     575.9,
+     195.9
+    ]
+   }
+  },
+  "consultations_anterieures": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     248.3,
+     157.9,
+     262.9,
+     168.1
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     284.3,
+     157.9,
+     302.7,
+     168.1
+    ]
+   }
+  },
+  "consultations_anterieures_lieu": {
+   "UNIL": {
+    "page": 1,
+    "boite": [
+     385.3,
+     157.9,
+     410.2,
+     168.1
+    ]
+   },
+   "EPFL": {
+    "page": 1,
+    "boite": [
+     425.6,
+     157.9,
+     453.1,
+     168.1
+    ]
+   },
+   "DP-CHUV": {
+    "page": 1,
+    "boite": [
+     468.5,
+     157.9,
+     518.4,
+     168.1
+    ]
+   },
+   "externe": {
+    "page": 1,
+    "boite": [
+     533.7,
+     157.9,
+     570.5,
+     168.1
+    ]
+   }
+  },
+  "hospitalisation": {
+   "oui": {
+    "page": 1,
+    "boite": [
+     289.2,
+     130.3,
+     303.9,
+     140.5
+    ]
+   },
+   "non": {
+    "page": 1,
+    "boite": [
+     325.4,
+     130.3,
+     343.8,
+     140.5
+    ]
+   }
+  },
+  "motif_principal": {
+   "symptômes": {
+    "page": 1,
+    "boite": [
+     172.3,
+     102.7,
+     228.6,
+     112.9
+    ]
+   },
+   "problème relationnel": {
+    "page": 1,
+    "boite": [
+     250.0,
+     102.7,
+     349.7,
+     112.9
+    ]
+   },
+   "études": {
+    "page": 1,
+    "boite": [
+     371.1,
+     102.7,
+     404.1,
+     112.9
+    ]
+   }
+  },
+  "contexte_etudes": {
+   "début": {
+    "page": 1,
+    "boite": [
+     136.9,
+     75.0,
+     164.4,
+     85.2
+    ]
+   },
+   "fin": {
+    "page": 1,
+    "boite": [
+     185.8,
+     75.0,
+     197.4,
+     85.2
+    ]
+   },
+   "examen": {
+    "page": 1,
+    "boite": [
+     218.9,
+     75.0,
+     258.1,
+     85.2
+    ]
+   },
+   "échec": {
+    "page": 1,
+    "boite": [
+     279.4,
+     75.0,
+     308.8,
+     85.2
+    ]
+   }
+  },
+  "difficultes_relationnelles": {
+   "familial": {
+    "page": 1,
+    "boite": [
+     178.6,
+     47.4,
+     212.7,
+     57.6
+    ]
+   },
+   "sentimental": {
+    "page": 1,
+    "boite": [
+     234.3,
+     47.4,
+     290.5,
+     57.6
+    ]
+   },
+   "vie sociale": {
+    "page": 1,
+    "boite": [
+     311.9,
+     47.4,
+     363.2,
+     57.6
+    ]
+   },
+   "milieu d’études": {
+    "page": 1,
+    "boite": [
+     384.7,
+     47.4,
+     458.1,
+     59.7
+    ]
+   },
+   "milieu prof.": {
+    "page": 1,
+    "boite": [
+     479.5,
+     47.4,
+     533.3,
+     57.6
+    ]
+   }
+  },
+  "idees_suicidaires": {
+   "scénarisées": {
+    "page": 2,
+    "boite": [
+     133.9,
+     708.5,
+     192.6,
+     718.7
+    ]
+   },
+   "idéation passive": {
+    "page": 2,
+    "boite": [
+     208.0,
+     708.5,
+     286.7,
+     718.7
+    ]
+   },
+   "absentes": {
+    "page": 2,
+    "boite": [
+     305.2,
+     708.5,
+     349.9,
+     718.7
+    ]
+   }
+  },
+  "tentative_suicide": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     526.4,
+     708.5,
+     541.1,
+     718.7
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     556.4,
+     708.5,
+     574.8,
+     718.7
+    ]
+   }
+  },
+  "screening": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     242.1,
+     680.9,
+     256.8,
+     691.1
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     278.2,
+     680.9,
+     296.6,
+     691.1
+    ]
+   }
+  },
+  "symptomes_screening": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     212.8,
+     653.1,
+     227.5,
+     663.3
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     248.9,
+     653.1,
+     267.3,
+     663.3
+    ]
+   }
+  },
+  "une_seule_consultation": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     444.3,
+     597.9,
+     459.0,
+     608.1
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     480.3,
+     597.9,
+     498.7,
+     608.1
+    ]
+   }
+  },
+  "raison_une_seule": {
+   "rupture": {
+    "page": 2,
+    "boite": [
+     163.6,
+     570.2,
+     198.5,
+     580.4
+    ]
+   },
+   "problème économique": {
+    "page": 2,
+    "boite": [
+     219.9,
+     570.2,
+     328.7,
+     580.4
+    ]
+   },
+   "pas besoin de plus": {
+    "page": 2,
+    "boite": [
+     350.1,
+     570.2,
+     441.8,
+     580.4
+    ]
+   },
+   "départ campus": {
+    "page": 2,
+    "boite": [
+     463.1,
+     570.2,
+     535.8,
+     580.4
+    ]
+   },
+   "autre suivi déjà en cours": {
+    "page": 2,
+    "boite": [
+     163.6,
+     551.6,
+     282.9,
+     561.8
+    ]
+   },
+   "bilan somatique d’abord": {
+    "page": 2,
+    "boite": [
+     304.4,
+     551.6,
+     421.1,
+     563.9
+    ]
+   },
+   "arrêt à l’initiative du patient": {
+    "page": 2,
+    "boite": [
+     442.6,
+     551.6,
+     573.4,
+     563.9
+    ]
+   }
+  },
+  "abus_substances": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     185.9,
+     373.0,
+     200.6,
+     383.2
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     222.1,
+     373.0,
+     240.4,
+     383.2
+    ]
+   }
+  },
+  "type_travail": {
+   "IP": {
+    "page": 2,
+    "boite": [
+     443.1,
+     373.0,
+     453.6,
+     383.2
+    ]
+   },
+   "IPB": {
+    "page": 2,
+    "boite": [
+     468.8,
+     373.0,
+     486.6,
+     383.2
+    ]
+   },
+   "IPB (en cours)": {
+    "page": 2,
+    "boite": [
+     501.8,
+     373.0,
+     572.0,
+     383.2
+    ]
+   }
+  },
+  "decision": {
+   "arrêt": {
+    "page": 2,
+    "boite": [
+     94.2,
+     345.3,
+     116.7,
+     355.5
+    ]
+   },
+   "rupture": {
+    "page": 2,
+    "boite": [
+     138.1,
+     345.3,
+     173.0,
+     355.5
+    ]
+   },
+   "transmission DP-CHUV": {
+    "page": 2,
+    "boite": [
+     194.4,
+     345.3,
+     309.3,
+     355.5
+    ]
+   },
+   "transmission privé": {
+    "page": 2,
+    "boite": [
+     330.9,
+     345.3,
+     419.5,
+     355.5
+    ]
+   },
+   "en cours": {
+    "page": 2,
+    "boite": [
+     440.9,
+     345.3,
+     483.2,
+     355.5
+    ]
+   },
+   "urgences": {
+    "page": 2,
+    "boite": [
+     501.5,
+     345.3,
+     546.7,
+     355.5
+    ]
+   },
+   "psy. précédent": {
+    "page": 2,
+    "boite": [
+     92.7,
+     326.7,
+     164.8,
+     336.9
+    ]
+   },
+   "poursuite suivi par intervenant(e)": {
+    "page": 2,
+    "boite": [
+     186.4,
+     326.7,
+     346.5,
+     336.9
+    ]
+   },
+   "poursuite chez le généraliste": {
+    "page": 2,
+    "boite": [
+     368.0,
+     326.7,
+     508.0,
+     336.9
+    ]
+   },
+   "poursuite chez le psy. étranger": {
+    "page": 2,
+    "boite": [
+     160.0,
+     308.1,
+     310.4,
+     318.3
+    ]
+   },
+   "autre": {
+    "page": 2,
+    "boite": [
+     331.6,
+     308.1,
+     356.8,
+     318.3
+    ]
+   },
+   "départ à l’étranger": {
+    "page": 2,
+    "boite": [
+     529.5,
+     326.7,
+     569.8,
+     336.9
+    ],
+    "boites_suivantes": [
+     [
+      92.7,
+      308.1,
+      138.6,
+      320.4
+     ]
+    ]
+   }
+  },
+  "prescription": {
+   "∅": {
+    "page": 2,
+    "boite": [
+     112.5,
+     278.9,
+     120.0,
+     290.9
+    ]
+   },
+   "somnifère": {
+    "page": 2,
+    "boite": [
+     135.6,
+     279.3,
+     184.0,
+     289.5
+    ]
+   },
+   "benzodiazépine": {
+    "page": 2,
+    "boite": [
+     199.2,
+     279.3,
+     276.3,
+     289.5
+    ]
+   },
+   "neuroleptique": {
+    "page": 2,
+    "boite": [
+     291.6,
+     279.3,
+     358.3,
+     289.5
+    ]
+   },
+   "antidépresseur": {
+    "page": 2,
+    "boite": [
+     373.6,
+     279.3,
+     446.4,
+     289.5
+    ]
+   },
+   "physiothérapie": {
+    "page": 2,
+    "boite": [
+     461.7,
+     279.3,
+     533.1,
+     289.5
+    ]
+   },
+   "autre": {
+    "page": 2,
+    "boite": [
+     548.6,
+     279.3,
+     573.7,
+     289.5
+    ]
+   }
+  },
+  "certificat_medical": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     137.1,
+     251.3,
+     151.8,
+     261.5
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     160.8,
+     251.3,
+     179.2,
+     261.5
+    ]
+   }
+  },
+  "demande_certificat": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     350.8,
+     251.3,
+     365.5,
+     261.5
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     374.7,
+     251.3,
+     393.1,
+     261.5
+    ]
+   }
+  },
+  "attestation_medicale": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     528.5,
+     251.3,
+     543.2,
+     261.5
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     552.5,
+     251.3,
+     570.8,
+     261.5
+    ]
+   }
+  },
+  "liaison_campus": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     505.1,
+     223.7,
+     519.6,
+     233.9
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     541.2,
+     223.7,
+     559.6,
+     233.9
+    ]
+   }
+  },
+  "liaison_hors_campus": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     212.2,
+     196.0,
+     226.9,
+     206.2
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     248.2,
+     196.0,
+     266.6,
+     206.2
+    ]
+   }
+  },
+  "groupe_indication": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     279.1,
+     168.4,
+     293.7,
+     178.6
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     315.2,
+     168.4,
+     333.5,
+     178.6
+    ]
+   }
+  },
+  "tests_psychologiques": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     166.9,
+     140.7,
+     181.6,
+     150.9
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     203.1,
+     140.7,
+     221.5,
+     150.9
+    ]
+   }
+  },
+  "adresse_medecine": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     373.6,
+     113.1,
+     388.3,
+     123.3
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     409.8,
+     113.1,
+     428.1,
+     123.3
+    ]
+   }
+  },
+  "entretien_famille": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     234.2,
+     85.5,
+     248.9,
+     95.7
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     270.2,
+     85.5,
+     288.5,
+     95.7
+    ]
+   }
+  },
+  "demande_ccf": {
+   "oui": {
+    "page": 2,
+    "boite": [
+     192.6,
+     57.7,
+     207.3,
+     68.0
+    ]
+   },
+   "non": {
+    "page": 2,
+    "boite": [
+     228.7,
+     57.7,
+     247.0,
+     68.0
+    ]
+   }
+  }
+ },
+ "cases_screening": {
+  "TDAH": {
+   "page": 2,
+   "boite": [
+    353,
+    681.0,
+    362,
+    692.0
+   ]
+  },
+  "Prodromes": {
+   "page": 2,
+   "boite": [
+    429,
+    681.0,
+    438,
+    692.0
+   ]
+  },
+  "Asperger": {
+   "page": 2,
+   "boite": [
+    495,
+    681.0,
+    505,
+    692.0
+   ]
+  },
+  "Dys": {
+   "page": 2,
+   "boite": [
+    536,
+    681.0,
+    546,
+    692.0
+   ]
+  }
+ },
+ "textes": {
+  "nom": {
+   "page": 1,
+   "x": 102,
+   "ligne": 628.6,
+   "x_fin": 250
+  },
+  "prenom": {
+   "page": 1,
+   "x": 102,
+   "ligne": 610.6,
+   "x_fin": 250
+  },
+  "consultant": {
+   "page": 1,
+   "x": 336,
+   "ligne": 629.6,
+   "x_fin": 575
+  },
+  "date_naissance_j": {
+   "page": 1,
+   "x": 124,
+   "ligne": 593.6,
+   "x_fin": 149
+  },
+  "date_naissance_m": {
+   "page": 1,
+   "x": 157,
+   "ligne": 593.6,
+   "x_fin": 182
+  },
+  "date_naissance_a": {
+   "page": 1,
+   "x": 190,
+   "ligne": 593.6,
+   "x_fin": 225
+  },
+  "nationalite": {
+   "page": 1,
+   "x": 109,
+   "ligne": 530.6,
+   "x_fin": 290
+  },
+  "langue_maternelle": {
+   "page": 1,
+   "x": 144,
+   "ligne": 447.6,
+   "x_fin": 290
+  },
+  "faculte_section": {
+   "page": 1,
+   "x": 328,
+   "ligne": 346.6,
+   "x_fin": 574
+  },
+  "mode_venue_autre": {
+   "page": 1,
+   "x": 506,
+   "ligne": 216.6,
+   "x_fin": 575
+  },
+  "date_premiere_j": {
+   "page": 2,
+   "x": 150,
+   "ligne": 629.6,
+   "x_fin": 190
+  },
+  "date_premiere_m": {
+   "page": 2,
+   "x": 197,
+   "ligne": 629.6,
+   "x_fin": 234
+  },
+  "date_premiere_a": {
+   "page": 2,
+   "x": 240,
+   "ligne": 629.6,
+   "x_fin": 290
+  },
+  "date_derniere_j": {
+   "page": 2,
+   "x": 449,
+   "ligne": 629.6,
+   "x_fin": 487
+  },
+  "date_derniere_m": {
+   "page": 2,
+   "x": 493,
+   "ligne": 629.6,
+   "x_fin": 530
+  },
+  "date_derniere_a": {
+   "page": 2,
+   "x": 537,
+   "ligne": 629.6,
+   "x_fin": 575
+  },
+  "nb_consultations": {
+   "page": 2,
+   "x": 109,
+   "ligne": 601.6,
+   "x_fin": 147
+  },
+  "diagnostic_principal_axe1": {
+   "page": 2,
+   "x": 165,
+   "ligne": 502.6,
+   "x_fin": 559
+  },
+  "diagnostic_principal_axe2": {
+   "page": 2,
+   "x": 165,
+   "ligne": 478.6,
+   "x_fin": 559
+  },
+  "comorbidite_axe1": {
+   "page": 2,
+   "x": 165,
+   "ligne": 453.6,
+   "x_fin": 559
+  },
+  "comorbidite_axe2": {
+   "page": 2,
+   "x": 165,
+   "ligne": 428.6,
+   "x_fin": 559
+  },
+  "code_z": {
+   "page": 2,
+   "x": 94,
+   "ligne": 404.6,
+   "x_fin": 160
+  }
+ }
+}

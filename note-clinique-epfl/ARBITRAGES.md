@@ -88,4 +88,7 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 **Appliqués provisoirement, à confirmer :**
 - **A18.** Note de transmission : l'idéation suicidaire est mentionnée au status **à chaque entretien** (votre texte « régime de transmission »), même sans idées suicidaires au départ, parce que le collègue doit connaître le risque. ☐ OK ☐ Même règle que la note courte
 - **A19.** Dans les briques de la note courte, « dynamiques relationnelles » est remplacé par « difficultés relationnelles », car vos dernières règles l'interdisent. ☐ OK
+- **A20.** Relevé : mode de prise de rendez-vous des étudiants EPFL = « mail EPFL » (votre règle), alors que le formulaire propose aussi « EPFL : mail via guichet ». ☐ OK ☐ mail via guichet
+- **A21.** Relevé : l'identité (nom, prénom, date de naissance) reste vide par défaut, on colle l'étiquette, pour ne pas envoyer l'identité à l'IA. ☐ OK ☐ Remplir quand je fournis la photo
+- **A22.** Relevé : situation économique d'un étudiant non doctorant laissée vide et demandée si elle n'est pas documentée (pas de « dépendance parents » supposée). ☐ OK
 

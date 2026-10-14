@@ -1,6 +1,6 @@
 ---
 name: note-clinique-epfl
-description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission) et la synthèse-discussion de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, ou la correction d'une note ou d'une synthèse existante.
+description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission), la synthèse-discussion et le relevé de données UNIL-EPFL de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, ou la correction d'une note ou d'une synthèse existante.
 ---
 
 # Note du premier entretien et synthèse — procédure en 7 étapes
@@ -66,6 +66,10 @@ Si l'exécution de code n'est pas disponible, appliquer les mêmes contrôles à
 ## Notes de suite (entretiens 2, 3, 4…)
 
 Pas de procédure en 7 étapes. Charger `references/8-notes-de-suite.md` et `references/4-langage.md`. Note courte par défaut ; note de transmission si le clinicien a écrit « transmission » pour ce patient (vaut pour toutes ses notes de suite). S'appuyer sur la compréhension et la fiche déjà validées, mises à jour avec l'entretien. Contrôle : `python3 scripts/controle.py texte suite.txt --type suite-courte` (ou `suite-transmission`) `--fiche fiche.json`, jusqu'à zéro erreur.
+
+## Relevé de données UNIL-EPFL
+
+Quand le clinicien demande le relevé : charger `references/9-releve-donnees.md`, remplir `releve.json` (modèle `scripts/releve_modele.json`) à partir de la conversation, puis `python3 scripts/remplir_releve.py releve.json -o releve_rempli.pdf --defauts --apercu`. Corriger les erreurs, vérifier l'aperçu des deux pages, restituer le PDF avec la liste des défauts, déductions, rubriques vides et documents en attente.
 
 ## Mode correction (un texte existe déjà)
 

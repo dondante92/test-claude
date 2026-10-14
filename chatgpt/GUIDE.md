@@ -23,18 +23,20 @@ Amorces de conversation (une par case) :
 - `Corrige cette note :`
 - `Note de suite :`
 - `Note de suite de transmission :`
+- `Relevé de données`
 - `Enchaîne`
 
 ## 3. Déposer les fichiers
 
-Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 13 fichiers** du dossier `fichiers/` :
+Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 18 fichiers** du dossier `fichiers/` :
 
 ```
 1-comprehension.md      4-canevas-note.md        7-verification.md
 2-fiche-faits.md        4-canevas-synthese.md    controle.py
 3-decision.md           4-langage.md             regles.json
 3-compartiments.md      5-contrebalance.md       fiche_modele.json
-8-notes-de-suite.md
+8-notes-de-suite.md     9-releve-donnees.md      remplir_releve.py
+releve_modele.json      releve_positions.json    releve_vierge.pdf
 ```
 
 ## 4. Cocher les fonctionnalités
@@ -61,6 +63,7 @@ Bouton **Créer** (ou « Mettre à jour ») en haut à droite → partage : **Se
 - Coller les notes en précisant l'entretien (E1, E2…).
 - Le GPT s'arrête après la compréhension, après la fiche s'il a des questions, et après la décision. Écrire **« enchaîne »** pour qu'il aille jusqu'au bout.
 - **Notes de suite** : dans la **même conversation** que le patient, coller les notes de l'entretien suivant. Note courte par défaut. Pour un patient que vous transmettez, écrire une fois **« transmission »** : toutes ses notes de suite seront alors détaillées pour le collègue.
+- **Relevé de données** : dans la conversation du patient, écrire **« Relevé de données »**. Il remplit le PDF original, vous le donne à télécharger, et liste ce qu'il a déduit, ce qui manque et ce qui attend des documents (identité : étiquette).
 - À l'étape 6, vous devez voir passer l'exécution du script (« Analyse… »). **Si le GPT dit avoir contrôlé sans montrer le résultat du script, demandez-le-lui** : c'est la garantie que les blocus ont vraiment tourné.
 
 ## Mettre à jour les règles

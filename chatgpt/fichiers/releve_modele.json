@@ -1,0 +1,543 @@
+{
+ "_lisezmoi": "Rubriques du Relevé de données UNIL-EPFL. 'defaut' = valeur appliquée par remplir_releve.py --defauts si la rubrique est absente. 'jamais_deduire' = uniquement depuis un document ou une donnée explicite. 'condition' = rubrique à remplir seulement si la condition est vraie.",
+ "rubriques": {
+  "nom": {
+   "type": "texte",
+   "regle": "Étiquette ou document d'identité uniquement. Par défaut : laisser vide et coller l'étiquette.",
+   "jamais_deduire": true
+  },
+  "prenom": {
+   "type": "texte",
+   "regle": "Étiquette ou document d'identité uniquement. Par défaut : laisser vide et coller l'étiquette.",
+   "jamais_deduire": true
+  },
+  "date_naissance_j": {
+   "type": "texte",
+   "regle": "Étiquette ou document d'identité uniquement. Par défaut : laisser vide et coller l'étiquette.",
+   "jamais_deduire": true
+  },
+  "date_naissance_m": {
+   "type": "texte",
+   "regle": "Étiquette ou document d'identité uniquement. Par défaut : laisser vide et coller l'étiquette.",
+   "jamais_deduire": true
+  },
+  "date_naissance_a": {
+   "type": "texte",
+   "regle": "Étiquette ou document d'identité uniquement. Par défaut : laisser vide et coller l'étiquette.",
+   "jamais_deduire": true
+  },
+  "consultant": {
+   "type": "texte",
+   "regle": "Nom du clinicien, donné par lui.",
+   "jamais_deduire": true
+  },
+  "sexe": {
+   "type": "choix",
+   "options": [
+    "F",
+    "M"
+   ],
+   "defaut": null,
+   "regle": "Selon le dossier."
+  },
+  "nationalite": {
+   "type": "texte",
+   "regle": "Nationalité documentée ; sinon l'origine clairement indiquée (origine polonaise → polonaise). Double nationalité : écrire les deux."
+  },
+  "etat_civil": {
+   "type": "choix",
+   "options": [
+    "célibataire",
+    "marié(e)",
+    "divorcé(e)",
+    "veuf(ve)",
+    "partenarié(e)"
+   ],
+   "defaut": "célibataire",
+   "regle": "Aucun mariage mentionné → célibataire."
+  },
+  "enfants": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucun enfant mentionné → non."
+  },
+  "langue_maternelle": {
+   "type": "texte",
+   "regle": "Déduite du pays principal où le patient a grandi et fait sa scolarité, si le contexte est clair."
+  },
+  "langue_consultation": {
+   "type": "choix",
+   "options": [
+    "fr",
+    "ang",
+    "all",
+    "it",
+    "esp",
+    "autre"
+   ],
+   "defaut": null,
+   "regle": "Langue documentée de l'entretien."
+  },
+  "echange": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucun échange en cours mentionné → non. (ajout)"
+  },
+  "annees_suisse": {
+   "type": "choix",
+   "options": [
+    "<1",
+    "1-2",
+    "3-4",
+    ">5",
+    "né CH"
+   ],
+   "defaut": null,
+   "regle": "Déduit du parcours académique et des dates d'arrivée (doctorant en dernière année → >5). Né en Suisse → né CH."
+  },
+  "situation_economique": {
+   "type": "choix",
+   "options": [
+    "dépendance parents",
+    "bourse",
+    "activité prof.",
+    "assistanat (assistant-doctorant)",
+    "dépendance conjoint"
+   ],
+   "defaut": null,
+   "regle": "Doctorant EPFL → assistanat (assistant-doctorant), sauf information contraire. Sinon : seulement si documenté."
+  },
+  "etudes": {
+   "type": "choix",
+   "options": [
+    "UNIL",
+    "EPFL"
+   ],
+   "defaut": "EPFL",
+   "regle": "Consultation EPFL → EPFL, sauf étudiant UNIL documenté. (ajout)"
+  },
+  "faculte_section": {
+   "type": "texte",
+   "regle": "Section ou faculté en toutes lettres."
+  },
+  "niveau_etudes": {
+   "type": "choix",
+   "options": [
+    "CMS",
+    "EFLE",
+    "bachelor",
+    "master",
+    "doctorat",
+    "MAN"
+   ],
+   "defaut": null,
+   "regle": "Niveau actuel (refait la 1re année après le cours de mise à niveau → bachelor ; en cours de mise à niveau → MAN)."
+  },
+  "situation_echec": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucune situation d'échec actuelle mentionnée → non."
+  },
+  "echecs_anterieurs": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucun échec antérieur mentionné → non."
+  },
+  "deplacement_etudes": {
+   "type": "choix",
+   "options": [
+    "non",
+    "autre canton",
+    "étranger"
+   ],
+   "defaut": null,
+   "regle": "Arrivé de l'étranger pour ses études → étranger ; d'un autre canton → autre canton ; sinon non."
+  },
+  "mode_venue": {
+   "type": "choix",
+   "options": [
+    "internet",
+    "SASME (unil)",
+    "SOC (unil)",
+    "Accueil santé (unil)",
+    "SAE (epfl)",
+    "Pt santé (epfl)",
+    "prof.",
+    "Ψ pays d’origine",
+    "MT",
+    "pair(e)",
+    "proches (FA, amis)",
+    "autre"
+   ],
+   "defaut": null,
+   "regle": "Démarche spontanée sans autre orientation mentionnée → internet. Adressé par un tiers → la catégorie correspondante."
+  },
+  "mode_venue_autre": {
+   "type": "texte",
+   "regle": "Seulement si mode_venue = autre.",
+   "condition": {
+    "mode_venue": "autre"
+   }
+  },
+  "mode_rdv": {
+   "type": "choix",
+   "options": [
+    "réception SASME",
+    "mail UNIL",
+    "mail EPFL",
+    "mail via guichet"
+   ],
+   "defaut": null,
+   "regle": "Contact spontané avec la consultation EPFL sans autre canal → mail EPFL."
+  },
+  "consultations_anterieures": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucune consultation psychiatrique antérieure → non."
+  },
+  "consultations_anterieures_lieu": {
+   "type": "choix",
+   "options": [
+    "UNIL",
+    "EPFL",
+    "DP-CHUV",
+    "externe"
+   ],
+   "defaut": null,
+   "regle": "Seulement si consultations antérieures = oui, et si le lieu est connu.",
+   "condition": {
+    "consultations_anterieures": "oui"
+   }
+  },
+  "hospitalisation": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucune hospitalisation psychiatrique rapportée → non."
+  },
+  "motif_principal": {
+   "type": "choix",
+   "options": [
+    "symptômes",
+    "problème relationnel",
+    "études"
+   ],
+   "defaut": null,
+   "regle": "Plainte principale : symptômes / problème relationnel / études."
+  },
+  "contexte_etudes": {
+   "type": "choix",
+   "options": [
+    "début",
+    "fin",
+    "examen",
+    "échec"
+   ],
+   "defaut": null,
+   "regle": "Début / fin / examen / échec, selon le dossier."
+  },
+  "difficultes_relationnelles": {
+   "type": "choix",
+   "options": [
+    "familial",
+    "sentimental",
+    "vie sociale",
+    "milieu d’études",
+    "milieu prof."
+   ],
+   "defaut": null,
+   "regle": "Seulement si des difficultés relationnelles sont documentées ; le domaine principal."
+  },
+  "idees_suicidaires": {
+   "type": "choix",
+   "options": [
+    "scénarisées",
+    "idéation passive",
+    "absentes"
+   ],
+   "defaut": "absentes",
+   "regle": "Aucune idéation rapportée → absentes ; sinon idéation passive ou scénarisées selon leur nature."
+  },
+  "tentative_suicide": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucun antécédent rapporté → non."
+  },
+  "screening": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "EXCEPTION : jamais déduit. Oui seulement si un questionnaire a été effectivement réalisé pour ce patient."
+  },
+  "symptomes_screening": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": null,
+   "regle": "Seulement si screening = oui : selon le résultat documenté, jamais selon le tableau clinique.",
+   "condition": {
+    "screening": "oui"
+   }
+  },
+  "date_premiere_j": {
+   "type": "texte",
+   "regle": "Document ou date explicitement fournie uniquement.",
+   "jamais_deduire": true
+  },
+  "date_premiere_m": {
+   "type": "texte",
+   "regle": "",
+   "jamais_deduire": true
+  },
+  "date_premiere_a": {
+   "type": "texte",
+   "regle": "",
+   "jamais_deduire": true
+  },
+  "date_derniere_j": {
+   "type": "texte",
+   "regle": "Document ou date explicitement fournie uniquement.",
+   "jamais_deduire": true
+  },
+  "date_derniere_m": {
+   "type": "texte",
+   "regle": "",
+   "jamais_deduire": true
+  },
+  "date_derniere_a": {
+   "type": "texte",
+   "regle": "",
+   "jamais_deduire": true
+  },
+  "nb_consultations": {
+   "type": "texte",
+   "regle": "Nombre d'entretiens effectivement réalisés."
+  },
+  "une_seule_consultation": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": null,
+   "regle": "Calculé : 1 consultation → oui, sinon non."
+  },
+  "raison_une_seule": {
+   "type": "choix",
+   "options": [
+    "rupture",
+    "problème économique",
+    "pas besoin de plus",
+    "départ campus",
+    "autre suivi déjà en cours",
+    "bilan somatique d’abord",
+    "arrêt à l’initiative du patient"
+   ],
+   "defaut": null,
+   "regle": "Seulement si une seule consultation.",
+   "condition": {
+    "une_seule_consultation": "oui"
+   }
+  },
+  "diagnostic_principal_axe1": {
+   "type": "texte",
+   "regle": "Diagnostic retenu dans le dossier (code et intitulé CIM-10), jamais créé pour remplir le formulaire."
+  },
+  "diagnostic_principal_axe2": {
+   "type": "texte",
+   "regle": "Trouble de la personnalité retenu, s'il y en a un."
+  },
+  "comorbidite_axe1": {
+   "type": "texte",
+   "regle": "Comorbidité retenue, s'il y en a une."
+  },
+  "comorbidite_axe2": {
+   "type": "texte",
+   "regle": ""
+  },
+  "code_z": {
+   "type": "texte",
+   "regle": "Code Z retenu, s'il y en a un."
+  },
+  "abus_substances": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Aucune consommation problématique rapportée → non. Une consommation simple n'est pas un abus."
+  },
+  "type_travail": {
+   "type": "choix",
+   "options": [
+    "IP",
+    "IPB",
+    "IPB (en cours)"
+   ],
+   "defaut": null,
+   "regle": "Cadre réel : IP, IPB, ou IPB (en cours)."
+  },
+  "decision": {
+   "type": "choix",
+   "options": [
+    "arrêt",
+    "rupture",
+    "transmission DP-CHUV",
+    "transmission privé",
+    "en cours",
+    "urgences",
+    "psy. précédent",
+    "poursuite suivi par intervenant(e)",
+    "poursuite chez le généraliste",
+    "poursuite chez le psy. étranger",
+    "autre",
+    "départ à l’étranger"
+   ],
+   "defaut": null,
+   "regle": "Décision effectivement prise (arrêt, rupture, transmission, poursuite…)."
+  },
+  "prescription": {
+   "type": "choix",
+   "options": [
+    "∅",
+    "somnifère",
+    "benzodiazépine",
+    "neuroleptique",
+    "antidépresseur",
+    "physiothérapie",
+    "autre"
+   ],
+   "defaut": "∅",
+   "regle": "Aucune prescription dans le cadre de la consultation → ∅. Un traitement des antécédents n'est pas une prescription."
+  },
+  "certificat_medical": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Certificat médical : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "demande_certificat": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Demande de certificat : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "attestation_medicale": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Attestation médicale : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "liaison_campus": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Travail de liaison sur le campus : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "liaison_hors_campus": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Travail de liaison hors campus : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "groupe_indication": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Groupe d'indication à la psychothérapie DP : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "tests_psychologiques": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Tests psychologiques : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "adresse_medecine": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Adressé en médecine interne/générale pour bilan : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "entretien_famille": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Entretien avec famille ou proches : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  },
+  "demande_ccf": {
+   "type": "choix",
+   "options": [
+    "oui",
+    "non"
+   ],
+   "defaut": "non",
+   "regle": "Demande d'intervention CCF : non, sauf si effectivement documenté (envisagé ≠ réalisé)."
+  }
+ },
+ "screening_types": [
+  "TDAH",
+  "Prodromes",
+  "Asperger",
+  "Dys"
+ ]
+}
