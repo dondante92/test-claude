@@ -77,7 +77,7 @@
     {"nom": "Antécédents psychiatriques", "alias": ["anamnese psychiatrique"], "obligatoire": true},
     {"nom": "Anamnèse somatique", "alias": [], "obligatoire": false},
     {"nom": "Status psychique", "alias": ["status psychiatrique", "status"], "obligatoire": true},
-    {"nom": "Évaluation du risque suicidaire", "alias": [], "obligatoire": "si_idees_ou_geste"},
+    {"nom": "Évaluation du risque suicidaire", "alias": [], "obligatoire": true},
     {"nom": "Hypothèses diagnostiques et suite proposée", "alias": ["hypotheses diagnostiques"], "obligatoire": true},
     {"nom": "Diagnostic CIM-10", "alias": ["diagnostic cim10", "diagnostic"], "obligatoire": true}
   ],
@@ -113,6 +113,15 @@
 
   "interdits": {
     "_lisezmoi": "Expressions refusées (erreur). Comparaison sans accents ni majuscules. Clé = expression, valeur = remplacement attendu ou raison.",
+    "homosexuel": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "homosexuelle": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "bisexuel": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "bisexuelle": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "heterosexuel": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "heterosexuelle": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "lesbienne": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "gay": "pas d'orientation sexuelle explicite (règle transversale 3)",
+    "orientation sexuelle": "pas d'orientation sexuelle explicite (règle transversale 3)",
     "dynamique relationnelle": "terme abstrait sans fait : décrire le fait concret",
     "fonctionnement centré sur": "terme abstrait sans fait : décrire le fait concret",
     "mise en sens": "terme abstrait : décrire ce qui a été travaillé",
@@ -198,18 +207,18 @@
    "clinicien moins experimente": "formule supprimée par le document maître",
    "moins experimente aurait": "formule supprimée par le document maître",
    "reste a ecarter": "piège : différentiel seulement avec arguments positifs, convergents et spontanés",
-   "a ecarter activement": "piège : différentiel seulement avec arguments positifs, convergents et spontanés",
-   "homosexuel": "pas d'orientation sexuelle explicite",
-   "homosexuelle": "pas d'orientation sexuelle explicite",
-   "bisexuel": "pas d'orientation sexuelle explicite",
-   "bisexuelle": "pas d'orientation sexuelle explicite",
-   "heterosexuel": "pas d'orientation sexuelle explicite",
-   "heterosexuelle": "pas d'orientation sexuelle explicite",
-   "lesbienne": "pas d'orientation sexuelle explicite",
-   "gay": "pas d'orientation sexuelle explicite",
-   "orientation sexuelle": "pas d'orientation sexuelle explicite"
+   "a ecarter activement": "piège : différentiel seulement avec arguments positifs, convergents et spontanés"
   },
   "avertissements": {
+   "homosexuel": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "homosexuelle": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "bisexuel": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "bisexuelle": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "heterosexuel": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "heterosexuelle": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "lesbienne": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "gay": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
+   "orientation sexuelle": "permise dans le Document 2 seulement si cliniquement centrale (A36)",
    "TSA": "différentiel : arguments positifs, convergents et spontanés dans le matériel ?",
    "TDAH": "différentiel : arguments positifs, convergents et spontanés dans le matériel ?",
    "autisme": "différentiel : arguments positifs, convergents et spontanés dans le matériel ?",
@@ -228,5 +237,10 @@
    "il est important de noter": "formule creuse",
    "il convient de noter": "formule creuse"
   }
+ },
+ "iso_8859_1": {
+  "_lisezmoi": "Décision du 14.10.2026 : caractères ISO/CEI 8859-1 (accents permis) obligatoires dans la rubrique « Évaluation du risque suicidaire » (entière) et dans l'attitude de fin du premier entretien (dernier paragraphe de « Hypothèses diagnostiques et suite proposée »). Correction : controle.py nettoie.",
+  "rubriques_entieres": ["Évaluation du risque suicidaire"],
+  "fin_de_rubrique": ["Hypothèses diagnostiques et suite proposée"]
  }
 }

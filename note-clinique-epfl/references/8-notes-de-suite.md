@@ -22,6 +22,8 @@ Les éléments anamnestiques nouveaux qui concernent des faits anciens (antécé
 
 Données des tiers protégées. Aucune information manquante n'est inventée : elle est demandée.
 
+⟨décision 14.10.2026, A32⟩ Si le cadre IPB n'a pas été posé (configuration par défaut), la note écrit « dans le cadre de l'intervention brève » ou « de l'investigation », jamais « on poursuit le travail IPB ». Pas d'orientation sexuelle explicite.
+
 **Idées suicidaires** ⟨décision⟩ — note courte : mentionnées **seulement** s'il y avait des idées suicidaires au départ ou un risque à réévaluer ; sinon, ne pas en parler. Note de transmission : voir la rubrique 4.
 
 ---

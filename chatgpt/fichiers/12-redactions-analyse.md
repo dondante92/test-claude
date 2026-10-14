@@ -21,14 +21,14 @@ Généré après le 3e entretien, sur demande, en deux documents distincts. La 4
 
 **Elles suivent `8-notes-de-suite.md`**, déjà intégré et contrôlé automatiquement (note courte, note de transmission, note du dernier entretien). Règles du document maître, reprises là-bas : notes courtes, factuelles, lisibles par le patient ; aucun contenu psychodynamique explicite (formulations génériques sur le travail, jamais le conflit technique, qui reste dans le Document 2) ; dire ce qu'on a fait, exploré et envisagé, puis les éléments pratiques ; données des tiers protégées.
 
-Différences entre le document maître et `8-notes-de-suite.md`, à trancher (ARBITRAGES A30-A32) :
-- **Idées suicidaires** : les exemples du document maître écrivent toujours « Absence d'idees suicidaires » ; votre décision A14 dit : dans la note courte, seulement si présentes au départ. A14 est appliquée.
-- **Accents** : les exemples du document maître sont sans accents ; « caractères compatibles Latin-1 » n'impose pas de les retirer (é, è, à sont du Latin-1). `controle.py nettoie` garde les accents ; `--sans-accents` les retire si votre logiciel les refuse.
+Décisions du 14.10.2026 (ARBITRAGES A30-A32) :
+- **Idées suicidaires** : dans la note courte, seulement si présentes au départ (A14). Dans la note de transmission, à chaque entretien (A18).
+- **Caractères ISO/CEI 8859-1** (accents permis) : obligatoires seulement dans la **rubrique « Évaluation du risque suicidaire »** (toujours présente dans la note du premier entretien) et dans **l'attitude de fin du premier entretien**. Pas pour chaque phrase qui parle du risque suicidaire. Contrôlé par le script ; `controle.py nettoie` corrige.
 - **« On poursuit le travail IPB »** : en configuration par défaut (cadre IPB non posé), la note écrit « dans le cadre de l'investigation » ou « de l'intervention brève », pas « travail IPB ».
 
 ## Courriers d'adressage
 
-Suivre le style d'un exemple validé quand il existe. Pas de surinterprétation, pas d'explication de la méthodologie des outils de dépistage aux spécialistes, pas de cadrage éditorial en fin de courrier. Cohérents avec ce qui a été restitué au patient.
+Suivre le style d'un exemple validé quand il existe. Pas d'orientation sexuelle. Pas de surinterprétation, pas d'explication de la méthodologie des outils de dépistage aux spécialistes, pas de cadrage éditorial en fin de courrier. Cohérents avec ce qui a été restitué au patient.
 
 ## Document 3 — présentation supervisable
 

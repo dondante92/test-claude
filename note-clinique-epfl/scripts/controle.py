@@ -279,6 +279,19 @@ def controler_note(texte, regles, fiche, r):
         if "activation" in status:
             r.erreur("status : le niveau d'activation ne figure jamais dans le status")
 
+    # Caractères ISO/CEI 8859-1 : rubrique du risque suicidaire entière, attitude de fin de premier entretien
+    iso = regles.get("iso_8859_1", {})
+    noms = [x["nom"] for x in rubriques]
+    zones = [(n, contenu_rubrique(lignes, vus, noms.index(n))) for n in iso.get("rubriques_entieres", []) if n in noms]
+    for n in iso.get("fin_de_rubrique", []):
+        if n in noms:
+            paras = [x for x in re.split(r"\n\s*\n", contenu_rubrique(lignes, vus, noms.index(n))) if x.strip()]
+            zones.append((n + " (attitude, fin de rubrique)", paras[-1] if paras else ""))
+    for n, contenu in zones:
+        hors = sorted({c for c in contenu if ord(c) > 255})
+        if hors:
+            r.erreur(f"« {n} » : caractères hors ISO-8859-1 ({' '.join(hors)}) : lancer controle.py nettoie")
+
     diag = plat(contenu_rubrique(lignes, vus, 8))
     if diag and fiche is not None and fiche.get("decision", {}).get("evaluation_poursuivie") \
             and not any(m in diag for m in ("provisoire", "hypothese", "a preciser")):

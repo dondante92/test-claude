@@ -76,7 +76,9 @@ PRINCIPE PRIORITAIRE — LE STATUS REFLÈTE LE TABLEAU. Un patient en crise n'a 
 
 ### ÉVALUATION DU RISQUE SUICIDAIRE
 
- Présente dès qu'il existe des idées suicidaires ou un antécédent de geste. Structure : processus suicidaire
+ ⟨décision du 14.10.2026⟩ **Toujours présente**, dans chaque note du premier entretien. **Écrite en caractères ISO/CEI 8859-1** (accents permis ; pas d'apostrophe courbe, de guillemets anglais, de points de suspension, de « œ » ni de tiret long) : contrôlé par le script, corrigé par `controle.py nettoie`. La même règle vaut pour l'attitude de fin du premier entretien (dernier paragraphe de « Hypothèses diagnostiques et suite proposée »).
+ Sans idées suicidaires ni antécédent de geste (formulation proposée, à valider) : « {Il/Elle} ne présente pas d'idéation suicidaire et ne rapporte pas d'antécédent de geste auto-agressif. » + facteurs protecteurs **seulement s'ils sont documentés** + « Le risque suicidaire est évalué comme faible. » si le clinicien l'a apprécié. Un champ non exploré suit sa règle (`regles.json`, section champs) : jamais déduit.
+ Avec idées suicidaires ou antécédent de geste, structure : processus suicidaire
 · ressources
 · lien thérapeutique
 · observation clinique

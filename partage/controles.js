@@ -147,6 +147,16 @@ function controlerNote(texte, f) {
     if (manq.length) r.erreur('status : items manquants : ' + manq.join(', '));
     if (status.includes('activation')) r.erreur("status : le niveau d'activation ne figure jamais dans le status");
   }
+  const iso = R.iso_8859_1 || {}, noms = R.rubriques_note.map(x => x.nom);
+  const zones = (iso.rubriques_entieres || []).filter(n => noms.includes(n)).map(n => [n, contenuRubrique(lignes, vus, noms.indexOf(n))]);
+  for (const n of (iso.fin_de_rubrique || []).filter(n => noms.includes(n))) {
+    const paras = contenuRubrique(lignes, vus, noms.indexOf(n)).split(/\n\s*\n/).filter(x => x.trim());
+    zones.push([n + ' (attitude, fin de rubrique)', paras.length ? paras[paras.length - 1] : '']);
+  }
+  for (const [n, contenu] of zones) {
+    const hors = [...new Set([...contenu].filter(c => c.codePointAt(0) > 255))].sort();
+    if (hors.length) r.erreur(`« ${n} » : caractères hors ISO-8859-1 (${hors.join(' ')}) : lancer controle.py nettoie`);
+  }
   const diag = plat(contenuRubrique(lignes, vus, 8));
   if (diag && f?.decision?.evaluation_poursuivie && !['provisoire', 'hypothese', 'a preciser'].some(m => diag.includes(m))) r.erreur('diagnostic CIM-10 : mentionner le caractère provisoire');
   if (diag && /differentiel/.test(diag)) r.erreur('diagnostic CIM-10 : pas de différentiel dans cette rubrique');

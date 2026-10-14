@@ -93,22 +93,24 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 - **A22.** Relevé : situation économique d'un étudiant non doctorant laissée vide et demandée si elle n'est pas documentée (pas de « dépendance parents » supposée). ☐ OK
 
 
-## Analyse IPB (document maître du 14.10.2026)
+## Analyse IPB (document maître du 14.10.2026) — décisions du 14.10.2026
 
-**Garde-fous IA ajoutés, appliqués provisoirement, à confirmer :**
-- **A23.** Contre-transfert et réflexivité : uniquement ce que le clinicien a rapporté ; sinon, des questions, jamais d'affirmation. ☐ OK
-- **A24.** Pas de cotation chiffrée (FDG, numéros d'items OPD, scores de compétence) à partir d'une note résumée : le niveau défensif s'écrit en mots. ☐ OK
-- **A25.** Grille de compétence utilisée seulement si la note rapporte les interventions du clinicien. ☐ OK
-- **A26.** Étape 0 « sécurité » : en cas de risque aigu, le volet psychiatrique ouvre le Document 2. ☐ OK ☐ Le garder en fin de document
-- **A27.** Vérifications de sécurité (antécédents (hypo)maniaques avant antidépresseur, consommations, cause somatique, signes psychotiques) hors de la règle « différentiel seulement avec arguments positifs », dans le volet psychiatrique. ☐ OK
-- **A28.** Outil formel passé selon sa procédure = donnée (avec ses limites) ; seule la question orientée officieuse est du matériel induit. ☐ OK
-- **A29.** Décision de supervision = fait foi pour la conduite ; désaccord de lecture = réflexivité. Repère de longueur : avertissement au-delà de 1500 mots. ☐ OK ☐ Autre longueur : …
-
-**Incohérences du document maître, à trancher :**
-- **A30.** Idées suicidaires dans la note courte : les exemples du document maître les mentionnent toujours ; A14 (seulement si présentes au départ) est appliquée. ☐ A14 ☐ Toujours
-- **A31.** Accents : les exemples du document maître sont sans accents ; Latin-1 accepte é, è, à. Accents gardés (option `--sans-accents` disponible). ☐ Garder ☐ Retirer
-- **A32.** « On poursuit le travail IPB » dans les notes alors que, par défaut, le cadre IPB n'est pas posé : la note écrit « intervention brève » ou « investigation ». ☐ OK
-- **A33.** Tableau des séances : la ligne « séance 3 » (approfondissement du conflit, travail sur la défense) n'est pas adaptée à la configuration par défaut, contrairement à la ligne « séance 2 ». ☐ Adapter comme la séance 2
-- **A34.** Kernberg range l'« idéalisation primitive » et la dévalorisation dans l'état limite ; la DMRS met idéalisation et dévalorisation au niveau 4 (narcissique). Garde-fou ajouté : à elles seules, elles ne signent pas une organisation limite. ☐ OK
-- **A35.** Livrable par défaut : pour une séance 2 ou plus sans demande, le Document 2 (document maître) ; la note de suite devient « sur demande ». Pour la séance 1, la note du premier entretien reste produite quand elle est demandée (« fais la note »). ☐ OK
-- **A36.** Orientation sexuelle : interdite aussi dans le Document 2 (règle transversale 3), contrôlée par le script. ☐ OK ☐ Permise dans le Document 2 si cliniquement centrale
+| N° | Point | Décision |
+|---|---|---|
+| A18 | Note de transmission : idéation suicidaire | Mentionnée au status **à chaque entretien**. |
+| A20 | Relevé : prise de rendez-vous EPFL | « mail EPFL ». |
+| A23 | Contre-transfert et réflexivité | Uniquement ce que le clinicien a rapporté ; sinon des questions, jamais d'affirmation. |
+| A24 | Cotations chiffrées | Aucune (FDG, items OPD, scores) à partir d'une note résumée : en mots. |
+| A25 | Grille de compétence | Seulement si la note rapporte les interventions du clinicien. |
+| A26 | Sécurité | Risque aigu → le volet psychiatrique ouvre le Document 2. |
+| A27 | Vérifications de sécurité | Rappelées dans le volet psychiatrique même sans argument positif ((hypo)manie avant antidépresseur, consommations, cause somatique, signes psychotiques). |
+| A28 | Questionnaire formel | Donnée, avec les limites de l'outil ; la question orientée officieuse reste du matériel induit. |
+| A29 | Supervision ; longueur | La décision de supervision fait foi pour la conduite ; désaccord de lecture → réflexivité. Avertissement au-delà de 1500 mots. |
+| A30 | Idées suicidaires, note courte | Seulement si présentes au départ (A14). |
+| A31 | Caractères ISO/CEI 8859-1 | Obligatoires seulement dans la **rubrique « Évaluation du risque suicidaire »** et dans **l'attitude de fin du premier entretien** (fin de « Hypothèses diagnostiques et suite proposée »). Accents permis. Contrôlé par le script. |
+| A31b | Rubrique « Évaluation du risque suicidaire » | **Toujours présente** dans la note du premier entretien (formulation d'absence proposée dans 4-canevas-note.md, à valider). |
+| A32 | « Travail IPB » dans les notes | Cadre non posé → « intervention brève » ou « investigation ». |
+| A33 | Tableau des séances, séance 3 | Adaptée à la configuration par défaut, comme la séance 2. |
+| A34 | Idéalisation / dévalorisation | Ne signent pas à elles seules une organisation limite. |
+| A35 | Livrable par défaut, séances 2 à 4 | Document 2 ; note de suite sur demande (« Note de suite : »). |
+| A36 | Orientation sexuelle | Interdite dans notes, synthèses, G2, Document 3, courriers ; permise dans le Document 2 seulement si cliniquement centrale (avertissement du script). |

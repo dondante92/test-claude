@@ -5,7 +5,7 @@
 > - **11-reperes-ipb.md** : le référentiel théorique du livre (TRCC de Luborsky, axe II de l'OPD, DMRS, Kernberg, interaction de transfert, déroulement, compétence), à ouvrir pour la section utile. Ce fichier est privé : il n'est pas publié sur GitHub ;
 > - **12-redactions-analyse.md** : G1/G2, Document 3, courriers, notes (rédactions sur demande uniquement).
 >
-> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩, et sont à confirmer (ARBITRAGES A23 à A29).
+> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩ ; ils ont été validés par Rami le 14.10.2026 (ARBITRAGES A23 à A36).
 
 ## Portée et hiérarchie des règles
 
@@ -38,10 +38,10 @@ L'intervention compte en règle générale quatre séances, ajustables selon la 
 |---|---|---|
 | 1 | Évaluation, exploration de la crise, épisodes relationnels, premières hypothèses sur l'organisation et le conflit, indication IPB | Document 2 (la note de 1er entretien relève d'un autre modèle) |
 | 2 | Par défaut (investigation avec raisonnement IPB) : approfondissement de la crise, des épisodes relationnels et du diagnostic, outils éventuels ; hypothèse de conflit tenue en arrière-plan. Si le cadre IPB est posé : formulation du conflit, début du travail sur la défense | Document 2 ; note de suivi sur demande |
-| 3 | Approfondissement du conflit, travail sur la défense et le TRCC, ce que le patient a pu utiliser | Document 2 ; G1 + G2 sur demande ; note de suivi sur demande |
+| 3 | Par défaut (investigation avec raisonnement IPB) : approfondissement de la crise et du diagnostic, épisodes relationnels et TRCC, ce que le patient a pu utiliser ; hypothèse de conflit tenue en arrière-plan, préparation du bilan. Si le cadre IPB est posé : approfondissement du conflit, travail sur la défense et le TRCC | Document 2 ; G1 + G2 sur demande ; note de suivi sur demande |
 | 4 | Accueil du nouveau, bilan crise / trouble / intervention, annonce dosée du diagnostic, indication de psychothérapie, trois axes, contacts | Note de 4e entretien sur demande |
 
-**Éthique, pour tous les documents.** Données des tiers protégées, aucun tiers identifiable, pas d'orientation sexuelle explicite. Formulations prudentes : « rapporte », « décrit », « semble », « aurait ».
+**Éthique, pour tous les documents.** Données des tiers protégées, aucun tiers identifiable, pas d'orientation sexuelle explicite (exception, A36 : dans le Document 2, qui reste privé, seulement si elle est cliniquement centrale). Formulations prudentes : « rapporte », « décrit », « semble », « aurait ».
 
 ## Algorithme appliqué à chaque note reçue
 
@@ -81,7 +81,7 @@ Le Document 2 est réservé au thérapeute et n'est jamais partagé tel quel : u
 
 **Densité.** Chaque volet n'est traité que s'il éclaire ce patient à cette séance, et sa longueur suit son utilité. Si un passage risque d'être sauté à la lecture, il est trop long. Pas d'introduction, pas de résumé final, pas de reformulation de ce qui a déjà été dit. La profondeur vient du mécanisme dégagé, pas du nombre d'observations ; la surface reste inacceptable.
 
-⟨garde-fou IA⟩ **Test de pertinence** : un volet est pertinent s'il change une décision (diagnostic, risque, intervention, prochain entretien) ou s'il explique un élément qui résiste. Repère de longueur : le contrôle automatique avertit au-delà de 1500 mots (à ajuster).
+⟨garde-fou IA⟩ **Test de pertinence** : un volet est pertinent s'il change une décision (diagnostic, risque, intervention, prochain entretien) ou s'il explique un élément qui résiste. Repère de longueur : le contrôle automatique avertit au-delà de 1500 mots.
 
 **Structural et affectif.** L'analyse structurale (défenses, organisation, patterns relationnels) pèse autant que l'affective. Corriger activement la tendance à chercher l'émotion cachée au détriment de la structure.
 
@@ -191,7 +191,7 @@ Ces volets ancrent l'analyse dans le cadre des quatre entretiens ; leur longueur
 
 ## Garde-fous propres à l'IA ⟨garde-fou IA⟩
 
-Ces règles ne viennent pas du document maître. Elles corrigent des erreurs typiques d'une IA. À confirmer (ARBITRAGES A23 à A29).
+Ces règles ne viennent pas du document maître. Elles corrigent des erreurs typiques d'une IA. Validées le 14.10.2026.
 
 1. **Contre-transfert et réflexivité : uniquement ce que le clinicien a rapporté.** L'IA n'a pas de contre-transfert : elle n'a que ce qui est dicté. Sans élément rapporté, aucune affirmation sur ce que le clinicien a ressenti ou fait ; à la place, une ou deux questions en fin de réflexivité (« Qu'avez-vous ressenti quand… ? »). La perspective B de l'axe II (comment les autres, thérapeute compris, vivent la relation) n'est remplie que par du contre-transfert rapporté ou par ce que le patient rapporte des autres.
 2. **Pas de cotation chiffrée à partir d'une note résumée.** FDG, numéros d'items OPD, scores de compétence : ces cotations exigent un verbatim. Le niveau défensif dominant s'écrit en mots (« surtout narcissique et par le désaveu »).
@@ -206,7 +206,7 @@ Ces règles ne viennent pas du document maître. Elles corrigent des erreurs typ
 Ces règles valent pour tous les documents, quelle que soit la séance.
 1. Toujours distinguer réaction de crise et trouble psychiatrique structuré.
 2. Pas de diagnostic de confort, pas de différentiel sans arguments positifs, convergents et spontanés.
-3. Données des tiers protégées, aucun tiers identifiable, pas d'orientation sexuelle explicite.
+3. Données des tiers protégées, aucun tiers identifiable, pas d'orientation sexuelle explicite (Document 2 : seulement si cliniquement centrale).
 4. Formulations prudentes : « rapporte », « décrit », « semble », « aurait ».
 5. Profondeur sans longueur : aller au mécanisme, pas à l'inventaire.
 6. Le structural pèse autant que l'affectif.
