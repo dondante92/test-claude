@@ -66,7 +66,7 @@ def etat(fiche, cle):
     return v.get("etat") if isinstance(v, dict) else None
 
 
-def controler_fiche(fiche, regles, r, sans_decision=False):
+def controler_fiche(fiche, regles, r, sans_decision=False, note_seule=False):
     # 1. États valides et règle NON_EXPLORE
     for cle, regle in regles["champs"].items():
         if cle.startswith("_"):
@@ -82,7 +82,7 @@ def controler_fiche(fiche, regles, r, sans_decision=False):
             r.erreur(f"{cle} : PRESENT mais sans valeur")
         if e != "NON_EXPLORE":
             continue
-        if cle == "fin.idees_suicidaires" and etat(fiche, "aigu.idees_suicidaires") != "PRESENT":
+        if cle == "fin.idees_suicidaires" and (note_seule or etat(fiche, "aigu.idees_suicidaires") != "PRESENT"):
             continue  # seulement exigé si des idées suicidaires étaient présentes au départ
         if regle == "BLOQUANT":
             r.questions.append(cle)
@@ -96,7 +96,7 @@ def controler_fiche(fiche, regles, r, sans_decision=False):
     for s in symptomes:
         if not s.get("depuis", "").strip():
             r.questions.append(f"temporalité du symptôme « {s['libelle']} » (aucun symptôme sans ancrage temporel)")
-        if not sans_decision and s.get("etat_final") in (None, "", "non_documente"):
+        if not sans_decision and not note_seule and s.get("etat_final") in (None, "", "non_documente"):
             r.avert(f"symptôme « {s['libelle']} » sans destin documenté dans l'évolution")
 
     # 3. Cohérences de base
@@ -120,6 +120,9 @@ def controler_fiche(fiche, regles, r, sans_decision=False):
     chron = b.get("chronique", "")
     if c["chronique"] and chron not in c["chronique"]:
         r.erreur(f"compartiment {comp} : plan chronique branche {c['chronique']} attendue, pas « {chron} »")
+    if note_seule:
+        controler_diagnostics(d, r)
+        return
     if c["diagnostic"] and b.get("diagnostic") not in c["diagnostic"]:
         r.erreur(f"compartiment {comp} : branche diagnostique {c['diagnostic']} attendue, pas {b.get('diagnostic')}")
     supp = b.get("supplementaires", []) or []
@@ -158,7 +161,11 @@ def controler_fiche(fiche, regles, r, sans_decision=False):
     if issue == 3 and d.get("indication_psychotherapie"):
         r.erreur("issue branche 3 (absence d'indication) mais indication_psychotherapie = true")
 
-    # 6. Diagnostic provisoire / final, sous-type
+    controler_diagnostics(d, r)
+
+
+def controler_diagnostics(d, r):
+    """Diagnostic provisoire / final, sous-type."""
     prov, fin = d.get("diagnostic_provisoire", {}), d.get("diagnostic_final", {})
     if not fin.get("code") or not fin.get("intitule"):
         r.questions.append("diagnostic final : code et intitulé CIM-10 (vérifiés dans une source officielle)")
@@ -336,6 +343,7 @@ def main():
     f = sub.add_parser("fiche")
     f.add_argument("fiche")
     f.add_argument("--sans-decision", action="store_true", help="étape 2 : contrôler les faits seulement, avant les décisions")
+    f.add_argument("--note-seule", action="store_true", help="note du premier entretien seule : pas de contrôle évolution / issue")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
     t.add_argument("--type", choices=["note", "synthese"], required=True)
@@ -350,7 +358,7 @@ def main():
 
     if a.cmd == "fiche":
         fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8"))
-        controler_fiche(fiche, regles, r, a.sans_decision)
+        controler_fiche(fiche, regles, r, a.sans_decision, a.note_seule)
         sys.exit(r.afficher("CONTRÔLE DE LA FICHE ET DES DÉCISIONS"))
 
     texte = pathlib.Path(a.fichier).read_text(encoding="utf-8")

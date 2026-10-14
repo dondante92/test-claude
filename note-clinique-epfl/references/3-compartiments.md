@@ -19,3 +19,5 @@
 
 ▸ SITUATION NON CONCLUSIVE OU INTERROMPUE NOTE — plan chronique seulement si des éléments durables existent réellement. SYNTHÈSE — diagnostique branche 6 ou 7, cadre en branche interruption, évolution branche 7, issue branche
 6. RÈGLE TRANSVERSALE DU STATUS — il ne contient jamais d'élément orientant vers un diagnostic non retenu, et contient ce que le diagnostic retenu implique. 
+
+▸ TROUBLE CHRONIQUE CONSTITUÉ ⟨ajout provisoire, ARBITRAGES A12⟩ (trouble ancien hors personnalité et neurodéveloppement : trichotillomanie, trouble obsessionnel-compulsif, trouble anxieux ancien…) NOTE — plan chronique branche D, développé : manifestations, ancienneté, évolution, retentissement. Le plan aigu décrit ce qui a changé récemment (majoration, réapparition) et pourquoi le patient consulte maintenant, avec sa datation et son facteur. STATUS — ce qui a été réellement observé. SYNTHÈSE — branche diagnostique 1 (forme générale) ; paragraphe supplémentaire branche 1, 2 ou 6 si une hypothèse associée est discutée. NE PAS ÉCRIRE — la majoration récente présentée comme le début du trouble ; le trouble chronique réduit au seul épisode actuel.

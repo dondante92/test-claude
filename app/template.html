@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Note clinique EPFL</title>
+<style>
+:root {
+  --fond: #f6f5f2; --carte: #ffffff; --texte: #1d1d1b; --doux: #5f5e5a; --bord: #dddbd5;
+  --accent: #1f5f8b; --accent-texte: #ffffff; --ok: #2e7d4f; --ok-fond: #e6f2ea;
+  --att: #8a5a00; --att-fond: #fbf0d9; --err: #a12d2d; --err-fond: #f8e3e1; --mark: #ffe69c;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #161615; --carte: #201f1d; --texte: #ecebe7; --doux: #a3a19b; --bord: #3a3935;
+    --accent: #6fb0dd; --accent-texte: #0d1b25; --ok: #7cc49a; --ok-fond: #1d2e23;
+    --att: #e6b85c; --att-fond: #33290f; --err: #ef8f87; --err-fond: #3a1d1b; --mark: #6b5713;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--texte); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--bord); background: var(--carte); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 17px; margin: 0; flex: 1; }
+header .fournisseur { color: var(--doux); font-size: 13px; }
+.bandeau { padding: 8px 20px; font-size: 13px; background: var(--att-fond); color: var(--att); border-bottom: 1px solid var(--bord); }
+main { display: grid; grid-template-columns: 360px 1fr; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } }
+section.carte, .etape { background: var(--carte); border: 1px solid var(--bord); border-radius: 10px; padding: 16px; }
+#entree { position: sticky; top: 76px; align-self: start; }
+@media (max-width: 900px) { #entree { position: static; } }
+h2 { font-size: 15px; margin: 0 0 10px; }
+label { display: block; font-size: 13px; color: var(--doux); margin: 10px 0 4px; }
+textarea, input, select { width: 100%; font: inherit; color: var(--texte); background: var(--fond); border: 1px solid var(--bord); border-radius: 6px; padding: 7px 9px; }
+textarea { resize: vertical; }
+input[type=checkbox], input[type=radio] { width: auto; margin-right: 6px; }
+button { font: inherit; border: 1px solid var(--bord); background: var(--carte); color: var(--texte); border-radius: 6px; padding: 7px 14px; cursor: pointer; }
+button.primaire { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+#etapes { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.etape header { all: unset; display: flex; align-items: center; gap: 10px; }
+.etape .num { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; background: var(--fond); border: 1px solid var(--bord); flex: none; }
+.etape .titre { font-weight: 600; flex: 1; }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--fond); color: var(--doux); white-space: nowrap; }
+.badge.cours { background: var(--fond); color: var(--accent); }
+.badge.valider { background: var(--att-fond); color: var(--att); }
+.badge.ok { background: var(--ok-fond); color: var(--ok); }
+.badge.err { background: var(--err-fond); color: var(--err); }
+.etape .corps:not(:empty) { margin-top: 12px; }
+.etape.inactive .titre { color: var(--doux); font-weight: 500; }
+.aide { color: var(--doux); font-size: 13px; margin: 0 0 8px; }
+.boite { border-radius: 8px; padding: 10px 12px; margin: 10px 0; font-size: 14px; }
+.boite ul { margin: 4px 0 0; padding-left: 18px; }
+.boite.err { background: var(--err-fond); color: var(--err); }
+.boite.att { background: var(--att-fond); color: var(--att); }
+.boite.ok { background: var(--ok-fond); color: var(--ok); }
+.boite.info { background: var(--fond); color: var(--doux); }
+.tableau { width: 100%; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { border-bottom: 1px solid var(--bord); padding: 5px 6px; text-align: left; vertical-align: top; }
+th { color: var(--doux); font-weight: 500; }
+td input, td select { padding: 4px 6px; font-size: 13px; }
+tr.bloquant td:first-child { box-shadow: inset 3px 0 var(--err); }
+tr.attente td:first-child { box-shadow: inset 3px 0 var(--att); }
+td.regle { color: var(--doux); font-size: 12px; white-space: nowrap; }
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 14px; }
+.texte-final { white-space: pre-wrap; background: var(--fond); border: 1px solid var(--bord); border-radius: 8px; padding: 14px; font-size: 14px; }
+mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 3px; }
+.question { border: 1px solid var(--bord); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+.question .options label { display: flex; align-items: center; color: var(--texte); margin: 4px 0; font-size: 14px; }
+details { margin-top: 10px; font-size: 13px; color: var(--doux); }
+details pre { white-space: pre-wrap; font-family: var(--mono); font-size: 12px; }
+dialog { border: 1px solid var(--bord); border-radius: 10px; background: var(--carte); color: var(--texte); max-width: 520px; width: calc(100% - 32px); }
+dialog::backdrop { background: rgba(0,0,0,.35); }
+.chargement::after { content: " …"; animation: points 1s steps(3) infinite; }
+@keyframes points { 0% { content: " ."; } 50% { content: " .."; } 100% { content: " ..."; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Note clinique EPFL</h1>
+  <span class="fournisseur" id="etiquette-fournisseur"></span>
+  <button id="ouvrir-reglages">Réglages IA</button>
+</header>
+<div class="bandeau">Données de patients : anonymiser (ni nom, ni date de naissance). Les notes sont envoyées au fournisseur d'IA choisi ; vérifier que le CHUV l'autorise. Avec un modèle local, rien ne quitte l'ordinateur. Rien n'est enregistré par cette page.</div>
+
+<main>
+  <section class="carte" id="entree">
+    <h2>Notes d'entretien</h2>
+    <label for="type">À produire</label>
+    <select id="type">
+      <option value="note">Note du premier entretien</option>
+      <option value="synthese">Synthèse</option>
+      <option value="les_deux">Note et synthèse</option>
+    </select>
+    <label for="notes">Notes dictées (préciser E1, E2… pour chaque entretien)</label>
+    <textarea id="notes" rows="16" placeholder="E1 : …"></textarea>
+    <label><input type="checkbox" id="auto"> Enchaîner les étapes sans m'arrêter (sauf question bloquante)</label>
+    <div class="actions">
+      <button class="primaire" id="lancer">Lancer</button>
+      <button id="effacer">Tout effacer</button>
+    </div>
+    <details><summary>Journal des appels à l'IA</summary><pre id="journal"></pre></details>
+  </section>
+  <section id="etapes"></section>
+</main>
+
+<dialog id="reglages">
+  <form method="dialog">
+    <h2>Réglages IA</h2>
+    <label for="fournisseur">Fournisseur</label>
+    <select id="fournisseur">
+      <option value="demo">Démo (cas fictif, sans IA)</option>
+      <option value="anthropic">Claude (Anthropic)</option>
+      <option value="openai">OpenAI</option>
+      <option value="local">Modèle local / compatible OpenAI (Ollama, LM Studio…)</option>
+    </select>
+    <div id="champs-fournisseur">
+      <label for="modele">Modèle</label>
+      <input id="modele" placeholder="nom exact du modèle">
+      <div id="bloc-url"><label for="url">Adresse du serveur</label><input id="url" placeholder="http://localhost:11434/v1"></div>
+      <div id="bloc-cle"><label for="cle">Clé d'API</label><input id="cle" type="password" autocomplete="off"></div>
+      <label><input type="checkbox" id="memoriser"> Mémoriser la clé sur cet ordinateur</label>
+      <div id="bloc-web"><label><input type="checkbox" id="web"> Recherche web pour vérifier la CIM-10 (Claude)</label></div>
+    </div>
+    <div class="actions"><button class="primaire" value="ok">Enregistrer</button></div>
+  </form>
+</dialog>
+
+<script id="donnees" type="application/json">/*__DONNEES__*/</script>
+<script>
+'use strict';
+const D = JSON.parse(document.getElementById('donnees').textContent);
+const R = D.regles;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const cles = o => Object.keys(o || {}).filter(k => !k.startsWith('_'));
+const ETATS = ['PRESENT', 'ABSENT', 'NON_EXPLORE'];
+
+/* =========================================================================
+   CONTRÔLES — traduction de scripts/controle.py (mêmes règles, regles.json)
+   ========================================================================= */
+const plat = s => String(s ?? '').replace(/[’‘]/g, "'").replace(/[  ]/g, ' ')
+  .normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const etat = (f, k) => (f[k] && typeof f[k] === 'object' && !Array.isArray(f[k])) ? f[k].etat : undefined;
+
+function rapport() {
+  const r = { erreurs: [], avert: [], questions: [], attente: [] };
+  const add = (l, m) => { if (!r[l].includes(m)) r[l].push(m); };
+  r.erreur = m => add('erreurs', m); r.av = m => add('avert', m);
+  r.q = m => add('questions', m); r.att = m => add('attente', m);
+  r.conforme = () => !r.erreurs.length && !r.questions.length;
+  return r;
+}
+
+function persistants(f) {
+  const s = (f['aigu.symptomes'] || []).filter(x => String(x.libelle || '').trim() && x.etat_final === 'persistant').map(x => x.libelle);
+  const c = (f['chronique.elements'] || []).filter(x => String(x.libelle || '').trim() && x.etat_final === 'persistant').map(x => x.libelle);
+  return s.concat(c);
+}
+
+function controlerFiche(f, { sansDecision = false, noteSeule = false } = {}) {
+  const r = rapport();
+  for (const k of cles(R.champs)) {
+    const regle = R.champs[k], e = etat(f, k);
+    if (e === undefined) { r.erreur(`champ absent de la fiche : ${k}`); continue; }
+    if (!ETATS.includes(e)) { r.erreur(`${k} : état « ${e} » invalide`); continue; }
+    if (e === 'PRESENT' && !String(f[k].valeur || '').trim()) r.erreur(`${libelle(k)} : PRÉSENT mais sans valeur`);
+    if (e !== 'NON_EXPLORE') continue;
+    if (k === 'fin.idees_suicidaires' && (noteSeule || etat(f, 'aigu.idees_suicidaires') !== 'PRESENT')) continue;
+    if (regle === 'BLOQUANT') r.q(k); else if (regle === 'ATTENTE') r.att(k);
+  }
+  const sympt = (f['aigu.symptomes'] || []).filter(s => String(s.libelle || '').trim());
+  if (!sympt.length) r.erreur('aucun symptôme aigu renseigné');
+  for (const s of sympt) {
+    if (!String(s.depuis || '').trim()) r.q(`temporalité du symptôme « ${s.libelle} »`);
+    if (!sansDecision && !noteSeule && [undefined, null, '', 'non_documente'].includes(s.etat_final)) r.av(`symptôme « ${s.libelle} » sans destin documenté dans l'évolution`);
+  }
+  if (etat(f, 'antecedents.premiere_consultation') === 'PRESENT' && etat(f, 'antecedents.suivis') === 'PRESENT')
+    r.av('première consultation en milieu psychiatrique ET suivi antérieur : vérifier la compatibilité');
+  const ia = etat(f, 'aigu.idees_suicidaires'), is = etat(f, 'status.idees_suicidaires');
+  if (ia !== is && ia !== 'NON_EXPLORE' && is !== 'NON_EXPLORE') r.av('idées suicidaires : état différent entre plan aigu et status');
+  if (!sansDecision) controlerDecision(f, r, noteSeule);
+  return r;
+}
+
+function controlerDecision(f, r, noteSeule) {
+  const d = f.decision || {}, comp = d.compartiment || '', b = d.branches || {};
+  const c = R.compartiments[comp];
+  if (!c || comp.startsWith('_')) { r.erreur(`compartiment « ${comp} » inconnu`); return; }
+  const chron = b.chronique || '';
+  if (c.chronique.length && !c.chronique.includes(chron)) r.erreur(`ce compartiment impose le plan chronique ${c.chronique.join(' ou ')}, pas « ${chron} »`);
+  const fin = d.diagnostic_final || {};
+  if (!String(fin.code || '').trim() || !String(fin.intitule || '').trim()) r.q('diagnostic : code et intitulé CIM-10');
+  const prov = d.diagnostic_provisoire || {};
+  if (prov.code && fin.code && prov.code !== fin.code && !d.evaluation_poursuivie) r.av('diagnostic de la note ≠ diagnostic de la synthèse sans évaluation poursuivie : écart temporel ou contradictoire ?');
+  if (['F43.2', 'F43.20'].includes(String(fin.code || '').trim().toUpperCase())) r.av("trouble de l'adaptation en code générique : sous-types examinés ?");
+  if (noteSeule) return;
+  const diag = +b.diagnostic, supp = (b.supplementaires || []).map(Number), evo = +b.evolution, issue = +b.issue;
+  if (c.diagnostic.length && !c.diagnostic.includes(diag)) r.erreur(`branche diagnostique attendue : ${c.diagnostic.join(' ou ')} (choisie : ${diag || 'aucune'})`);
+  for (const s of supp) if (!c.supp_permises.includes(s)) r.erreur(`paragraphe supplémentaire branche ${s} non prévu pour ce compartiment`);
+  if (c.supp_requises_une_de.length && !supp.some(s => c.supp_requises_une_de.includes(s))) r.erreur(`paragraphe supplémentaire requis : branche ${c.supp_requises_une_de.join(' ou ')}`);
+  if (comp === 'personnalite' && diag !== 4 && !supp.includes(3)) r.erreur('trouble de la personnalité : branche diagnostique 4 ou supplémentaire 3 requise');
+  if (c.evolution.length && !c.evolution.includes(evo)) r.erreur(`branche d'évolution attendue : ${c.evolution.join(' ou ')} (choisie : ${evo || 'aucune'})`);
+  if (c.issue.length && !c.issue.includes(issue)) r.erreur(`branche d'issue attendue : ${c.issue.join(' ou ')} (choisie : ${issue || 'aucune'})`);
+  const permis = R.couplage_evolution_issue[String(evo)];
+  if (permis && !permis.includes(issue)) r.erreur(`couplage : l'évolution ${evo} n'admet que l'issue ${permis.join(' ou ')}`);
+  const pers = persistants(f);
+  if (evo === 2 && !pers.length) r.erreur('évolution partiellement favorable sans aucun élément « persistant » dans la fiche');
+  if (evo === 1 && pers.length) r.av(`évolution favorable alors que la fiche note des éléments persistants : ${pers.join(', ')}`);
+  if (issue === 1 && !d.indication_psychotherapie) r.erreur('issue 1 (psychothérapie indiquée) sans indication cochée');
+  if (issue === 1 && !pers.length) r.erreur('indication de psychothérapie sans élément persistant documenté');
+  if (issue === 2 && (d.indication_psychotherapie || !d.souhait_patient)) r.erreur('issue 2 : souhait du patient SANS indication formelle');
+  if ([1, 2].includes(issue) && !d.orientation_realisee) r.erreur('issue 1/2 : « travail d\'orientation réalisé » exige que l\'orientation soit cochée');
+  if (issue === 3 && d.indication_psychotherapie) r.erreur('issue 3 (absence d\'indication) alors que l\'indication est cochée');
+}
+
+function detecterRubriques(lignes) {
+  const vus = [];
+  lignes.forEach((l, n) => {
+    const p = plat(l).replace(/^[\s:#*_-]+|[\s:#*_-]+$/g, '');
+    if (!p || p.length > 60) return;
+    R.rubriques_note.forEach((rub, i) => {
+      if ([rub.nom, ...rub.alias].map(plat).includes(p) && !vus.some(v => v[1] === n)) vus.push([i, n]);
+    });
+  });
+  return vus;
+}
+function contenuRubrique(lignes, vus, i) {
+  const k = vus.findIndex(v => v[0] === i);
+  if (k < 0) return '';
+  const fin = k + 1 < vus.length ? vus[k + 1][1] : lignes.length;
+  return lignes.slice(vus[k][1] + 1, fin).join('\n');
+}
+
+function controlerCommun(texte, r) {
+  const p = plat(texte);
+  for (const [table, niveau] of [[R.interdits, 'erreur'], [R.avertissements, 'av']])
+    for (const e of cles(table))
+      if (new RegExp('\\b' + reEsc(plat(e)) + '\\b').test(p)) r[niveau](`« ${e} » → ${table[e]}`);
+  const residus = [[/\[(?!À COMPLÉTER)/g, 'crochet de canevas'], [/[{}]/g, 'accolade de menu'], [/…|\.\.\./g, 'pointillés'],
+    [/\b(?:il\/elle|Il\/Elle|le\/la|Le\/La|lui\/elle|désireux\/désireuse)\b/g, 'alternative non tranchée'],
+    [/\(e\)|\(s\)/g, 'accord non tranché'], [/\bBranche [0-9A-D]\b/g, 'nom de branche'], [/⟨ajout⟩/g, "marque d'instruction"]];
+  for (const [re, nom] of residus)
+    for (const m of texte.matchAll(re)) r.erreur(`résidu du canevas (${nom}) : « …${texte.slice(Math.max(0, m.index - 25), m.index + m[0].length + 25).replace(/\n/g, ' ')}… »`);
+  for (const m of texte.matchAll(/\[À COMPLÉTER[^\]]*\]/g)) r.att(m[0]);
+  const corps = texte.split('\n').filter(l => { const lettres = [...l].filter(c => /\p{L}/u.test(c)).length; const maj = [...l].filter(c => /\p{Lu}/u.test(c)).length; return maj < 0.6 * Math.max(1, lettres); }).join('\n');
+  for (const m of corps.matchAll(/\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*\b/g)) {
+    const s = m[0];
+    if (s.replace(/[^A-Z]/g, '').length < 2 || R.sigles_autorises.includes(s) || /^[A-Z]\d{2}(\.\d+)?$/.test(s)) continue;
+    if (R.sigles_diagnostiques.includes(s)) r.erreur(`sigle « ${s} » : écrire en toutes lettres`);
+    else r.av(`abréviation « ${s} » : nom usuel (garder) ou opaque (développer) ?`);
+  }
+  for (const ph of texte.split(/(?<=[.!?])\s+|\n/)) {
+    const n = ph.split(/\s+/).filter(Boolean).length;
+    if (n > 55) r.av(`phrase de ${n} mots : une information par phrase ? « ${ph.slice(0, 70)}… »`);
+  }
+}
+
+function controlerNote(texte, f) {
+  const r = rapport(), lignes = texte.split('\n'), vus = detecterRubriques(lignes), presents = vus.map(v => v[0]);
+  const isOuGeste = f && [etat(f, 'aigu.idees_suicidaires'), etat(f, 'antecedents.geste_suicidaire')].includes('PRESENT');
+  R.rubriques_note.forEach((rub, i) => {
+    const oblig = rub.obligatoire === 'si_idees_ou_geste' ? isOuGeste : rub.obligatoire;
+    if (oblig && !presents.includes(i)) r.erreur(`rubrique manquante : ${rub.nom}`);
+  });
+  if (presents.join() !== [...presents].sort((a, b) => a - b).join()) r.erreur('rubriques dans le désordre');
+  if (new Set(presents).size !== presents.length) r.erreur('rubrique en double');
+  const apa = plat(contenuRubrique(lignes, vus, 1));
+  if (apa && !apa.startsWith("il s'agit d")) r.erreur("affection actuelle : la phrase d'ouverture doit commencer par « Il s'agit d'un étudiant / d'une étudiante de … ans »");
+  if (apa && !apa.includes('sur le plan aigu')) r.erreur('affection actuelle : « Sur le plan aigu » absent');
+  if (apa && !apa.includes('exclut toute autre symptomatologie aigue')) r.av('affection actuelle : clôture « exclut toute autre symptomatologie aiguë » absente');
+  const chron = f?.decision?.branches?.chronique;
+  if (chron === 'aucune' && apa.includes('sur le plan chronique')) r.erreur('compartiment sans plan chronique, mais « Sur le plan chronique » présent');
+  if (['A', 'B', 'C', 'D'].includes(chron) && !apa.includes('sur le plan chronique')) r.erreur(`plan chronique branche ${chron} attendu mais absent`);
+  const status = plat(contenuRubrique(lignes, vus, 5));
+  if (status) {
+    const manq = cles(R.items_status).filter(it => !R.items_status[it].some(c => status.includes(plat(c))));
+    if (manq.length) r.erreur('status : items manquants : ' + manq.join(', '));
+    if (status.includes('activation')) r.erreur("status : le niveau d'activation ne figure jamais dans le status");
+  }
+  const diag = plat(contenuRubrique(lignes, vus, 8));
+  if (diag && f?.decision?.evaluation_poursuivie && !['provisoire', 'hypothese', 'a preciser'].some(m => diag.includes(m))) r.erreur('diagnostic CIM-10 : mentionner le caractère provisoire');
+  if (diag && /differentiel/.test(diag)) r.erreur('diagnostic CIM-10 : pas de différentiel dans cette rubrique');
+  controlerCommun(texte, r);
+  return r;
+}
+
+function controlerSynthese(texte, f) {
+  const r = rapport(), paras = texte.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
+  if (!paras.length) { r.erreur('texte vide'); return r; }
+  if (paras.at(-1) !== 'Nous nous tenons à sa disposition.') r.erreur('la dernière ligne doit être, seule : « Nous nous tenons à sa disposition. »');
+  const corps = paras.slice(0, -1);
+  if (corps.length < 4 || corps.length > 5) r.av(`${corps.length} paragraphes avant la phrase finale (4 attendus, 5 si second diagnostic)`);
+  if (!/^(Le patient|La patiente) a bénéficié d/.test(paras[0])) r.erreur('paragraphe 1 : moule « Le patient / La patiente a bénéficié d\'une … »');
+  const p = plat(texte);
+  if (!p.includes('sur le plan diagnostique') && !p.includes('les elements recueillis')) r.erreur('paragraphe diagnostique absent');
+  if (!p.includes('au cours du suivi') && !p.includes('le suivi ayant ete interrompu')) r.erreur("paragraphe d'évolution absent");
+  if (f?.decision) {
+    const d = f.decision, evo = +d.branches?.evolution, issue = +d.branches?.issue;
+    if (evo === 1 && p.includes('partiellement favorable')) r.erreur('décision : évolution favorable ; texte : partiellement favorable');
+    if (evo === 2 && !p.includes('partiellement favorable') && !p.includes('amelioration partielle')) r.erreur("décision : évolution partiellement favorable ; le texte ne le dit pas");
+    if (issue === 3 && p.includes('orientation')) r.erreur("absence d'indication : aucune mention d'orientation");
+    if (p.includes('orientation a ete realise') && !d.orientation_realisee) r.erreur("« travail d'orientation réalisé » non documenté");
+    if (etat(f, 'aigu.idees_suicidaires') === 'PRESENT' && !p.includes('suicidaire')) r.erreur("idées suicidaires initialement présentes : passage obligatoire dans l'évolution");
+    if (d.diagnostic_final?.code && !texte.includes(d.diagnostic_final.code)) r.av(`code du diagnostic final (${d.diagnostic_final.code}) absent du texte`);
+  }
+  controlerCommun(texte, r);
+  return r;
+}
+
+function nettoyer(texte, sansAccents = false) {
+  for (const a of cles(R.typographie)) texte = texte.split(a).join(R.typographie[a]);
+  if (sansAccents) texte = texte.normalize('NFKD').replace(/\p{M}/gu, '');
+  return texte;
+}
+
+/* =========================================================================
+   FOURNISSEURS D'IA — Claude, OpenAI, modèle local compatible OpenAI, démo
+   ========================================================================= */
+const CFG = 'note-clinique-reglages';
+const DEFAUTS = { demo: { modele: '' }, anthropic: { modele: 'claude-sonnet-5-5' }, openai: { modele: '' }, local: { modele: '', url: 'http://localhost:11434/v1' } };
+let cfg = Object.assign({ fournisseur: 'demo', modele: '', url: '', cle: '', memoriser: false, web: true }, (() => { try { return JSON.parse(localStorage.getItem(CFG)) || {}; } catch { return {}; } })());
+
+function enregistrerCfg() {
+  const copie = { ...cfg }; if (!cfg.memoriser) delete copie.cle;
+  try { localStorage.setItem(CFG, JSON.stringify(copie)); } catch { /* stockage indisponible : réglages pour cette session seulement */ }
+  $('#etiquette-fournisseur').textContent = { demo: 'Démo (sans IA)', anthropic: 'Claude', openai: 'OpenAI', local: 'Modèle local' }[cfg.fournisseur] + (cfg.modele ? ' · ' + cfg.modele : '');
+}
+
+function journal(m) { const j = $('#journal'); j.textContent = `${new Date().toLocaleTimeString()}  ${m}\n` + j.textContent; }
+
+async function appelIA(tag, system, user, { web = false, max = 8000 } = {}) {
+  const t0 = performance.now();
+  let texte;
+  if (cfg.fournisseur === 'demo') texte = await demo(tag, user);
+  else if (cfg.fournisseur === 'anthropic') texte = await appelClaude(system, user, web && cfg.web, max);
+  else texte = await appelOpenAI(system, user);
+  journal(`${tag} — ${Math.round(performance.now() - t0)} ms, ${texte.length} caractères reçus`);
+  return texte;
+}
+
+async function appelClaude(system, user, web, max) {
+  if (!cfg.cle) throw new Error("Clé d'API Claude manquante (Réglages IA).");
+  const messages = [{ role: 'user', content: user }];
+  for (let tour = 0; tour < 4; tour++) {
+    const corps = { model: cfg.modele, max_tokens: max, system, messages };
+    if (web) corps.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }];
+    const rep = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': cfg.cle, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify(corps),
+    });
+    if (!rep.ok) throw new Error(`Claude a répondu ${rep.status} : ${(await rep.text()).slice(0, 400)}`);
+    const j = await rep.json();
+    if (j.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: j.content }); continue; }
+    return j.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+  }
+  throw new Error('Recherche web trop longue : réessayer.');
+}
+
+async function appelOpenAI(system, user) {
+  const base = cfg.fournisseur === 'openai' ? 'https://api.openai.com/v1' : (cfg.url || DEFAUTS.local.url).replace(/\/$/, '');
+  if (cfg.fournisseur === 'openai' && !cfg.cle) throw new Error("Clé d'API OpenAI manquante (Réglages IA).");
+  if (!cfg.modele) throw new Error('Nom du modèle manquant (Réglages IA).');
+  const headers = { 'content-type': 'application/json' };
+  if (cfg.cle) headers.authorization = 'Bearer ' + cfg.cle;
+  const rep = await fetch(base + '/chat/completions', {
+    method: 'POST', headers,
+    body: JSON.stringify({ model: cfg.modele, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }),
+  });
+  if (!rep.ok) throw new Error(`Le serveur a répondu ${rep.status} : ${(await rep.text()).slice(0, 400)}`);
+  const j = await rep.json();
+  return j.choices?.[0]?.message?.content ?? '';
+}
+
+function extraireJSON(t) {
+  const m = t.match(/```(?:json)?\s*([\s\S]*?)```/), s = m ? m[1] : t;
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if (i < 0 || j < i) throw new Error('réponse sans JSON');
+  return JSON.parse(s.slice(i, j + 1));
+}
+async function appelJSON(tag, system, user, opts) {
+  const t = await appelIA(tag, system, user, opts);
+  try { return extraireJSON(t); } catch {
+    return extraireJSON(await appelIA(tag + ' (reprise)', system, user + "\n\nTa réponse précédente n'était pas un JSON valide. Renvoie UNIQUEMENT l'objet JSON, sans aucun texte autour.", opts));
+  }
+}
+const sortieTexte = t => t.replace(/^```[a-z]*\n?|```$/gm, '').trim();
+
+/* ---- Démo : cas entièrement fictif, pour voir l'interface sans clé ---- */
+async function demo(tag, user) {
+  await new Promise(r => setTimeout(r, 350));
+  const base = tag.replace(/ \(reprise\)$/, '');
+  const fiche = JSON.parse(JSON.stringify(D.demo.fiche)); delete fiche.decision;
+  if (base === 'etape1') return D.demo.comprehension;
+  if (base === 'etape2') return JSON.stringify(fiche);
+  if (base === 'etape3') return JSON.stringify({
+    decision: D.demo.fiche.decision,
+    arguments: { diagnostic_final: "Symptomatologie mixte anxieuse et dépressive apparue à la suite d'une rupture, rompant avec le fonctionnement habituel.", compartiment: "Trouble de l'adaptation seul : pas d'élément chronique.", evolution: 'Symptomatologie anxieuse persistante, dépressive atténuée.', issue: 'Psychothérapie indiquée au vu des difficultés persistantes.' },
+    hypotheses_a_explorer: [], verification_cim: { effectuee: false, sources: [], resume: 'Démo : aucune vérification en ligne.' },
+  });
+  if (base === 'etape4-note') return D.demo.note;
+  if (base === 'etape4-synthese') return D.demo.synthese;
+  if (base === 'etape5') return JSON.stringify({ sens1: [{ element: 'Rupture sentimentale comme déclencheur', traduction: 'Ils sont apparus à la suite de la rupture sentimentale…', rubrique: 'Affection psychiatrique actuelle' }], sens2_orphelins: [], note_corrigee: S.note, synthese_corrigee: S.synthese, ecarts_non_corriges: [] });
+  if (base === 'correction') return (user.match(/<<<TEXTE\n([\s\S]*?)\nTEXTE>>>/) || [, ''])[1];
+  if (base === 'etape7') return JSON.stringify({ texte_note: S.note, texte_synthese: S.synthese, mode: 'génération', anomalies: { langage: [], coherence: [] }, incertains: [{ question: 'Démo : exemple de question à choix multiple', options: ['Option a', 'Option b'] }], signalement: [] });
+  if (base === 'reponses') return JSON.stringify({ texte_note: S.note, texte_synthese: S.synthese });
+  return '';
+}
+
+/* =========================================================================
+   CONSIGNES PAR ÉTAPE — chaque appel ne reçoit que les règles de son étape
+   ========================================================================= */
+const ENTETE = `Tu es l'assistant de rédaction clinique de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL). Tu exécutes UNE SEULE étape d'une procédure en 7 étapes : les autres sont faites ailleurs. Réponds exactement dans le format demandé, sans introduction ni commentaire.\n\nBASE DE DONNÉES — ${D.base}\n\n`;
+const TITRES_COMP = { adaptation_seul: "TROUBLE DE L'ADAPTATION SEUL", code_z: 'CODE Z', adaptation_traits: "TROUBLE DE L'ADAPTATION AVEC ACCENTUATION", personnalite: 'TROUBLE DE LA PERSONNALITÉ RETENU', neurodev: 'HYPOTHÈSE NEURODÉVELOPPEMENTALE', non_conclusif: 'SITUATION NON CONCLUSIVE', trouble_chronique: 'TROUBLE CHRONIQUE CONSTITUÉ' };
+const NOMS_COMP = { adaptation_seul: "Trouble de l'adaptation seul", code_z: 'Code Z / difficulté circonscrite', adaptation_traits: 'Adaptation avec accentuation de traits', personnalite: 'Trouble de la personnalité', neurodev: 'Hypothèse neurodéveloppementale', non_conclusif: 'Non conclusive ou interrompue', trouble_chronique: 'Trouble chronique constitué (provisoire)' };
+const blocCompartiment = comp => {
+  const blocs = D.refs.compartiments.split('▸ ').slice(1);
+  return '▸ ' + (blocs.find(b => b.startsWith(TITRES_COMP[comp])) || '') + "\nRÈGLE TRANSVERSALE DU STATUS — il ne contient jamais d'élément orientant vers un diagnostic non retenu, et contient ce que le diagnostic retenu implique.";
+};
+const ficheSansNotes = f => { const c = JSON.parse(JSON.stringify(f)); for (const k of Object.keys(c)) if (k.startsWith('_')) delete c[k]; return c; };
+const RUBRIQUES = R.rubriques_note.map(r => r.nom.toUpperCase()).join(', ');
+
+/* =========================================================================
+   ÉTAT ET INTERFACE
+   ========================================================================= */
+const ETAPES = [[1, 'Compréhension de la situation'], [2, 'Fiche de faits'], [3, 'Décision : diagnostic et branches'], [4, 'Rédaction sur canevas'], [5, 'Contrebalance'], [6, 'Contrôle automatique'], [7, 'Vérification et résultat']];
+let S;
+const noteSeule = () => S.type === 'note';
+const veutNote = () => S.type !== 'synthese';
+const veutSynthese = () => S.type !== 'note';
+const auto = () => $('#auto').checked;
+
+function initEtapes() {
+  S = { type: $('#type').value, notes: '', comprehension: '', fiche: null, prop: null, note: '', synthese: '', cb: null, controles: {}, final: null };
+  $('#etapes').innerHTML = ETAPES.map(([n, t]) => `<article class="etape inactive" id="e${n}"><header><span class="num">${n}</span><span class="titre">${t}</span><span class="badge" id="b${n}">à venir</span></header><div class="corps" id="c${n}"></div></article>`).join('');
+}
+function badge(n, texte, cls = '') { const b = $('#b' + n); b.textContent = texte; b.className = 'badge ' + cls; $('#e' + n).classList.toggle('inactive', texte === 'à venir'); }
+function corps(n, html) { $('#c' + n).innerHTML = html; }
+function enCours(n, m = "L'IA travaille") { badge(n, 'en cours', 'cours'); corps(n, `<p class="aide chargement">${m}</p>`); $('#e' + n).scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+function viderApres(n) { for (let i = n + 1; i <= 7; i++) { badge(i, 'à venir'); corps(i, ''); } }
+function boite(cls, titre, items) { return items.length ? `<div class="boite ${cls}"><strong>${titre}</strong><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : ''; }
+
+async function executer(n, fn) {
+  try { await fn(); }
+  catch (e) { badge(n, 'erreur', 'err'); corps(n, `<div class="boite err"><strong>Erreur</strong><br>${esc(e.message)}</div><div class="actions"><button data-act="refaire" data-n="${n}">Réessayer</button></div>`); journal('ERREUR ' + e.message); }
+}
+
+/* ---- Étape 1 ---- */
+async function etape1() {
+  viderApres(1); enCours(1);
+  const sys = ENTETE + "ÉTAPE 1 — COMPRÉHENSION DE LA SITUATION. Applique les règles ci-dessous. Renvoie uniquement le bloc de prose continue.\n\n" + D.refs.comprehension;
+  S.comprehension = sortieTexte(await appelIA('etape1', sys, "NOTES D'ENTRETIEN :\n" + S.notes));
+  afficher1();
+}
+function afficher1() {
+  badge(1, 'à valider', 'valider');
+  corps(1, `<p class="aide">Est-ce la bonne lecture du cas ? Corrigez directement le texte si besoin, puis validez.</p><textarea id="t1" rows="12">${esc(S.comprehension)}</textarea><div class="actions"><button class="primaire" data-act="valider1">Valider la compréhension</button><button data-act="refaire" data-n="1">Régénérer</button></div>`);
+  if (auto()) valider1();
+}
+function valider1() { S.comprehension = $('#t1').value.trim(); badge(1, 'validée', 'ok'); executer(2, etape2); }
+
+/* ---- Étape 2 ---- */
+async function etape2() {
+  viderApres(2); enCours(2);
+  const modele = ficheSansNotes(D.fiche_modele); delete modele.decision;
+  const sys = ENTETE + `ÉTAPE 2 — FICHE DE FAITS. Remplis la fiche à partir des notes et de la compréhension validée. Renvoie UNIQUEMENT un objet JSON avec exactement les clés du modèle ci-dessous (sans "decision"). Pour chaque champ : "etat" = PRESENT, ABSENT (exploré et négatif, explicitement dans les notes) ou NON_EXPLORE (rien dans les notes) ; "valeur" = le fait, avec les mots du clinicien ; "source" = E1, E2… N'invente rien et ne déduis aucun négatif : ce qui n'est pas dans les notes est NON_EXPLORE. Pour "aigu.symptomes" : "depuis" reste vide si la temporalité n'est pas dans les notes ; "etat_final" = amende, attenue, persistant, stable, majore ou non_documente.\n\n` + D.refs.fiche + '\n\nMODÈLE JSON :\n' + JSON.stringify(modele, null, 1);
+  const f = await appelJSON('etape2', sys, `NOTES D'ENTRETIEN :\n${S.notes}\n\nCOMPRÉHENSION VALIDÉE :\n${S.comprehension}`);
+  S.fiche = {};
+  for (const k of Object.keys(modele)) S.fiche[k] = f[k] ?? (Array.isArray(modele[k]) ? [] : { etat: 'NON_EXPLORE', valeur: '', source: '' });
+  for (const k of ['aigu.symptomes', 'chronique.elements', 'instruments']) if (!Array.isArray(S.fiche[k])) S.fiche[k] = [];
+  afficher2();
+}
+const LIB = { patient: 'Patient', motif: 'Motif', cadre: 'Cadre', aigu: 'Plan aigu', psychosocial: 'Contexte', antecedents: 'Antécédents', somatique: 'Somatique', status: 'Status', fin: 'Fin du suivi' };
+function libelle(k) { const [a, b] = k.split('.'); return (LIB[a] || a) + (b ? ' › ' + b.replace(/_/g, ' ') : ''); }
+const COLS = {
+  'aigu.symptomes': [['libelle', 'Symptôme'], ['depuis', 'Depuis'], ['mode', 'Mode'], ['etat_final', 'Destin (fin de suivi)', ['', 'amende', 'attenue', 'persistant', 'stable', 'majore', 'non_documente']], ['source', 'Source']],
+  'chronique.elements': [['libelle', 'Élément'], ['anciennete', 'Ancienneté'], ['spheres', 'Sphères'], ['retentissement', 'Retentissement'], ['etat_final', 'Destin', ['', 'persistant', 'attenue', 'non_documente']], ['source', 'Source']],
+  'instruments': [['nom', 'Instrument'], ['resultat', 'Résultat'], ['source', 'Source']],
+};
+function afficher2() {
+  const r = controlerFiche(S.fiche, { sansDecision: true });
+  const qs = r.questions, att = new Set(r.attente);
+  const lignes = cles(R.champs).map(k => {
+    const v = S.fiche[k] || {}, cls = qs.includes(k) ? 'bloquant' : att.has(k) ? 'attente' : '';
+    return `<tr class="${cls}"><td>${esc(libelle(k))}</td><td><select data-k="${k}" data-f="etat">${ETATS.map(e => `<option ${v.etat === e ? 'selected' : ''}>${e}</option>`).join('')}</select></td><td><input data-k="${k}" data-f="valeur" value="${esc(v.valeur)}"></td><td><input data-k="${k}" data-f="source" value="${esc(v.source)}" size="3"></td><td class="regle">${R.champs[k]}</td></tr>`;
+  }).join('');
+  const listes = Object.entries(COLS).map(([k, cols]) => `<h2 style="margin-top:16px">${esc(libelle(k))}</h2><div class="tableau"><table><tr>${cols.map(c => `<th>${c[1]}</th>`).join('')}<th></th></tr>${(S.fiche[k] || []).map((it, i) => `<tr>${cols.map(([c, , opts]) => `<td>${opts ? `<select data-l="${k}" data-i="${i}" data-f="${c}">${opts.map(o => `<option ${it[c] === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` : `<input data-l="${k}" data-i="${i}" data-f="${c}" value="${esc(it[c])}">`}</td>`).join('')}<td><button data-act="suppr" data-l="${k}" data-i="${i}" title="Supprimer">×</button></td></tr>`).join('')}</table></div><button data-act="ajout" data-l="${k}">+ ajouter</button>`).join('');
+  badge(2, qs.length ? 'questions bloquantes' : 'à valider', qs.length ? 'err' : 'valider');
+  corps(2, `<div id="r2">${resume2(r)}</div>
+    <p class="aide">Complétez ou corrigez directement : changez l'état et écrivez le fait. Rouge = bloquant, orange = en attente (le texte portera [À COMPLÉTER]).</p>
+    <div class="tableau"><table id="fiche"><tr><th>Champ</th><th>État</th><th>Fait</th><th>Source</th><th>Si non exploré</th></tr>${lignes}</table></div>${listes}
+    <div class="actions"><button class="primaire" data-act="valider2" ${r.conforme() ? '' : 'disabled'}>Valider la fiche</button><button data-act="refaire" data-n="2">Régénérer</button></div>`);
+  if (auto() && r.conforme()) valider2();
+}
+function resume2(r) {
+  return boite('err', 'Questions bloquantes : à renseigner avant de rédiger', r.questions.map(libelleQ)) + boite('err', 'Erreurs', r.erreurs)
+    + boite('att', 'En attente (le texte portera [À COMPLÉTER])', r.attente.map(libelleQ)) + boite('info', 'À vérifier', r.avert)
+    + (r.conforme() ? '<div class="boite ok">Aucune question bloquante : la fiche peut être validée.</div>' : '');
+}
+const libelleQ = q => R.champs[q] ? libelle(q) : q;
+function majFiche(el) {
+  if (el.dataset.k) S.fiche[el.dataset.k][el.dataset.f] = el.value;
+  else if (el.dataset.l) S.fiche[el.dataset.l][+el.dataset.i][el.dataset.f] = el.value;
+  else return;
+  const r = controlerFiche(S.fiche, { sansDecision: true });
+  $('#r2').innerHTML = resume2(r);
+  document.querySelector('[data-act=valider2]').disabled = !r.conforme();
+  badge(2, r.questions.length ? 'questions bloquantes' : 'à valider', r.questions.length ? 'err' : 'valider');
+  const qs = r.questions, att = new Set(r.attente);
+  document.querySelectorAll('#fiche tr').forEach(tr => { const s = tr.querySelector('[data-k]'); if (s) tr.className = qs.includes(s.dataset.k) ? 'bloquant' : att.has(s.dataset.k) ? 'attente' : ''; });
+}
+function valider2() { badge(2, 'validée', 'ok'); executer(3, etape3); }
+
+/* ---- Étape 3 ---- */
+async function etape3() {
+  viderApres(3); enCours(3, cfg.fournisseur === 'anthropic' && cfg.web ? "L'IA vérifie la CIM-10 en ligne et propose les décisions" : "L'IA propose les décisions");
+  const web = cfg.fournisseur === 'anthropic' && cfg.web;
+  const sys = ENTETE + `ÉTAPE 3 — DÉCISION. Propose le diagnostic, le compartiment et les branches à partir de la fiche validée. ${web ? "Utilise la recherche web pour vérifier dans une source officielle (CIM-10-GM de l'OFS en priorité, sinon CIM-10 de l'OMS) le code, l'intitulé et les critères diagnostiques de chaque diagnostic envisagé, et confronte ces critères aux faits de la fiche." : "Tu n'as PAS accès à internet : verification_cim.effectuee = false ; le clinicien vérifiera le code et les critères."} ${noteSeule() ? 'Seule la note du premier entretien est demandée : evolution = 0 et issue = 0.' : ''}
+Renvoie UNIQUEMENT un objet JSON : {"decision": {même structure que le modèle}, "arguments": {"diagnostic_provisoire": "", "diagnostic_final": "", "compartiment": "", "branches": ""}, "hypotheses_a_explorer": [""], "verification_cim": {"effectuee": true|false, "sources": ["url"], "criteres": [{"critere": "", "faits": "", "rempli": "oui|non|à préciser"}], "resume": ""}}.
+"compartiment" doit être une de ces clés : ${cles(R.compartiments).join(', ')}. Si aucun ne convient, prends le plus proche et explique-le dans arguments.compartiment.\n\n` + D.refs.decision + '\n\n' + D.refs.compartiments + '\n\nTABLE EXÉCUTABLE :\n' + JSON.stringify({ compartiments: R.compartiments, couplage_evolution_issue: R.couplage_evolution_issue }) + '\n\nMODÈLE DE "decision" :\n' + JSON.stringify(D.fiche_modele.decision);
+  S.prop = await appelJSON('etape3', sys, `COMPRÉHENSION VALIDÉE :\n${S.comprehension}\n\nFICHE DE FAITS VALIDÉE :\n${JSON.stringify(ficheSansNotes(S.fiche))}`, { web, max: 12000 });
+  S.fiche.decision = Object.assign(JSON.parse(JSON.stringify(D.fiche_modele.decision)), S.prop.decision || {});
+  S.fiche.decision.branches = Object.assign({ chronique: 'aucune', diagnostic: 0, supplementaires: [], evolution: 0, issue: 0 }, S.prop.decision?.branches || {});
+  afficher3();
+}
+function afficher3() {
+  const d = S.fiche.decision, b = d.branches, p = S.prop || {}, v = p.verification_cim || {};
+  const sel = (id, opts, val) => `<select id="${id}">${opts.map(([o, t]) => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const nums = (n, z) => [[0, z], ...Array.from({ length: n }, (_, i) => [i + 1, 'Branche ' + (i + 1)])];
+  const arg = cles(p.arguments).map(k => `<li><strong>${esc(k.replace(/_/g, ' '))}</strong> : ${esc(p.arguments[k])}</li>`).join('');
+  const crit = (v.criteres || []).map(c => `<tr><td>${esc(c.critere)}</td><td>${esc(c.faits)}</td><td>${esc(c.rempli)}</td></tr>`).join('');
+  badge(3, 'à valider', 'valider');
+  corps(3, `${v.effectuee ? `<div class="boite ok"><strong>CIM-10 vérifiée en ligne.</strong> ${esc(v.resume)}<br>${(v.sources || []).map(s => `<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`).join('<br>')}</div>` : `<div class="boite att"><strong>Code et critères CIM-10 non vérifiés en ligne.</strong> À confirmer par vous dans la CIM-10-GM (OFS) avant de valider. ${esc(v.resume || '')}</div>`}
+    ${crit ? `<div class="tableau"><table><tr><th>Critère</th><th>Faits de la fiche</th><th>Rempli</th></tr>${crit}</table></div>` : ''}
+    ${arg ? `<div class="boite info"><strong>Arguments de l'IA</strong><ul>${arg}</ul></div>` : ''}
+    ${(p.hypotheses_a_explorer || []).length ? boite('info', 'Hypothèses à explorer', p.hypotheses_a_explorer) : ''}
+    <div class="grille">
+      <div><label>Diagnostic de la note : intitulé</label><input id="d-pi" value="${esc(d.diagnostic_provisoire?.intitule)}"></div>
+      <div><label>Code</label><input id="d-pc" value="${esc(d.diagnostic_provisoire?.code)}"></div>
+      <div><label>Diagnostic final : intitulé</label><input id="d-fi" value="${esc(d.diagnostic_final?.intitule)}"></div>
+      <div><label>Code</label><input id="d-fc" value="${esc(d.diagnostic_final?.code)}"></div>
+      <div><label>Compartiment</label>${sel('d-comp', cles(R.compartiments).map(k => [k, NOMS_COMP[k] || k]), d.compartiment)}</div>
+      <div><label>Plan chronique</label>${sel('d-chr', [['aucune', 'Aucun'], ['A', 'Branche A'], ['B', 'Branche B'], ['C', 'Branche C'], ['D', 'Branche D']], b.chronique)}</div>
+      ${noteSeule() ? '' : `<div><label>Synthèse : branche diagnostique</label>${sel('d-diag', nums(7, '—'), b.diagnostic)}</div>
+      <div><label>Paragraphes supplémentaires (ex. 2, 6)</label><input id="d-supp" value="${esc((b.supplementaires || []).join(', '))}"></div>
+      <div><label>Évolution</label>${sel('d-evo', nums(7, '—'), b.evolution)}</div>
+      <div><label>Issue</label>${sel('d-iss', nums(7, '—'), b.issue)}</div>`}
+    </div>
+    <div class="actions" style="flex-direction:column;align-items:flex-start">
+      <label><input type="checkbox" id="d-ev" ${d.evaluation_poursuivie ? 'checked' : ''}> L'évaluation se poursuit après le premier entretien (diagnostic provisoire dans la note)</label>
+      ${noteSeule() ? '' : `<label><input type="checkbox" id="d-ind" ${d.indication_psychotherapie ? 'checked' : ''}> Indication formelle de psychothérapie</label>
+      <label><input type="checkbox" id="d-sou" ${d.souhait_patient ? 'checked' : ''}> Souhait du patient de poursuivre</label>
+      <label><input type="checkbox" id="d-ori" ${d.orientation_realisee ? 'checked' : ''}> Travail d'orientation réalisé</label>`}
+    </div>
+    <div id="r3"></div>
+    <div class="actions"><button class="primaire" data-act="valider3">Valider les décisions</button><button data-act="refaire" data-n="3">Régénérer</button></div>`);
+  majDecision();
+  if (auto() && controlerFiche(S.fiche, { noteSeule: noteSeule() }).conforme()) valider3();
+}
+function majDecision() {
+  const d = S.fiche.decision, val = id => $('#' + id)?.value, coche = id => $('#' + id)?.checked;
+  d.diagnostic_provisoire = { intitule: val('d-pi'), code: val('d-pc') };
+  d.diagnostic_final = { intitule: val('d-fi'), code: val('d-fc') };
+  d.compartiment = val('d-comp'); d.evaluation_poursuivie = coche('d-ev');
+  d.branches.chronique = val('d-chr');
+  if (!noteSeule()) {
+    d.branches.diagnostic = +val('d-diag'); d.branches.evolution = +val('d-evo'); d.branches.issue = +val('d-iss');
+    d.branches.supplementaires = (val('d-supp') || '').split(/[^0-9]+/).filter(Boolean).map(Number);
+    d.indication_psychotherapie = coche('d-ind'); d.souhait_patient = coche('d-sou'); d.orientation_realisee = coche('d-ori');
+  }
+  const r = controlerFiche(S.fiche, { noteSeule: noteSeule() });
+  $('#r3').innerHTML = boite('err', 'Décision refusée par le contrôle', r.erreurs) + boite('err', 'À renseigner', r.questions.map(libelleQ)) + boite('info', 'À vérifier', r.avert) + (r.conforme() ? '<div class="boite ok">Combinaison cohérente avec les compartiments et le couplage évolution → issue.</div>' : '');
+  document.querySelector('[data-act=valider3]').disabled = !r.conforme();
+}
+function valider3() { badge(3, 'validée', 'ok'); executer(4, etape4); }
+
+/* ---- Étape 4 ---- */
+async function etape4() {
+  viderApres(4); enCours(4, "L'IA rédige sur le canevas");
+  const d = S.fiche.decision, contexte = `COMPRÉHENSION VALIDÉE :\n${S.comprehension}\n\nFICHE DE FAITS VALIDÉE :\n${JSON.stringify(ficheSansNotes(S.fiche))}\n\nDÉCISION VALIDÉE (impérative) :\n${JSON.stringify(d)}`;
+  const commun = `Règles absolues : n'utilise QUE les faits de la fiche validée ; applique les branches de la décision validée, sans en choisir d'autres ; un champ NON_EXPLORE suit sa règle : ATTENTE → écris [À COMPLÉTER : ce qui manque] à l'endroit voulu ; OMIS → supprime l'emplacement et réécris la phrase sans lui ; NORMAL → valeur normale du répertoire ; DERIVE_AIGU → reprends ce que le plan aigu documente, sinon normal. Texte brut, sans markdown. Supprime toutes les instructions, variantes, crochets, accolades et pointillés du canevas.\n\nRÈGLE PAR CHAMP :\n${JSON.stringify(R.champs)}\n\nCOMPARTIMENT IMPOSÉ :\n${blocCompartiment(d.compartiment)}\n\n${D.refs.langage}\n\n`;
+  if (veutNote()) {
+    const sys = ENTETE + `ÉTAPE 4 — RÉDACTION DE LA NOTE DU PREMIER ENTRETIEN. ${commun}Format : chaque titre de rubrique seul sur sa ligne, en majuscules, dans cet ordre : ${RUBRIQUES} (anamnèse somatique et évaluation du risque suicidaire seulement si le canevas les demande). Plan chronique : branche ${d.branches.chronique} uniquement. Renvoie uniquement la note.\n\n` + D.refs.canevas_note;
+    S.note = sortieTexte(await appelIA('etape4-note', sys, contexte));
+  }
+  if (veutSynthese()) {
+    const sys = ENTETE + `ÉTAPE 4 — RÉDACTION DE LA SYNTHÈSE. ${commun}Format : pas de titres ; quatre paragraphes (cinq si un second diagnostic est discuté) séparés par une ligne vide, puis la phrase « Nous nous tenons à sa disposition. » seule. Branches imposées : diagnostique ${d.branches.diagnostic}, supplémentaires ${JSON.stringify(d.branches.supplementaires)}, évolution ${d.branches.evolution}, issue ${d.branches.issue}. Renvoie uniquement la synthèse.\n\n` + D.refs.canevas_synthese;
+    S.synthese = sortieTexte(await appelIA('etape4-synthese', sys, contexte + (S.note ? `\n\nNOTE DU PREMIER ENTRETIEN :\n${S.note}` : '') + `\n\nNOTES DE TOUS LES ENTRETIENS :\n${S.notes}`));
+  }
+  badge(4, 'rédigé', 'ok');
+  corps(4, `<details open><summary>Premier jet</summary>${S.note ? `<div class="texte-final">${surligner(S.note)}</div>` : ''}${S.synthese ? `<div class="texte-final" style="margin-top:8px">${surligner(S.synthese)}</div>` : ''}</details>`);
+  await executer(5, etape5);
+}
+
+/* ---- Étape 5 ---- */
+async function etape5() {
+  enCours(5, "L'IA confronte la note à la compréhension");
+  const sys = ENTETE + `ÉTAPE 5 — CONTREBALANCE. Confronte les textes à la compréhension validée, dans les deux sens, et corrige les écarts sans toucher au reste (verrouillage). Renvoie UNIQUEMENT un objet JSON : {"sens1": [{"element": "", "traduction": "citation ou ABSENT", "rubrique": ""}], "sens2_orphelins": [""], "note_corrigee": "", "synthese_corrigee": "", "ecarts_non_corriges": [""]}. Laisse "note_corrigee" ou "synthese_corrigee" vide si ce texte n'est pas demandé.\n\n` + D.refs.contrebalance + '\n\n' + D.refs.langage;
+  S.cb = await appelJSON('etape5', sys, `COMPRÉHENSION VALIDÉE :\n${S.comprehension}\n\nFICHE :\n${JSON.stringify(ficheSansNotes(S.fiche))}\n\n${S.note ? 'NOTE :\n' + S.note + '\n\n' : ''}${S.synthese ? 'SYNTHÈSE :\n' + S.synthese : ''}`);
+  if (veutNote() && S.cb.note_corrigee?.trim()) S.note = S.cb.note_corrigee.trim();
+  if (veutSynthese() && S.cb.synthese_corrigee?.trim()) S.synthese = S.cb.synthese_corrigee.trim();
+  const lignes = (S.cb.sens1 || []).map(x => `<tr><td>${esc(x.element)}</td><td>${x.traduction === 'ABSENT' ? '<strong>ABSENT</strong>' : esc(x.traduction)}</td><td>${esc(x.rubrique)}</td></tr>`).join('');
+  badge(5, (S.cb.ecarts_non_corriges || []).length ? 'écarts signalés' : 'faite', (S.cb.ecarts_non_corriges || []).length ? 'valider' : 'ok');
+  corps(5, `<div class="tableau"><table><tr><th>Élément de la compréhension</th><th>Traduction dans la note</th><th>Rubrique</th></tr>${lignes}</table></div>${boite('att', 'Éléments de la note sans rattachement', S.cb.sens2_orphelins || [])}${boite('att', 'Écarts non corrigés', S.cb.ecarts_non_corriges || [])}`);
+  await executer(6, etape6);
+}
+
+/* ---- Étape 6 ---- */
+function controler(type, texte) { return type === 'note' ? controlerNote(texte, S.fiche) : controlerSynthese(texte, S.fiche); }
+async function corriger(type, texte, erreurs) {
+  const sys = ENTETE + "CORRECTION CIBLÉE. Le contrôle automatique a relevé les erreurs ci-dessous. Corrige UNIQUEMENT les passages concernés ; tout le reste est repris mot pour mot (verrouillage). Ne touche pas aux [À COMPLÉTER : …]. Renvoie uniquement le texte complet corrigé, sans commentaire.\n\n" + D.refs.langage;
+  return sortieTexte(await appelIA('correction', sys, `ERREURS :\n- ${erreurs.join('\n- ')}\n\nFICHE :\n${JSON.stringify(ficheSansNotes(S.fiche))}\n\n<<<TEXTE\n${texte}\nTEXTE>>>`));
+}
+async function boucleControle(type) {
+  let texte = S[type], r = controler(type, texte), tours = 0;
+  while (r.erreurs.length && tours < 3) { tours++; texte = await corriger(type, texte, r.erreurs); r = controler(type, texte); }
+  S[type] = texte; S.controles[type] = { r, tours };
+}
+async function etape6() {
+  enCours(6, 'Contrôle automatique');
+  for (const t of ['note', 'synthese']) if (t === 'note' ? veutNote() : veutSynthese()) await boucleControle(t);
+  afficher6();
+  await executer(7, etape7);
+}
+function afficher6() {
+  const blocs = Object.entries(S.controles).map(([t, { r, tours }]) => `<h2>${t === 'note' ? 'Note' : 'Synthèse'} ${tours ? `<span class="aide">(${tours} tour${tours > 1 ? 's' : ''} de correction)</span>` : ''}</h2>${r.erreurs.length ? boite('err', 'Erreurs restantes', r.erreurs) : '<div class="boite ok">Aucune erreur.</div>'}${boite('info', 'À vérifier', r.avert)}`).join('');
+  const reste = Object.values(S.controles).some(c => c.r.erreurs.length);
+  badge(6, reste ? 'erreurs restantes' : 'conforme', reste ? 'err' : 'ok');
+  corps(6, blocs);
+}
+
+/* ---- Étape 7 ---- */
+async function etape7() {
+  enCours(7, 'Vérification finale');
+  const sys = ENTETE + `ÉTAPE 7 — VÉRIFICATION ET SORTIE. Applique la phase de vérification aux textes (mode génération, ou correction s'ils viennent d'un texte soumis). Renvoie UNIQUEMENT un objet JSON : {"texte_note": "", "texte_synthese": "", "mode": "", "anomalies": {"langage": [""], "coherence": [""]}, "incertains": [{"question": "", "options": [""]}], "signalement": [""]}. Garde les [À COMPLÉTER : …] tels quels. Laisse vide un texte non demandé.\n\n` + D.refs.verification + '\n\n' + D.refs.langage;
+  const res = await appelJSON('etape7', sys, `NOTES :\n${S.notes}\n\nCOMPRÉHENSION VALIDÉE :\n${S.comprehension}\n\nFICHE ET DÉCISION :\n${JSON.stringify(ficheSansNotes(S.fiche))}\n\n${S.note ? 'NOTE :\n' + S.note + '\n\n' : ''}${S.synthese ? 'SYNTHÈSE :\n' + S.synthese : ''}`);
+  if (veutNote() && res.texte_note?.trim()) S.note = res.texte_note.trim();
+  if (veutSynthese() && res.texte_synthese?.trim()) S.synthese = res.texte_synthese.trim();
+  for (const t of ['note', 'synthese']) if (S[t]) await boucleControle(t);
+  S.final = res;
+  afficher6(); afficher7();
+}
+const surligner = t => esc(t).replace(/\[À COMPLÉTER[^\]]*\]/g, m => `<mark>${m}</mark>`);
+function aCompleter() { return [...new Set(((S.note || '') + '\n' + (S.synthese || '')).match(/\[À COMPLÉTER[^\]]*\]/g) || [])]; }
+function afficher7() {
+  const f = S.final || {}, an = f.anomalies || {};
+  const textes = [['note', 'Note du premier entretien'], ['synthese', 'Synthèse']].filter(([t]) => S[t]).map(([t, titre]) => `<h2>${titre}</h2><div class="texte-final" id="final-${t}">${surligner(S[t])}</div><div class="actions"><button class="primaire" data-act="copier" data-t="${t}">Copier pour le dossier</button><button data-act="telecharger" data-t="${t}">Télécharger (.txt Latin-1)</button></div>`).join('');
+  const champs = aCompleter().map((m, i) => `<div class="question"><strong>${esc(m.slice(1, -1).replace(/^À COMPLÉTER\s*:\s*/, ''))}</strong><input data-ac="${i}" data-m="${esc(m)}" placeholder="Votre réponse (vide = laisser en attente)"></div>`).join('');
+  const qs = (f.incertains || []).map((q, i) => `<div class="question"><strong>${esc(q.question)}</strong><div class="options">${(q.options || []).map(o => `<label><input type="radio" name="q${i}" value="${esc(o)}">${esc(o)}</label>`).join('')}<label><input type="radio" name="q${i}" value="__autre">Autre : <input data-autre="${i}" style="margin-left:6px"></label></div></div>`).join('');
+  badge(7, champs || qs ? 'questions ouvertes' : 'terminé', champs || qs ? 'valider' : 'ok');
+  corps(7, `${textes}
+    <p class="aide">Mode : ${esc(f.mode || '—')}</p>
+    ${boite('info', 'Anomalies corrigées : langage', an.langage || [])}${boite('info', 'Anomalies corrigées : cohérence', an.coherence || [])}${boite('att', 'Signalement', f.signalement || [])}
+    ${champs ? `<h2>Champs à compléter</h2>${champs}` : ''}${qs ? `<h2>Points restant incertains</h2>${qs}` : ''}
+    ${champs || qs ? '<div class="actions"><button class="primaire" data-act="repondre">Intégrer mes réponses</button></div>' : ''}`);
+}
+async function repondre() {
+  const rep = [];
+  document.querySelectorAll('[data-ac]').forEach(i => { if (i.value.trim()) rep.push(`${i.dataset.m} → ${i.value.trim()}`); });
+  (S.final?.incertains || []).forEach((q, i) => { const c = document.querySelector(`input[name=q${i}]:checked`); if (c) rep.push(`${q.question} → ${c.value === '__autre' ? document.querySelector(`[data-autre="${i}"]`).value : c.value}`); });
+  if (!rep.length) return;
+  enCours(7, 'Intégration de vos réponses');
+  const sys = ENTETE + `INTÉGRATION DES RÉPONSES DU CLINICIEN. Verrouillage : modifie uniquement ce que les réponses changent ; remplace les [À COMPLÉTER : …] correspondants par une formulation du canevas ; tout le reste est repris mot pour mot. Renvoie UNIQUEMENT un objet JSON : {"texte_note": "", "texte_synthese": ""}.\n\n` + D.refs.langage + '\n\n' + (veutNote() ? D.refs.canevas_note : '') + '\n\n' + (veutSynthese() ? D.refs.canevas_synthese : '');
+  const res = await appelJSON('reponses', sys, `RÉPONSES :\n- ${rep.join('\n- ')}\n\n${S.note ? 'NOTE :\n' + S.note + '\n\n' : ''}${S.synthese ? 'SYNTHÈSE :\n' + S.synthese : ''}`);
+  if (veutNote() && res.texte_note?.trim()) S.note = res.texte_note.trim();
+  if (veutSynthese() && res.texte_synthese?.trim()) S.synthese = res.texte_synthese.trim();
+  S.final.incertains = (S.final.incertains || []).filter((q, i) => !document.querySelector(`input[name=q${i}]:checked`));
+  for (const t of ['note', 'synthese']) if (S[t]) await boucleControle(t);
+  afficher6(); afficher7();
+}
+function telecharger(t) {
+  const txt = nettoyer(S[t]).replace(/\n/g, '\r\n');
+  const octets = Uint8Array.from(txt, c => c.charCodeAt(0) <= 255 ? c.charCodeAt(0) : 63);
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([octets], { type: 'text/plain;charset=iso-8859-1' })), download: (t === 'note' ? 'note' : 'synthese') + '.txt' });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* =========================================================================
+   ÉVÉNEMENTS
+   ========================================================================= */
+const ACTIONS = {
+  valider1, valider2, valider3: () => { majDecision(); if (controlerFiche(S.fiche, { noteSeule: noteSeule() }).conforme()) valider3(); },
+  refaire: b => { const n = +b.dataset.n; executer(n, [etape1, etape2, etape3, etape4, etape5, etape6, etape7][n - 1]); },
+  ajout: b => { const cols = COLS[b.dataset.l]; S.fiche[b.dataset.l].push(Object.fromEntries(cols.map(c => [c[0], '']))); afficher2(); },
+  suppr: b => { S.fiche[b.dataset.l].splice(+b.dataset.i, 1); afficher2(); },
+  copier: async b => { await navigator.clipboard.writeText(nettoyer(S[b.dataset.t])); b.textContent = 'Copié'; setTimeout(() => (b.textContent = 'Copier pour le dossier'), 1500); },
+  telecharger: b => telecharger(b.dataset.t),
+  repondre: () => executer(7, repondre),
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b && !b.disabled) ACTIONS[b.dataset.act]?.(b); });
+document.addEventListener('input', e => { if (e.target.closest('#c2')) majFiche(e.target); if (e.target.closest('#c3')) majDecision(); });
+document.addEventListener('change', e => { if (e.target.closest('#c2')) majFiche(e.target); if (e.target.closest('#c3')) majDecision(); });
+
+$('#lancer').onclick = () => {
+  if (!$('#notes').value.trim()) { $('#notes').focus(); return; }
+  initEtapes(); S.notes = $('#notes').value.trim(); executer(1, etape1);
+};
+$('#effacer').onclick = () => { if (confirm('Effacer les notes et tout le travail en cours ?')) { $('#notes').value = ''; initEtapes(); } };
+
+function majChampsFournisseur() {
+  const f = $('#fournisseur').value;
+  $('#champs-fournisseur').style.display = f === 'demo' ? 'none' : '';
+  $('#bloc-url').style.display = f === 'local' ? '' : 'none';
+  $('#bloc-web').style.display = f === 'anthropic' ? '' : 'none';
+  $('#cle').placeholder = f === 'local' ? 'facultative pour un serveur local' : '';
+  if (!$('#modele').value) $('#modele').value = DEFAUTS[f].modele;
+  if (f === 'local' && !$('#url').value) $('#url').value = DEFAUTS.local.url;
+}
+$('#ouvrir-reglages').onclick = () => {
+  $('#fournisseur').value = cfg.fournisseur; $('#modele').value = cfg.modele; $('#url').value = cfg.url; $('#cle').value = cfg.cle;
+  $('#memoriser').checked = cfg.memoriser; $('#web').checked = cfg.web; majChampsFournisseur(); $('#reglages').showModal();
+};
+$('#fournisseur').onchange = () => { $('#modele').value = ''; majChampsFournisseur(); };
+$('#reglages').addEventListener('close', () => {
+  if ($('#reglages').returnValue !== 'ok') return;
+  Object.assign(cfg, { fournisseur: $('#fournisseur').value, modele: $('#modele').value.trim(), url: $('#url').value.trim(), cle: $('#cle').value.trim(), memoriser: $('#memoriser').checked, web: $('#web').checked });
+  enregistrerCfg();
+});
+
+initEtapes(); enregistrerCfg();
+if (cfg.fournisseur === 'demo') $('#notes').placeholder = "Mode démo : écrivez n'importe quoi et cliquez sur Lancer pour voir le parcours complet sur un cas fictif.";
+</script>
+</body>
+</html>
