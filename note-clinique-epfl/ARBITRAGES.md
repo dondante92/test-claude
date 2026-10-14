@@ -80,3 +80,12 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 | A4 | « stress / fonctionnement / retentissement académique » | « retentissement académique » est gardé (il est dans le répertoire). « stress académique » devient « stress lié aux études ». « fonctionnement académique », « anxiété / pression / épuisement académique » sont interdits (contrôlés par le script). |
 | A8 | Notes de suite | Module à part, traité séparément. Le choix entre format court et format de transmission se fera à ce moment-là. |
 | A10 | Vérification CIM-10 | Recherche en ligne **obligatoire** pour le code, l'intitulé **et les critères diagnostiques**, avant de retenir tout diagnostic. Sans accès web, le diagnostic reste en attente. |
+| A14 | Notes de suite : idées suicidaires (note courte) | Mentionnées seulement s'il y avait des idées suicidaires au départ ou un risque à réévaluer (contrôlé par le script avec la fiche). |
+| A15 | Note de transmission : psychodynamique | Juste milieu : les éléments nécessaires à la compréhension, sans formulation psychodynamique complète. Critère : la pertinence pour la continuité du suivi, pour que le collègue ne reparte pas de zéro. Nouvelle rubrique obligatoire « Éléments de compréhension pour la continuité du suivi ». |
+| A16 | Note de transmission : forme | Chaque note de suite d'un patient transmis est écrite en régime de transmission. |
+| A17 | Interface ChatGPT | Canvas ajouté : le texte final s'ouvre dans un panneau modifiable. |
+
+**Appliqués provisoirement, à confirmer :**
+- **A18.** Note de transmission : l'idéation suicidaire est mentionnée au status **à chaque entretien** (votre texte « régime de transmission »), même sans idées suicidaires au départ, parce que le collègue doit connaître le risque. ☐ OK ☐ Même règle que la note courte
+- **A19.** Dans les briques de la note courte, « dynamiques relationnelles » est remplacé par « difficultés relationnelles », car vos dernières règles l'interdisent. ☐ OK
+

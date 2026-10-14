@@ -21,17 +21,20 @@ Amorces de conversation (une par case) :
 - `Voici les notes du premier entretien, fais la note :`
 - `Voici les notes des entretiens 1 à 4, fais la note et la synthèse :`
 - `Corrige cette note :`
+- `Note de suite :`
+- `Note de suite de transmission :`
 - `Enchaîne`
 
 ## 3. Déposer les fichiers
 
-Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 12 fichiers** du dossier `fichiers/` :
+Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 13 fichiers** du dossier `fichiers/` :
 
 ```
 1-comprehension.md      4-canevas-note.md        7-verification.md
 2-fiche-faits.md        4-canevas-synthese.md    controle.py
 3-decision.md           4-langage.md             regles.json
 3-compartiments.md      5-contrebalance.md       fiche_modele.json
+8-notes-de-suite.md
 ```
 
 ## 4. Cocher les fonctionnalités
@@ -39,6 +42,7 @@ Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 
 Rubrique **Fonctionnalités** :
 - ✅ **Interpréteur de code et analyse de données** : **indispensable**. C'est lui qui exécute le script de contrôle, c'est-à-dire les blocus.
 - ✅ **Recherche web** : pour vérifier la CIM-10 à l'étape 3.
+- ✅ **Canvas** : la note finale s'ouvre dans un panneau à droite, modifiable directement.
 - ⬜ Génération d'images : inutile.
 
 ## 5. Confidentialité, avant d'enregistrer
@@ -56,6 +60,7 @@ Bouton **Créer** (ou « Mettre à jour ») en haut à droite → partage : **Se
 - **Un patient = une nouvelle conversation** avec le GPT.
 - Coller les notes en précisant l'entretien (E1, E2…).
 - Le GPT s'arrête après la compréhension, après la fiche s'il a des questions, et après la décision. Écrire **« enchaîne »** pour qu'il aille jusqu'au bout.
+- **Notes de suite** : dans la **même conversation** que le patient, coller les notes de l'entretien suivant. Note courte par défaut. Pour un patient que vous transmettez, écrire une fois **« transmission »** : toutes ses notes de suite seront alors détaillées pour le collègue.
 - À l'étape 6, vous devez voir passer l'exécution du script (« Analyse… »). **Si le GPT dit avoir contrôlé sans montrer le résultat du script, demandez-le-lui** : c'est la garantie que les blocus ont vraiment tourné.
 
 ## Mettre à jour les règles

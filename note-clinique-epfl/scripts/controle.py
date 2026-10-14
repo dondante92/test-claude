@@ -3,7 +3,8 @@
 
 Trois commandes :
   fiche   FICHE.json                               vérifie la fiche de faits et les décisions (étapes 2-3)
-  texte   FICHIER --type note|synthese [--fiche F]  vérifie un texte produit (étape 6)
+  texte   FICHIER --type note|synthese|suite-courte|suite-transmission [--fiche F]
+                                                   vérifie un texte produit (étape 6, ou note de suite)
   nettoie FICHIER [-o SORTIE] [--sans-accents]      rend le texte compatible Latin-1 (étape 6)
 
 Les règles sont dans regles.json, à côté de ce script. Code de sortie 1 s'il reste une erreur.
@@ -323,6 +324,46 @@ def controler_synthese(texte, regles, fiche, r):
     controler_commun(texte, regles, r)
 
 
+def mentionne_idees_suicidaires(texte):
+    p = plat(texte)
+    return "ideation suicidaire" in p or "idees suicidaires" in p
+
+
+def controler_suite_courte(texte, regles, fiche, r):
+    phrases = [x for x in re.split(r"(?<=[.!?])\s+", texte.strip()) if x.strip()]
+    if len(phrases) > 8:
+        r.avert(f"note courte de {len(phrases)} phrases : 2 à 6 attendues ; sinon, régime de transmission ?")
+    vus = detecter_rubriques(texte.splitlines(), regles["rubriques_suite_transmission"])
+    if vus:
+        r.erreur("note courte : pas de titres de rubriques (réservés à la note de transmission)")
+    if not re.search(r"entretien|ne s'est pas présenté|ne s’est pas présenté", texte, re.I):
+        r.avert("note courte : le cadre de l'entretien n'est pas indiqué")
+    if fiche is not None and etat(fiche, "aigu.idees_suicidaires") != "PRESENT" and mentionne_idees_suicidaires(texte):
+        r.erreur("note courte : idées suicidaires mentionnées alors qu'il n'y en avait pas au départ (règle du 14.10.2026)")
+    if fiche is not None and etat(fiche, "aigu.idees_suicidaires") == "PRESENT" and not mentionne_idees_suicidaires(texte):
+        r.erreur("note courte : idées suicidaires présentes au départ, réévaluation à mentionner")
+    controler_commun(texte, regles, r)
+
+
+def controler_suite_transmission(texte, regles, fiche, r):
+    lignes = texte.splitlines()
+    rubriques = regles["rubriques_suite_transmission"]
+    vus = detecter_rubriques(lignes, rubriques)
+    presents = [i for i, _ in vus]
+    for i, rub in enumerate(rubriques):
+        if rub["obligatoire"] and i not in presents:
+            r.erreur(f"note de transmission : rubrique manquante : {rub['nom']}")
+    if presents != sorted(presents):
+        r.erreur("note de transmission : rubriques dans le désordre")
+    status = contenu_rubrique(lignes, vus, 4)
+    if status and not mentionne_idees_suicidaires(status):
+        r.erreur("note de transmission : le status mentionne l'idéation suicidaire à chaque entretien")
+    comprehension = contenu_rubrique(lignes, vus, 3)
+    if comprehension and len(comprehension.split()) < 15:
+        r.avert("éléments de compréhension très courts : suffisent-ils pour que le collègue ne reparte pas de zéro ?")
+    controler_commun(texte, regles, r)
+
+
 # ---------------------------------------------------------------- nettoie
 
 def nettoyer(texte, regles, sans_accents=False):
@@ -346,7 +387,7 @@ def main():
     f.add_argument("--note-seule", action="store_true", help="note du premier entretien seule : pas de contrôle évolution / issue")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
-    t.add_argument("--type", choices=["note", "synthese"], required=True)
+    t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission"], required=True)
     t.add_argument("--fiche")
     n = sub.add_parser("nettoie")
     n.add_argument("fichier")
@@ -375,10 +416,8 @@ def main():
         sys.exit(0)
 
     fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8")) if a.fiche else None
-    if a.type == "note":
-        controler_note(texte, regles, fiche, r)
-    else:
-        controler_synthese(texte, regles, fiche, r)
+    {"note": controler_note, "synthese": controler_synthese, "suite-courte": controler_suite_courte,
+     "suite-transmission": controler_suite_transmission}[a.type](texte, regles, fiche, r)
     sys.exit(r.afficher(f"CONTRÔLE DU TEXTE ({a.type})"))
 
 

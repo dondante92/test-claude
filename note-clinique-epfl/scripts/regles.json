@@ -82,6 +82,19 @@
     {"nom": "Diagnostic CIM-10", "alias": ["diagnostic cim10", "diagnostic"], "obligatoire": true}
   ],
 
+  "rubriques_suite_transmission": [
+    {"nom": "Cadre de l'entretien", "alias": [], "obligatoire": true},
+    {"nom": "Évolution clinique depuis le dernier entretien", "alias": ["evolution clinique"], "obligatoire": true},
+    {"nom": "Contenu clinique exploré", "alias": [], "obligatoire": false},
+    {"nom": "Éléments de compréhension pour la continuité du suivi", "alias": ["elements de comprehension"], "obligatoire": true},
+    {"nom": "Status", "alias": ["status psychique", "status psychiatrique"], "obligatoire": true},
+    {"nom": "Instruments et investigations", "alias": [], "obligatoire": false},
+    {"nom": "Supervision et décisions", "alias": [], "obligatoire": false},
+    {"nom": "Éléments pratiques et administratifs", "alias": [], "obligatoire": false},
+    {"nom": "Hypothèse diagnostique actuelle", "alias": [], "obligatoire": true},
+    {"nom": "Suite prévue", "alias": [], "obligatoire": true}
+  ],
+
   "items_status": {
     "_lisezmoi": "Un mot-clé par item du status (12 items). Comparaison sans accents ni majuscules.",
     "1 tenue et hygiène": ["faisant son age"],
