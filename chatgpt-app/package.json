@@ -7,7 +7,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test/test_serveur.js && node test/test_widget.js"
+    "test": "node test/test_serveur.js && node test/test_widget.js && node test/test_mcpapps.js"
   },
   "engines": {
     "node": ">=18"

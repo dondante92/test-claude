@@ -11,7 +11,7 @@ const CAPTURES = process.env.CAPTURES || os.tmpdir();
 const CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 (async () => {
   const { client, fermer } = await demarrer();
-  const html = (await client.readResource({ uri: 'ui://widget/note-clinique-v1.html' })).contents[0].text;
+  const html = (await client.readResource({ uri: 'ui://widget/note-clinique-v2.html' })).contents[0].text;
   const fichier = path.join(os.tmpdir(), 'ecran-note-clinique.html'); fs.writeFileSync(fichier, html);
   const fiche = JSON.parse(lire('fiche_exemple.json')); const decision = fiche.decision; delete fiche.decision;
   const sortie = async (name, args) => (await client.callTool({ name, arguments: args })).structuredContent;

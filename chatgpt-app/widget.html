@@ -43,29 +43,71 @@ const C = creerControles(R);
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const O = () => window.openai || {};
+
+/* Pont avec ChatGPT : ancien format (window.openai) et standard MCP Apps (messages JSON-RPC
+   avec la fenêtre parente). Les deux sont pris en charge ; le premier qui livre des données gagne. */
+const PONT = (() => {
+  let n = 0, theme = null;
+  const attente = new Map();
+  const envoyer = m => window.parent.postMessage(Object.assign({ jsonrpc: '2.0' }, m), '*');
+  const requete = (method, params) => new Promise((ok, ko) => { const id = ++n; attente.set(id, [ok, ko]); envoyer({ id, method, params }); });
+  const notifier = (method, params) => envoyer({ method, params });
+  window.addEventListener('message', e => {
+    if (e.source !== window.parent) return;
+    const m = e.data;
+    if (!m || m.jsonrpc !== '2.0') return;
+    if (m.id != null && attente.has(m.id) && ('result' in m || 'error' in m)) {
+      const [ok, ko] = attente.get(m.id); attente.delete(m.id); m.error ? ko(m.error) : ok(m.result); return;
+    }
+    if (m.method === 'ui/notifications/tool-result') recevoir(m.params && m.params.structuredContent);
+    else if (m.method === 'ui/notifications/host-context-changed' && m.params && m.params.theme) { theme = m.params.theme; appliquerTheme(); }
+    else if (m.method === 'ui/resource-teardown' && m.id != null) envoyer({ id: m.id, result: {} });
+  });
+  requete('ui/initialize', { appInfo: { name: 'note-clinique-epfl', version: '1.1.0' }, appCapabilities: {}, protocolVersion: '2026-01-26' })
+    .then(r => { theme = r && r.hostContext && r.hostContext.theme; appliquerTheme(); notifier('ui/notifications/initialized', {}); taille(); })
+    .catch(() => { /* hôte sans standard MCP Apps : l'ancien format prend le relais */ });
+  let derniere = 0;
+  function taille() {
+    const h = Math.ceil(document.documentElement.scrollHeight);
+    if (h === derniere) return;
+    derniere = h;
+    notifier('ui/notifications/size-changed', { height: h });
+    try { O().notifyIntrinsicHeight?.(h); } catch { /* ancien format sans cette fonction */ }
+  }
+  new ResizeObserver(taille).observe(document.documentElement);
+  return {
+    theme: () => theme || O().theme,
+    message: texte => {
+      if (O().sendFollowUpMessage) { O().sendFollowUpMessage({ prompt: texte }); return Promise.resolve(true); }
+      return requete('ui/message', { role: 'user', content: [{ type: 'text', text: texte }] }).then(() => true, () => false);
+    },
+    taille,
+  };
+})();
+function appliquerTheme() { document.documentElement.dataset.theme = PONT.theme() === 'dark' ? 'dark' : 'light'; }
 const boite = (cls, titre, items) => items && items.length ? `<div class="boite ${cls}"><strong>${titre}</strong><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
 const libQ = q => R.champs[q] ? C.libelle(q) : q;
 let W = null, signature = '';
 
 function sauver() { try { O().setWidgetState?.({ signature, W }); } catch { /* état non persistant */ } }
-function envoyer(message) {
-  if (O().sendFollowUpMessage) { O().sendFollowUpMessage({ prompt: message }); return true; }
-  return false;
-}
-function signale(el, envoye, texteSecours) {
-  el.outerHTML = envoye ? '<p class="envoye">Envoyé à ChatGPT.</p>'
-    : `<p class="boite att">Copiez ce message dans la conversation :</p><textarea rows="6" readonly>${esc(texteSecours)}</textarea>`;
+function signale(el, message) {
+  el.innerHTML = '<p class="envoye">Envoi à ChatGPT…</p>';
+  PONT.message(message).then(ok => {
+    el.innerHTML = ok ? '<p class="envoye">Envoyé à ChatGPT.</p>'
+      : `<p class="boite att">Copiez ce message dans la conversation :</p><textarea rows="6" readonly>${esc(message)}</textarea>`;
+    PONT.taille();
+  });
 }
 
-function charger() {
-  const sortie = O().toolOutput;
+function charger() { recevoir(O().toolOutput); }
+function recevoir(sortie) {
   if (!sortie || !sortie.vue) return;
   const sig = JSON.stringify(sortie).length + ':' + sortie.vue;
   if (sig === signature) return;
   signature = sig;
   const garde = O().widgetState;
   W = garde && garde.signature === sig ? garde.W : JSON.parse(JSON.stringify(sortie));
-  document.documentElement.dataset.theme = O().theme === 'dark' ? 'dark' : 'light';
+  appliquerTheme();
   ({ fiche: vueFiche, decision: vueDecision, resultat: vueResultat, refus: vueRefus })[W.vue]?.();
 }
 
@@ -106,7 +148,7 @@ function vueFiche() {
     else if (b.dataset.suppr) { W.fiche[b.dataset.suppr].splice(+b.dataset.i, 1); sauver(); vueFiche(); }
     else if (b.id === 'valider' && !b.disabled && rapportFiche().conforme()) {
       const msg = "FICHE VALIDÉE PAR LE CLINICIEN. Utilise exactement cette fiche (ne la modifie pas), puis passe à l'étape 3 : appelle regles_etape(3).\n```json\n" + JSON.stringify(W.fiche) + '\n```';
-      signale(b.parentElement, envoyer(msg), msg);
+      signale(b.parentElement, msg);
     }
   };
 }
@@ -152,7 +194,7 @@ function vueDecision() {
   $('#racine').onclick = e => {
     if (e.target.id !== 'valider' || e.target.disabled || !maj().conforme()) return;
     const msg = `DÉCISION VALIDÉE PAR LE CLINICIEN. Utilise exactement cette fiche et cette décision, puis passe à l'étape 4 : appelle regles_etape(4, compartiment="${d.compartiment}", type="${W.type}").\n\`\`\`json\n${JSON.stringify(W.fiche)}\n\`\`\``;
-    signale(e.target.parentElement, envoyer(msg), msg);
+    signale(e.target.parentElement, msg);
   };
   maj();
 }
@@ -184,7 +226,7 @@ function vueResultat() {
       (W.incertains || []).forEach((q, i) => { const c = document.querySelector(`input[name=q${i}]:checked`); if (c) rep.push(`${q.question} → ${c.value === '__autre' ? document.querySelector(`[data-autre="${i}"]`).value : c.value}`); });
       if (!rep.length) return;
       const msg = "RÉPONSES DU CLINICIEN. Intègre-les en verrouillage (ne modifie que ce qu'elles changent, remplace les [À COMPLÉTER] correspondants), recontrôle avec controler_texte, puis rappelle afficher_resultat.\n- " + rep.join('\n- ');
-      signale(b.parentElement, envoyer(msg), msg);
+      signale(b.parentElement, msg);
     }
   };
 }

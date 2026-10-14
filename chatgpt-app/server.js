@@ -36,7 +36,8 @@ const blocCompartiment = comp => '▸ ' + (ref('3-compartiments.md').split('▸ 
   + "\nRÈGLE TRANSVERSALE DU STATUS — il ne contient jamais d'élément orientant vers un diagnostic non retenu, et contient ce que le diagnostic retenu implique.";
 
 /* ---- Interface affichée dans ChatGPT ---- */
-const WIDGET_URI = 'ui://widget/note-clinique-v1.html';
+const WIDGET_URI = 'ui://widget/note-clinique-v2.html';            // ancien format ChatGPT (skybridge)
+const WIDGET_URI_MCP = 'ui://widget/note-clinique-v2-mcp.html';    // standard MCP Apps
 const WIDGET = fs.readFileSync(path.join(__dirname, 'widget.html'), 'utf8')
   .replace('/*__CONTROLES__*/', () => fs.readFileSync(path.join(RACINE, 'partage', 'controles.js'), 'utf8'))
   .replace('/*__REGLES__*/', () => JSON.stringify(R).replace(/</g, '\\u003c'));
@@ -45,7 +46,7 @@ const avecEcran = (enCours, fait) => ({
   'openai/toolInvocation/invoking': enCours,
   'openai/toolInvocation/invoked': fait,
   'openai/widgetAccessible': true,
-  ui: { resourceUri: WIDGET_URI },
+  ui: { resourceUri: WIDGET_URI_MCP },
 });
 const LECTURE = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 
@@ -84,7 +85,10 @@ function creerServeur() {
   const s = new McpServer({ name: 'note-clinique-epfl', version: '1.0.0' });
 
   s.registerResource('ecran-note-clinique', WIDGET_URI, { title: 'Note clinique EPFL', mimeType: 'text/html+skybridge' }, async () => ({
-    contents: [{ uri: WIDGET_URI, mimeType: 'text/html+skybridge', text: WIDGET, _meta: { 'openai/widgetDescription': 'Fiche de faits, décision ou texte final de la note clinique, avec contrôles.', 'openai/widgetPrefersBorder': true } }],
+    contents: [{ uri: WIDGET_URI, mimeType: 'text/html+skybridge', text: WIDGET, _meta: { 'openai/widgetDescription': 'Fiche de faits, décision ou texte final de la note clinique, avec contrôles.', 'openai/widgetPrefersBorder': true, 'openai/widgetCSP': { connect_domains: [], resource_domains: [] } } }],
+  }));
+  s.registerResource('ecran-note-clinique-mcp', WIDGET_URI_MCP, { title: 'Note clinique EPFL', mimeType: 'text/html;profile=mcp-app' }, async () => ({
+    contents: [{ uri: WIDGET_URI_MCP, mimeType: 'text/html;profile=mcp-app', text: WIDGET, _meta: { ui: { prefersBorder: true, csp: { connectDomains: [], resourceDomains: [] } } } }],
   }));
 
   s.registerTool('demarrer_note_clinique', {
@@ -212,6 +216,9 @@ function creerServeur() {
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.post('/mcp', async (req, res) => {
+  // Journal minimal pour le diagnostic : nom de la méthode et de l'outil, jamais le contenu.
+  const b = req.body || {};
+  for (const m of Array.isArray(b) ? b : [b]) if (m && m.method) console.log('MCP', m.method, m.params && (m.params.name || m.params.uri) || '');
   const serveur = creerServeur();
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   res.on('close', () => { transport.close(); serveur.close(); });

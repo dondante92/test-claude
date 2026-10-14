@@ -12,7 +12,7 @@ const lire = n => fs.readFileSync(path.join(EX, n), 'utf8');
   assert(outils.every(t => t.annotations?.readOnlyHint === true)); ok('7 outils, tous en lecture seule');
   const ecran = outils.filter(t => t._meta?.['openai/outputTemplate']).map(t => t.name).sort();
   assert.deepStrictEqual(ecran, ['afficher_decision', 'afficher_fiche', 'afficher_resultat']); ok('3 outils avec écran');
-  const res = await client.readResource({ uri: 'ui://widget/note-clinique-v1.html' });
+  const res = await client.readResource({ uri: 'ui://widget/note-clinique-v2.html' });
   assert.strictEqual(res.contents[0].mimeType, 'text/html+skybridge');
   assert(!res.contents[0].text.includes('/*__')); ok('écran servi en text/html+skybridge, gabarit complet');
 
