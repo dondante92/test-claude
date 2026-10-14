@@ -50,5 +50,8 @@ charge = json.dumps(donnees, ensure_ascii=False).replace("</", "<\\/")
 gabarit = (ICI / "template.html").read_text(encoding="utf-8")
 assert "/*__DONNEES__*/" in gabarit
 sortie = ICI / "note-clinique.html"
+controles = (ICI.parent / "partage" / "controles.js").read_text(encoding="utf-8")
+assert "/*__CONTROLES__*/" in gabarit
+gabarit = gabarit.replace("/*__CONTROLES__*/", controles)
 sortie.write_text(gabarit.replace("/*__DONNEES__*/", charge), encoding="utf-8")
 print(f"Écrit : {sortie} ({sortie.stat().st_size // 1024} Ko)")

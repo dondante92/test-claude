@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<style>
+:root { --fond: #f6f5f2; --carte: #ffffff; --texte: #1d1d1b; --doux: #5f5e5a; --bord: #dddbd5; --accent: #1f5f8b; --accent-texte: #fff;
+  --ok: #2e7d4f; --ok-fond: #e6f2ea; --att: #8a5a00; --att-fond: #fbf0d9; --err: #a12d2d; --err-fond: #f8e3e1; --mark: #ffe69c; }
+:root[data-theme="dark"] { --fond: #161615; --carte: #201f1d; --texte: #ecebe7; --doux: #a3a19b; --bord: #3a3935; --accent: #6fb0dd; --accent-texte: #0d1b25;
+  --ok: #7cc49a; --ok-fond: #1d2e23; --att: #e6b85c; --att-fond: #33290f; --err: #ef8f87; --err-fond: #3a1d1b; --mark: #6b5713; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px; background: var(--carte); color: var(--texte); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+h2 { font-size: 15px; margin: 0 0 8px; } h3 { font-size: 14px; margin: 16px 0 6px; }
+.etape { font-size: 12px; color: var(--doux); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+label { display: block; font-size: 12px; color: var(--doux); margin: 8px 0 3px; }
+input, select, textarea { width: 100%; font: inherit; color: var(--texte); background: var(--fond); border: 1px solid var(--bord); border-radius: 6px; padding: 5px 7px; }
+input[type=checkbox], input[type=radio] { width: auto; margin-right: 6px; }
+button { font: inherit; border: 1px solid var(--bord); background: var(--carte); color: var(--texte); border-radius: 6px; padding: 7px 14px; cursor: pointer; }
+button.primaire { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.boite { border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 13px; } .boite ul { margin: 4px 0 0; padding-left: 18px; }
+.err { background: var(--err-fond); color: var(--err); } .att { background: var(--att-fond); color: var(--att); }
+.ok { background: var(--ok-fond); color: var(--ok); } .info { background: var(--fond); color: var(--doux); }
+.tableau { overflow-x: auto; } table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th, td { border-bottom: 1px solid var(--bord); padding: 4px 5px; text-align: left; vertical-align: top; } th { color: var(--doux); font-weight: 500; }
+tr.bloquant td:first-child { box-shadow: inset 3px 0 var(--err); } tr.attente td:first-child { box-shadow: inset 3px 0 var(--att); }
+td.regle { color: var(--doux); font-size: 11px; white-space: nowrap; }
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0 12px; }
+.texte-final { white-space: pre-wrap; background: var(--fond); border: 1px solid var(--bord); border-radius: 8px; padding: 12px; }
+mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 3px; }
+.question { border: 1px solid var(--bord); border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+.question .options label { display: flex; align-items: center; color: var(--texte); font-size: 13px; margin: 3px 0; }
+.envoye { color: var(--ok); font-size: 13px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="racine"><p style="color:var(--doux)">Chargement…</p></div>
+<script>
+'use strict';
+const R = /*__REGLES__*/;
+/*__CONTROLES__*/
+const C = creerControles(R);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const O = () => window.openai || {};
+const boite = (cls, titre, items) => items && items.length ? `<div class="boite ${cls}"><strong>${titre}</strong><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+const libQ = q => R.champs[q] ? C.libelle(q) : q;
+let W = null, signature = '';
+
+function sauver() { try { O().setWidgetState?.({ signature, W }); } catch { /* état non persistant */ } }
+function envoyer(message) {
+  if (O().sendFollowUpMessage) { O().sendFollowUpMessage({ prompt: message }); return true; }
+  return false;
+}
+function signale(el, envoye, texteSecours) {
+  el.outerHTML = envoye ? '<p class="envoye">Envoyé à ChatGPT.</p>'
+    : `<p class="boite att">Copiez ce message dans la conversation :</p><textarea rows="6" readonly>${esc(texteSecours)}</textarea>`;
+}
+
+function charger() {
+  const sortie = O().toolOutput;
+  if (!sortie || !sortie.vue) return;
+  const sig = JSON.stringify(sortie).length + ':' + sortie.vue;
+  if (sig === signature) return;
+  signature = sig;
+  const garde = O().widgetState;
+  W = garde && garde.signature === sig ? garde.W : JSON.parse(JSON.stringify(sortie));
+  document.documentElement.dataset.theme = O().theme === 'dark' ? 'dark' : 'light';
+  ({ fiche: vueFiche, decision: vueDecision, resultat: vueResultat, refus: vueRefus })[W.vue]?.();
+}
+
+/* ---------------- Étape 2 : fiche de faits ---------------- */
+const ETATS = ['PRESENT', 'ABSENT', 'NON_EXPLORE'];
+const COLS = {
+  'aigu.symptomes': [['libelle', 'Symptôme'], ['depuis', 'Depuis'], ['mode', 'Mode'], ['etat_final', 'Destin', ['', 'amende', 'attenue', 'persistant', 'stable', 'majore', 'non_documente']], ['source', 'Source']],
+  'chronique.elements': [['libelle', 'Élément'], ['anciennete', 'Ancienneté'], ['spheres', 'Sphères'], ['retentissement', 'Retentissement'], ['etat_final', 'Destin', ['', 'persistant', 'attenue', 'non_documente']], ['source', 'Source']],
+  'instruments': [['nom', 'Instrument'], ['resultat', 'Résultat'], ['source', 'Source']],
+};
+function rapportFiche() { return C.controlerFiche(W.fiche, { sansDecision: true }); }
+function resumeFiche(r) {
+  return boite('err', 'Questions bloquantes : à renseigner avant de rédiger', r.questions.map(libQ)) + boite('err', 'Erreurs', r.erreurs)
+    + boite('att', 'En attente (le texte portera [À COMPLÉTER])', r.attente.map(libQ)) + boite('info', 'À vérifier', r.avert)
+    + (r.conforme() ? '<div class="boite ok">Aucune question bloquante : la fiche peut être validée.</div>' : '');
+}
+function vueFiche() {
+  const r = rapportFiche(), qs = r.questions, att = new Set(r.attente);
+  const lignes = C.cles(R.champs).map(k => { const v = W.fiche[k] || {}; return `<tr class="${qs.includes(k) ? 'bloquant' : att.has(k) ? 'attente' : ''}" data-ligne="${k}"><td>${esc(C.libelle(k))}</td><td><select data-k="${k}" data-f="etat">${ETATS.map(e => `<option ${v.etat === e ? 'selected' : ''}>${e}</option>`).join('')}</select></td><td><input data-k="${k}" data-f="valeur" value="${esc(v.valeur)}"></td><td><input data-k="${k}" data-f="source" value="${esc(v.source)}" size="3"></td><td class="regle">${R.champs[k]}</td></tr>`; }).join('');
+  const listes = Object.entries(COLS).map(([k, cols]) => `<h3>${esc(C.libelle(k))}</h3><div class="tableau"><table><tr>${cols.map(c => `<th>${c[1]}</th>`).join('')}<th></th></tr>${(W.fiche[k] || []).map((it, i) => `<tr>${cols.map(([c, , o]) => `<td>${o ? `<select data-l="${k}" data-i="${i}" data-f="${c}">${o.map(x => `<option ${it[c] === x ? 'selected' : ''}>${x}</option>`).join('')}</select>` : `<input data-l="${k}" data-i="${i}" data-f="${c}" value="${esc(it[c])}">`}</td>`).join('')}<td><button data-suppr="${k}" data-i="${i}">×</button></td></tr>`).join('')}</table></div><button data-ajout="${k}">+ ajouter</button>`).join('');
+  $('#racine').innerHTML = `<div class="etape">Étape 2 sur 7</div><h2>Fiche de faits</h2><div id="resume">${resumeFiche(r)}</div>
+    <p style="color:var(--doux);font-size:12px">Corrigez directement. Rouge = bloquant ; orange = en attente.</p>
+    <div class="tableau"><table id="fiche"><tr><th>Champ</th><th>État</th><th>Fait</th><th>Source</th><th>Si non exploré</th></tr>${lignes}</table></div>${listes}
+    <div class="actions"><button class="primaire" id="valider" ${r.conforme() ? '' : 'disabled'}>Valider la fiche</button></div>`;
+  $('#racine').oninput = $('#racine').onchange = e => {
+    const el = e.target;
+    if (el.dataset.k) W.fiche[el.dataset.k][el.dataset.f] = el.value;
+    else if (el.dataset.l) W.fiche[el.dataset.l][+el.dataset.i][el.dataset.f] = el.value;
+    else return;
+    const r2 = rapportFiche(), att2 = new Set(r2.attente);
+    $('#resume').innerHTML = resumeFiche(r2); $('#valider').disabled = !r2.conforme();
+    document.querySelectorAll('[data-ligne]').forEach(tr => { tr.className = r2.questions.includes(tr.dataset.ligne) ? 'bloquant' : att2.has(tr.dataset.ligne) ? 'attente' : ''; });
+    sauver();
+  };
+  $('#racine').onclick = e => {
+    const b = e.target;
+    if (b.dataset.ajout) { W.fiche[b.dataset.ajout].push(Object.fromEntries(COLS[b.dataset.ajout].map(c => [c[0], '']))); sauver(); vueFiche(); }
+    else if (b.dataset.suppr) { W.fiche[b.dataset.suppr].splice(+b.dataset.i, 1); sauver(); vueFiche(); }
+    else if (b.id === 'valider' && !b.disabled && rapportFiche().conforme()) {
+      const msg = "FICHE VALIDÉE PAR LE CLINICIEN. Utilise exactement cette fiche (ne la modifie pas), puis passe à l'étape 3 : appelle regles_etape(3).\n```json\n" + JSON.stringify(W.fiche) + '\n```';
+      signale(b.parentElement, envoyer(msg), msg);
+    }
+  };
+}
+
+/* ---------------- Étape 3 : décision ---------------- */
+const NOMS_COMP = { adaptation_seul: "Trouble de l'adaptation seul", code_z: 'Code Z / difficulté circonscrite', adaptation_traits: 'Adaptation avec accentuation de traits', personnalite: 'Trouble de la personnalité', neurodev: 'Hypothèse neurodéveloppementale', non_conclusif: 'Non conclusive ou interrompue', trouble_chronique: 'Trouble chronique constitué (provisoire)' };
+function vueDecision() {
+  const d = W.fiche.decision, b = d.branches, v = W.verification_cim || {}, seule = W.type === 'note';
+  const sel = (id, opts, val) => `<select id="${id}">${opts.map(([o, t]) => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const nums = n => [[0, '—'], ...Array.from({ length: n }, (_, i) => [i + 1, 'Branche ' + (i + 1)])];
+  const crit = (v.criteres || []).map(c => `<tr><td>${esc(c.critere)}</td><td>${esc(c.faits)}</td><td>${esc(c.rempli)}</td></tr>`).join('');
+  const args = C.cles(W.arguments).map(k => `${k.replace(/_/g, ' ')} : ${W.arguments[k]}`);
+  $('#racine').innerHTML = `<div class="etape">Étape 3 sur 7</div><h2>Décision : diagnostic et branches</h2>
+    ${v.effectuee ? `<div class="boite ok"><strong>CIM-10 vérifiée en ligne.</strong> ${esc(v.resume || '')}<br>${(v.sources || []).map(s => esc(s)).join('<br>')}</div>` : '<div class="boite att"><strong>Code et critères CIM-10 non vérifiés en ligne.</strong> À confirmer par vous dans la CIM-10-GM (OFS) avant de valider.</div>'}
+    ${crit ? `<div class="tableau"><table><tr><th>Critère</th><th>Faits de la fiche</th><th>Rempli</th></tr>${crit}</table></div>` : ''}
+    ${boite('info', "Arguments de l'IA", args)}${boite('info', 'Hypothèses à explorer', W.hypotheses_a_explorer || [])}
+    <div class="grille">
+      <div><label>Diagnostic de la note : intitulé</label><input id="pi" value="${esc(d.diagnostic_provisoire?.intitule)}"></div>
+      <div><label>Code</label><input id="pc" value="${esc(d.diagnostic_provisoire?.code)}"></div>
+      <div><label>Diagnostic final : intitulé</label><input id="fi" value="${esc(d.diagnostic_final?.intitule)}"></div>
+      <div><label>Code</label><input id="fc" value="${esc(d.diagnostic_final?.code)}"></div>
+      <div><label>Compartiment</label>${sel('comp', C.cles(R.compartiments).map(k => [k, NOMS_COMP[k] || k]), d.compartiment)}</div>
+      <div><label>Plan chronique</label>${sel('chr', [['aucune', 'Aucun'], ['A', 'Branche A'], ['B', 'Branche B'], ['C', 'Branche C'], ['D', 'Branche D']], b.chronique)}</div>
+      ${seule ? '' : `<div><label>Synthèse : branche diagnostique</label>${sel('diag', nums(7), b.diagnostic)}</div>
+      <div><label>Paragraphes supplémentaires (ex. 2, 6)</label><input id="supp" value="${esc((b.supplementaires || []).join(', '))}"></div>
+      <div><label>Évolution</label>${sel('evo', nums(7), b.evolution)}</div><div><label>Issue</label>${sel('iss', nums(7), b.issue)}</div>`}
+    </div>
+    <label style="color:var(--texte)"><input type="checkbox" id="ev" ${d.evaluation_poursuivie ? 'checked' : ''}>L'évaluation se poursuit (diagnostic provisoire dans la note)</label>
+    ${seule ? '' : `<label style="color:var(--texte)"><input type="checkbox" id="ind" ${d.indication_psychotherapie ? 'checked' : ''}>Indication formelle de psychothérapie</label>
+    <label style="color:var(--texte)"><input type="checkbox" id="sou" ${d.souhait_patient ? 'checked' : ''}>Souhait du patient de poursuivre</label>
+    <label style="color:var(--texte)"><input type="checkbox" id="ori" ${d.orientation_realisee ? 'checked' : ''}>Travail d'orientation réalisé</label>`}
+    <div id="r3"></div><div class="actions"><button class="primaire" id="valider">Valider les décisions</button></div>`;
+  const maj = () => {
+    const val = id => $('#' + id)?.value, coche = id => $('#' + id)?.checked;
+    d.diagnostic_provisoire = { intitule: val('pi'), code: val('pc') }; d.diagnostic_final = { intitule: val('fi'), code: val('fc') };
+    d.compartiment = val('comp'); d.evaluation_poursuivie = coche('ev'); b.chronique = val('chr');
+    if (!seule) { b.diagnostic = +val('diag'); b.evolution = +val('evo'); b.issue = +val('iss'); b.supplementaires = (val('supp') || '').split(/[^0-9]+/).filter(Boolean).map(Number); d.indication_psychotherapie = coche('ind'); d.souhait_patient = coche('sou'); d.orientation_realisee = coche('ori'); }
+    const r = C.controlerFiche(W.fiche, { noteSeule: seule });
+    $('#r3').innerHTML = boite('err', 'Décision refusée par le contrôle', r.erreurs) + boite('err', 'À renseigner', r.questions.map(libQ)) + boite('info', 'À vérifier', r.avert) + (r.conforme() ? '<div class="boite ok">Combinaison cohérente.</div>' : '');
+    $('#valider').disabled = !r.conforme(); sauver(); return r;
+  };
+  $('#racine').oninput = $('#racine').onchange = maj;
+  $('#racine').onclick = e => {
+    if (e.target.id !== 'valider' || e.target.disabled || !maj().conforme()) return;
+    const msg = `DÉCISION VALIDÉE PAR LE CLINICIEN. Utilise exactement cette fiche et cette décision, puis passe à l'étape 4 : appelle regles_etape(4, compartiment="${d.compartiment}", type="${W.type}").\n\`\`\`json\n${JSON.stringify(W.fiche)}\n\`\`\``;
+    signale(e.target.parentElement, envoyer(msg), msg);
+  };
+  maj();
+}
+
+/* ---------------- Étape 7 : résultat ---------------- */
+const surligner = t => esc(t).replace(/\[À COMPLÉTER[^\]]*\]/g, m => `<mark>${m}</mark>`);
+async function copier(texte, bouton) {
+  try { await navigator.clipboard.writeText(texte); }
+  catch { const z = document.createElement('textarea'); z.value = texte; document.body.appendChild(z); z.select(); document.execCommand('copy'); z.remove(); }
+  bouton.textContent = 'Copié'; setTimeout(() => (bouton.textContent = 'Copier pour le dossier'), 1500);
+}
+function vueResultat() {
+  const textes = Object.entries(W.textes || {}), an = W.anomalies || {};
+  const champs = [...new Set(textes.map(([, v]) => v.texte).join('\n').match(/\[À COMPLÉTER[^\]]*\]/g) || [])];
+  $('#racine').innerHTML = `<div class="etape">Étape 7 sur 7 · texte contrôlé</div>
+    ${textes.map(([t, v]) => `<h2>${t === 'note' ? 'Note du premier entretien' : 'Synthèse'}</h2><div class="texte-final">${surligner(v.texte)}</div>
+      <div class="actions"><button class="primaire" data-copier="${t}">Copier pour le dossier</button></div>${boite('info', 'À vérifier', v.avertissements)}`).join('')}
+    <p style="color:var(--doux);font-size:12px">Mode : ${esc(W.mode || '—')}</p>
+    ${boite('info', 'Anomalies corrigées : langage', an.langage)}${boite('info', 'Anomalies corrigées : cohérence', an.coherence)}${boite('att', 'Signalement', W.signalement)}
+    ${champs.length ? '<h3>Champs à compléter</h3>' + champs.map((m, i) => `<div class="question"><strong>${esc(m.slice(1, -1).replace(/^À COMPLÉTER\s*:\s*/, ''))}</strong><input data-ac="${i}" data-m="${esc(m)}" placeholder="Votre réponse (vide = laisser en attente)"></div>`).join('') : ''}
+    ${(W.incertains || []).length ? '<h3>Points restant incertains</h3>' + W.incertains.map((q, i) => `<div class="question"><strong>${esc(q.question)}</strong><div class="options">${(q.options || []).map(o => `<label><input type="radio" name="q${i}" value="${esc(o)}">${esc(o)}</label>`).join('')}<label><input type="radio" name="q${i}" value="__autre">Autre : <input data-autre="${i}" style="margin-left:6px"></label></div></div>`).join('') : ''}
+    ${champs.length || (W.incertains || []).length ? '<div class="actions"><button class="primaire" id="repondre">Intégrer mes réponses</button></div>' : '<div class="boite ok">Terminé.</div>'}`;
+  $('#racine').onclick = e => {
+    const b = e.target;
+    if (b.dataset.copier) copier(C.nettoyer(W.textes[b.dataset.copier].texte), b);
+    if (b.id === 'repondre') {
+      const rep = [];
+      document.querySelectorAll('[data-ac]').forEach(i => { if (i.value.trim()) rep.push(`${i.dataset.m} → ${i.value.trim()}`); });
+      (W.incertains || []).forEach((q, i) => { const c = document.querySelector(`input[name=q${i}]:checked`); if (c) rep.push(`${q.question} → ${c.value === '__autre' ? document.querySelector(`[data-autre="${i}"]`).value : c.value}`); });
+      if (!rep.length) return;
+      const msg = "RÉPONSES DU CLINICIEN. Intègre-les en verrouillage (ne modifie que ce qu'elles changent, remplace les [À COMPLÉTER] correspondants), recontrôle avec controler_texte, puis rappelle afficher_resultat.\n- " + rep.join('\n- ');
+      signale(b.parentElement, envoyer(msg), msg);
+    }
+  };
+}
+function vueRefus() {
+  $('#racine').innerHTML = `<div class="etape">Contrôle final</div><h2>Texte refusé par le contrôle</h2>${boite('err', "Le texte n'est pas affiché tant que ces erreurs ne sont pas corrigées. ChatGPT doit les corriger et réessayer.", W.blocages)}`;
+}
+
+window.addEventListener('openai:set_globals', charger);
+charger();
+setTimeout(() => { if (!W) $('#racine').innerHTML = '<p style="color:var(--doux)">En attente des données de ChatGPT…</p>'; }, 1500);
+</script>
+</body>
+</html>

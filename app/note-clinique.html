@@ -139,8 +139,17 @@ const cles = o => Object.keys(o || {}).filter(k => !k.startsWith('_'));
 const ETATS = ['PRESENT', 'ABSENT', 'NON_EXPLORE'];
 
 /* =========================================================================
-   CONTRÔLES — traduction de scripts/controle.py (mêmes règles, regles.json)
+   CONTRÔLES — module partagé partage/controles.js (injecté par build.py)
    ========================================================================= */
+/* Contrôles mécaniques de la note et de la synthèse — traduction de
+   note-clinique-epfl/scripts/controle.py, mêmes règles (regles.json).
+   Partagé par l'application web (app/) et l'app ChatGPT (chatgpt-app/). */
+function creerControles(R) {
+'use strict';
+const cles = o => Object.keys(o || {}).filter(k => !k.startsWith('_'));
+const ETATS = ['PRESENT', 'ABSENT', 'NON_EXPLORE'];
+const LIB = { patient: 'Patient', motif: 'Motif', cadre: 'Cadre', aigu: 'Plan aigu', psychosocial: 'Contexte', antecedents: 'Antécédents', somatique: 'Somatique', status: 'Status', fin: 'Fin du suivi' };
+function libelle(k) { const [a, b] = k.split('.'); return (LIB[a] || a) + (b ? ' › ' + b.replace(/_/g, ' ') : ''); }
 const plat = s => String(s ?? '').replace(/[’‘]/g, "'").replace(/[  ]/g, ' ')
   .normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
 const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -247,7 +256,7 @@ function controlerCommun(texte, r) {
     for (const m of texte.matchAll(re)) r.erreur(`résidu du canevas (${nom}) : « …${texte.slice(Math.max(0, m.index - 25), m.index + m[0].length + 25).replace(/\n/g, ' ')}… »`);
   for (const m of texte.matchAll(/\[À COMPLÉTER[^\]]*\]/g)) r.att(m[0]);
   const corps = texte.split('\n').filter(l => { const lettres = [...l].filter(c => /\p{L}/u.test(c)).length; const maj = [...l].filter(c => /\p{Lu}/u.test(c)).length; return maj < 0.6 * Math.max(1, lettres); }).join('\n');
-  for (const m of corps.matchAll(/\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*\b/g)) {
+  for (const m of corps.replace(/\[À COMPLÉTER[^\]]*\]/g, ' ').matchAll(/(?<![\p{L}\d])[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*(?![\p{L}\d])/gu)) {
     const s = m[0];
     if (s.replace(/[^A-Z]/g, '').length < 2 || R.sigles_autorises.includes(s) || /^[A-Z]\d{2}(\.\d+)?$/.test(s)) continue;
     if (R.sigles_diagnostiques.includes(s)) r.erreur(`sigle « ${s} » : écrire en toutes lettres`);
@@ -316,6 +325,12 @@ function nettoyer(texte, sansAccents = false) {
   if (sansAccents) texte = texte.normalize('NFKD').replace(/\p{M}/gu, '');
   return texte;
 }
+
+return { cles, ETATS, plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, nettoyer, persistants };
+}
+if (typeof module !== 'undefined') module.exports = { creerControles };
+
+const { plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, nettoyer } = creerControles(R);
 
 /* =========================================================================
    FOURNISSEURS D'IA — Claude, OpenAI, modèle local compatible OpenAI, démo
@@ -474,8 +489,6 @@ async function etape2() {
   for (const k of ['aigu.symptomes', 'chronique.elements', 'instruments']) if (!Array.isArray(S.fiche[k])) S.fiche[k] = [];
   afficher2();
 }
-const LIB = { patient: 'Patient', motif: 'Motif', cadre: 'Cadre', aigu: 'Plan aigu', psychosocial: 'Contexte', antecedents: 'Antécédents', somatique: 'Somatique', status: 'Status', fin: 'Fin du suivi' };
-function libelle(k) { const [a, b] = k.split('.'); return (LIB[a] || a) + (b ? ' › ' + b.replace(/_/g, ' ') : ''); }
 const COLS = {
   'aigu.symptomes': [['libelle', 'Symptôme'], ['depuis', 'Depuis'], ['mode', 'Mode'], ['etat_final', 'Destin (fin de suivi)', ['', 'amende', 'attenue', 'persistant', 'stable', 'majore', 'non_documente']], ['source', 'Source']],
   'chronique.elements': [['libelle', 'Élément'], ['anciennete', 'Ancienneté'], ['spheres', 'Sphères'], ['retentissement', 'Retentissement'], ['etat_final', 'Destin', ['', 'persistant', 'attenue', 'non_documente']], ['source', 'Source']],

@@ -1,0 +1,23 @@
+{
+  "name": "note-clinique-chatgpt-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "App ChatGPT (Apps SDK / MCP) : note du premier entretien et synthèse en 7 étapes, contrôles et interface dans la conversation.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test_serveur.js && node test/test_widget.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.56.1"
+  }
+}
