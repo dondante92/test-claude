@@ -9,6 +9,7 @@ Une **app ChatGPT** (Apps SDK d'OpenAI, protocole MCP) : vous travaillez dans Ch
 | 7 | **Le texte final**, surligné, avec « Copier pour le dossier », les champs à compléter et les questions à choix. |
 | Notes de suite | **La note de suite** (courte ou de transmission), contrôlée, avec « Copier pour le dossier ». |
 | Relevé de données | **Le relevé** : bouton « Télécharger le PDF rempli » (formulaire original, lien valable 15 minutes), rubriques vides, déductions et valeurs par défaut à relire. |
+| Analyse IPB (Document 2) | Pas d'écran : le Document 2 est contrôlé (formules interdites, sous-titres, différentiels, contre-transfert, cotations chiffrées), puis donné dans la conversation ou un Canvas. G1/G2, Document 3, courriers sur demande. |
 
 ## Pourquoi c'est plus sûr qu'un GPT personnalisé
 
@@ -82,6 +83,7 @@ OpenAI déplace parfois ces menus. Si un intitulé diffère, chercher « mode d�
 
 - **Note de suite** : dans la conversation du patient, `Note de suite :` + notes. Écrire une fois `transmission` pour un patient transmis.
 - **Relevé de données** : dans la conversation du patient, `Relevé de données`. L'identité reste vide (coller l'étiquette).
+- **Analyse IPB** : `Analyse (Document 2), séance n° :` suivi des notes de la séance. Le référentiel détaillé du livre (11-reperes-ipb.md) n'est pas dans l'app (dépôt public) : il est dans le GPT et le projet Claude.
 
 1. Nouvelle conversation. Bouton **+** → **Mode développeur** (ou **Plus**) → choisir **Note clinique EPFL**.
 2. Écrire, par exemple : `Utilise Note clinique EPFL. Fais la note du premier entretien : E1 : …` puis coller les notes.

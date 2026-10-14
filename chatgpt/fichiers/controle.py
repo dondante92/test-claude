@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Contrôles mécaniques de la note du premier entretien et de la synthèse.
+"""Contrôles mécaniques de la note du premier entretien, de la synthèse, des notes de suite et du Document 2.
 
 Trois commandes :
   fiche   FICHE.json                               vérifie la fiche de faits et les décisions (étapes 2-3)
-  texte   FICHIER --type note|synthese|suite-courte|suite-transmission [--fiche F]
-                                                   vérifie un texte produit (étape 6, ou note de suite)
+  texte   FICHIER --type note|synthese|suite-courte|suite-transmission|document2 [--fiche F]
+                                                   vérifie un texte produit (étape 6, note de suite, ou Document 2)
   nettoie FICHIER [-o SORTIE] [--sans-accents]      rend le texte compatible Latin-1 (étape 6)
 
 Les règles sont dans regles.json, à côté de ce script. Code de sortie 1 s'il reste une erreur.
@@ -364,6 +364,49 @@ def controler_suite_transmission(texte, regles, fiche, r):
     controler_commun(texte, regles, r)
 
 
+# ---------------------------------------------------------------- Document 2 (analyse IPB)
+
+PUCE = re.compile(r"^\s*(?:[-•*]|\d+[.)])\s+")
+
+
+def intitule(ligne):
+    """Une ligne courte sans ponctuation finale est un intitulé (sous-titre)."""
+    l = ligne.strip()
+    if not l or PUCE.match(l) or len(l.split()) > 8 or re.search(r"[.!?…»)\"]$", l):
+        return None
+    return plat(l.strip("#*_ :").rstrip(":"))
+
+
+def controler_document2(texte, regles, fiche, r):
+    d = regles["document2"]
+    if not texte.strip():
+        r.erreur("Document 2 vide")
+        return
+    p = plat(texte)
+    for niveau, table in ((r.erreur, d["interdits"]), (r.avert, d["avertissements"])):
+        for expr, conseil in table.items():
+            if not expr.startswith("_") and re.search(r"\b" + re.escape(plat(expr)) + r"\b", p):
+                niveau(f"« {expr} » → {conseil}")
+    premier_bloc, puces = None, 0
+    for n, ligne in enumerate(texte.splitlines()):
+        h = intitule(ligne)
+        if h is not None:
+            if any(h.startswith(b) for b in d["blocs_autorises"]):
+                premier_bloc = n if premier_bloc is None else premier_bloc
+            else:
+                r.erreur(f"sous-titre « {ligne.strip()} » : le corps est un texte continu ; seuls trois blocs finaux "
+                         "(volet psychiatrique, préparation du prochain entretien, réflexivité)")
+        elif PUCE.match(ligne) and premier_bloc is None:
+            puces += 1
+    if puces:
+        r.avert(f"{puces} ligne(s) en liste dans le corps : texte continu attendu (listes admises seulement dans les blocs finaux)")
+    if re.search(r"\bFDG\b\s*(?:de|=|:|à)?\s*\d", texte) or re.search(r"\bitems?\s+\d+", texte, re.I):
+        r.avert("cotation chiffrée (FDG, numéro d'item) : impossible sans verbatim ; écrire le niveau en mots")
+    mots = len(texte.split())
+    if mots > d["longueur_max_mots"]:
+        r.avert(f"{mots} mots : peut-il être lu en entier ? (repère : {d['longueur_max_mots']})")
+
+
 # ---------------------------------------------------------------- nettoie
 
 def nettoyer(texte, regles, sans_accents=False):
@@ -387,7 +430,7 @@ def main():
     f.add_argument("--note-seule", action="store_true", help="note du premier entretien seule : pas de contrôle évolution / issue")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
-    t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission"], required=True)
+    t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission", "document2"], required=True)
     t.add_argument("--fiche")
     n = sub.add_parser("nettoie")
     n.add_argument("fichier")
@@ -417,7 +460,7 @@ def main():
 
     fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8")) if a.fiche else None
     {"note": controler_note, "synthese": controler_synthese, "suite-courte": controler_suite_courte,
-     "suite-transmission": controler_suite_transmission}[a.type](texte, regles, fiche, r)
+     "suite-transmission": controler_suite_transmission, "document2": controler_document2}[a.type](texte, regles, fiche, r)
     sys.exit(r.afficher(f"CONTRÔLE DU TEXTE ({a.type})"))
 
 

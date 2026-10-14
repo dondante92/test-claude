@@ -13,7 +13,7 @@ Durée : 10 minutes, une seule fois. Il faut un abonnement ChatGPT payant (Plus,
 | Champ | Quoi mettre |
 |---|---|
 | **Nom** | Note clinique EPFL |
-| **Description** | Note du premier entretien et synthèse en 7 étapes, avec contrôles automatiques. |
+| **Description** | Note du premier entretien, synthèse, notes de suite, relevé de données et analyse IPB (Document 2), avec contrôles automatiques. |
 | **Instructions** | Copier-coller **tout** le contenu de `instructions.txt` |
 | **Amorces de conversation** | voir ci-dessous |
 
@@ -24,11 +24,12 @@ Amorces de conversation (une par case) :
 - `Note de suite :`
 - `Note de suite de transmission :`
 - `Relevé de données`
+- `Analyse (Document 2), séance n° :`
 - `Enchaîne`
 
 ## 3. Déposer les fichiers
 
-Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 18 fichiers** du dossier `fichiers/` :
+Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 21 fichiers** du dossier `fichiers/` :
 
 ```
 1-comprehension.md      4-canevas-note.md        7-verification.md
@@ -37,7 +38,12 @@ Rubrique **Connaissances** → **Charger des fichiers** → sélectionner **les 
 3-compartiments.md      5-contrebalance.md       fiche_modele.json
 8-notes-de-suite.md     9-releve-donnees.md      remplir_releve.py
 releve_modele.json      releve_positions.json    releve_vierge.pdf
+10-analyse-ipb.md       11-reperes-ipb.md        12-redactions-analyse.md
 ```
+
+Si le GPT existe déjà : supprimer les anciens fichiers des Connaissances, charger les 21 nouveaux, et remplacer les Instructions par le nouveau `instructions.txt`.
+
+`11-reperes-ipb.md` est votre synthèse du livre IPB : il n'est **pas** sur GitHub (dépôt public), il vous est envoyé directement. Gardez le GPT en « Seulement moi » tant qu'il le contient.
 
 ## 4. Cocher les fonctionnalités
 
@@ -62,7 +68,8 @@ Bouton **Créer** (ou « Mettre à jour ») en haut à droite → partage : **Se
 - **Un patient = une nouvelle conversation** avec le GPT.
 - Coller les notes en précisant l'entretien (E1, E2…).
 - Le GPT s'arrête après la compréhension, après la fiche s'il a des questions, et après la décision. Écrire **« enchaîne »** pour qu'il aille jusqu'au bout.
-- **Notes de suite** : dans la **même conversation** que le patient, coller les notes de l'entretien suivant. Note courte par défaut. Pour un patient que vous transmettez, écrire une fois **« transmission »** : toutes ses notes de suite seront alors détaillées pour le collègue.
+- **Analyse IPB (Document 2)** : dans la conversation du patient, coller les notes de la séance. Pour les séances 2 et suivantes, **c'est le livrable par défaut** (règle du document maître). Il est privé, pour vous : jamais une note de dossier. G1/G2, Document 3 et courriers : à demander explicitement.
+- **Notes de suite** : dans la **même conversation** que le patient, écrire **« Note de suite : »** suivi des notes de l'entretien (elles ne sont plus produites sans demande). Note courte par défaut. Pour un patient que vous transmettez, écrire une fois **« transmission »** : toutes ses notes de suite seront alors détaillées pour le collègue.
 - **Relevé de données** : dans la conversation du patient, écrire **« Relevé de données »**. Il remplit le PDF original, vous le donne à télécharger, et liste ce qu'il a déduit, ce qui manque et ce qui attend des documents (identité : étiquette).
 - À l'étape 6, vous devez voir passer l'exécution du script (« Analyse… »). **Si le GPT dit avoir contrôlé sans montrer le résultat du script, demandez-le-lui** : c'est la garantie que les blocus ont vraiment tourné.
 

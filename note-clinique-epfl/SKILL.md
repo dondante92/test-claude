@@ -1,6 +1,6 @@
 ---
 name: note-clinique-epfl
-description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission), la synthèse-discussion et le relevé de données UNIL-EPFL de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, ou la correction d'une note ou d'une synthèse existante.
+description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission), la synthèse-discussion, le relevé de données UNIL-EPFL et l'analyse IPB des séances (Document 2, G1/G2, Document 3) de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, la correction d'une note ou d'une synthèse existante, ou une analyse psychodynamique d'une séance.
 ---
 
 # Note du premier entretien et synthèse — procédure en 7 étapes
@@ -70,6 +70,10 @@ Pas de procédure en 7 étapes. Charger `references/8-notes-de-suite.md` et `ref
 ## Relevé de données UNIL-EPFL
 
 Quand le clinicien demande le relevé : charger `references/9-releve-donnees.md`, remplir `releve.json` (modèle `scripts/releve_modele.json`) à partir de la conversation, puis `python3 scripts/remplir_releve.py releve.json -o releve_rempli.pdf --defauts --apercu`. Corriger les erreurs, vérifier l'aperçu des deux pages, restituer le PDF avec la liste des défauts, déductions, rubriques vides et documents en attente.
+
+## Analyse IPB — Document 2 (séances 1 à 4)
+
+Quand le clinicien demande l'analyse (« analyse », « Document 2 ») ou envoie les notes d'une séance 2 ou plus sans autre demande : pas de procédure en 7 étapes. Charger `references/10-analyse-ipb.md` en entier et suivre son algorithme ; ouvrir `references/11-reperes-ipb.md` (fichier privé, s'il est présent) seulement pour la section utile. Contrôle : `python3 scripts/controle.py texte doc2.txt --type document2`, jusqu'à zéro erreur. G1/G2, Document 3 et courriers, seulement sur demande : `references/12-redactions-analyse.md`. Le Document 2 n'est jamais une note de dossier.
 
 ## Mode correction (un texte existe déjà)
 

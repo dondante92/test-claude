@@ -1,4 +1,4 @@
-/* Contrôles mécaniques de la note et de la synthèse — traduction de
+/* Contrôles mécaniques de la note, de la synthèse, des notes de suite et du Document 2 — traduction de
    note-clinique-epfl/scripts/controle.py, mêmes règles (regles.json).
    Partagé par l'application web (app/) et l'app ChatGPT (chatgpt-app/). */
 function creerControles(R) {
@@ -204,12 +204,40 @@ function controlerSuiteTransmission(texte) {
   return r;
 }
 
+function controlerDocument2(texte) {
+  const r = rapport(), d = R.document2;
+  if (!String(texte || '').trim()) { r.erreur('Document 2 vide'); return r; }
+  const p = plat(texte);
+  for (const [table, niveau] of [[d.interdits, 'erreur'], [d.avertissements, 'av']])
+    for (const e of cles(table))
+      if (new RegExp('\\b' + reEsc(plat(e)) + '\\b').test(p)) r[niveau](`« ${e} » → ${table[e]}`);
+  const puce = /^\s*(?:[-•*]|\d+[.)])\s+/;
+  const intitule = l => {
+    l = l.trim();
+    if (!l || puce.test(l) || l.split(/\s+/).length > 8 || /[.!?…»)"]$/.test(l)) return null;
+    return plat(l.replace(/^[#*_ :]+|[#*_ :]+$/g, ''));
+  };
+  let premierBloc = null, puces = 0;
+  texte.split('\n').forEach((ligne, n) => {
+    const h = intitule(ligne);
+    if (h !== null) {
+      if (d.blocs_autorises.some(b => h.startsWith(b))) { if (premierBloc === null) premierBloc = n; }
+      else r.erreur(`sous-titre « ${ligne.trim()} » : le corps est un texte continu ; seuls trois blocs finaux (volet psychiatrique, préparation du prochain entretien, réflexivité)`);
+    } else if (puce.test(ligne) && premierBloc === null) puces++;
+  });
+  if (puces) r.av(`${puces} ligne(s) en liste dans le corps : texte continu attendu (listes admises seulement dans les blocs finaux)`);
+  if (/\bFDG\b\s*(?:de|=|:|à)?\s*\d/.test(texte) || /\bitems?\s+\d+/i.test(texte)) r.av("cotation chiffrée (FDG, numéro d'item) : impossible sans verbatim ; écrire le niveau en mots");
+  const mots = texte.split(/\s+/).filter(Boolean).length;
+  if (mots > d.longueur_max_mots) r.av(`${mots} mots : peut-il être lu en entier ? (repère : ${d.longueur_max_mots})`);
+  return r;
+}
+
 function nettoyer(texte, sansAccents = false) {
   for (const a of cles(R.typographie)) texte = texte.split(a).join(R.typographie[a]);
   if (sansAccents) texte = texte.normalize('NFKD').replace(/\p{M}/gu, '');
   return texte;
 }
 
-return { cles, ETATS, plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, controlerSuiteCourte, controlerSuiteTransmission, nettoyer, persistants };
+return { cles, ETATS, plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, controlerSuiteCourte, controlerSuiteTransmission, controlerDocument2, nettoyer, persistants };
 }
 if (typeof module !== 'undefined') module.exports = { creerControles };

@@ -1,3 +1,9 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# Fichiers privés (synthèse du livre IPB) et paquets qui les contiennent : jamais publiés
+**/11-reperes-ipb.md
+livrables/
+chatgpt/note-clinique-gpt.zip
+note-clinique-epfl.zip

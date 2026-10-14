@@ -58,7 +58,7 @@ const LECTURE = { readOnlyHint: true, destructiveHint: false, openWorldHint: fal
 
 /* ---- Utilitaires ---- */
 const TYPE = z.enum(['note', 'synthese', 'les_deux']).describe("note = note du premier entretien ; synthese = synthèse ; les_deux = note et synthèse");
-const DEMANDE = z.enum(['note', 'synthese', 'les_deux', 'suite', 'releve']).describe("note, synthese, les_deux : procédure en 7 étapes ; suite : note de suite (courte ou transmission) ; releve : relevé de données UNIL-EPFL");
+const DEMANDE = z.enum(['note', 'synthese', 'les_deux', 'suite', 'releve', 'analyse', 'redaction_analyse']).describe("note, synthese, les_deux : procédure en 7 étapes ; suite : note de suite (courte ou transmission) ; releve : relevé de données UNIL-EPFL ; analyse : Document 2 (analyse IPB d'une séance) ; redaction_analyse : G1/G2, Document 3 (présentation supervisable) ou courrier d'adressage");
 const FICHE = z.record(z.string(), z.any()).describe('Fiche de faits : même structure que fiche_modele.json (champ → {etat, valeur, source} ; listes aigu.symptomes, chronique.elements, instruments ; bloc decision).');
 const texte = t => ({ content: [{ type: 'text', text: t }] });
 function completerFiche(f) {
@@ -137,12 +137,14 @@ function creerServeur(baseUrl = '') {
 
   s.registerTool('demarrer_note_clinique', {
     title: 'Démarrer une note clinique',
-    description: "À appeler EN PREMIER dès que le clinicien demande, pour la Consultation psychothérapeutique pour étudiants (CHUV/EPFL) : une note du premier entretien, une synthèse, la correction d'une note, une note de suite (courte ou de transmission) ou le relevé de données. Renvoie la procédure et les règles à suivre.",
+    description: "À appeler EN PREMIER dès que le clinicien demande, pour la Consultation psychothérapeutique pour étudiants (CHUV/EPFL) : une note du premier entretien, une synthèse, la correction d'une note, une note de suite (courte ou de transmission), le relevé de données, l'analyse IPB d'une séance (Document 2, aussi quand le clinicien écrit « analyse ») ou un bilan G1/G2, un Document 3, un courrier. Renvoie la procédure et les règles à suivre.",
     inputSchema: { type: DEMANDE },
     annotations: LECTURE,
   }, async ({ type }) => {
     if (type === 'suite') return texte(`PROCÉDURE NOTE DE SUITE. Pas de procédure en 7 étapes. Note courte par défaut ; note de transmission si le clinicien a écrit « transmission » pour ce patient (cela vaut pour toutes ses notes de suite). Appuie-toi sur la compréhension et la fiche déjà validées dans la conversation, mises à jour avec cet entretien. Rédige selon les règles ci-dessous, contrôle avec controler_texte (type suite-courte ou suite-transmission) jusqu'à zéro erreur, puis présente la note UNIQUEMENT avec afficher_note_de_suite. Ne donne pas la note en texte libre.\n\nBASE DE DONNÉES — ${BASE}\n\n=== RÈGLES DES NOTES DE SUITE ===\n${ref('8-notes-de-suite.md')}\n\n=== RÈGLES DE LANGAGE ===\n${ref('4-langage.md')}`);
     if (type === 'releve') return texte(`PROCÉDURE RELEVÉ DE DONNÉES. Lis les règles ci-dessous. Construis l'objet releve {choix, textes, screening_types, deductions} à partir de la conversation (fiche et décisions validées en priorité) : pour chaque rubrique à choix, exactement une option du modèle ; n'inclus pas les rubriques qui ont une valeur par défaut, sauf si le dossier dit autre chose ; pour chaque réponse déduite, sa raison dans deductions. Identité et dates : seulement si fournies explicitement (par défaut vides : étiquette). Puis appelle preparer_releve : il refuse les incohérences, applique les valeurs par défaut, écrit le PDF original et l'affiche au clinicien.\n\n=== RÈGLES DU RELEVÉ ===\n${ref('9-releve-donnees.md')}\n\n=== MODÈLE DES RUBRIQUES (options exactes, valeurs par défaut) ===\n${JSON.stringify(RELEVE_MODELE.rubriques)}`);
+    if (type === 'analyse') return texte(`PROCÉDURE ANALYSE IPB (DOCUMENT 2). Pas de procédure en 7 étapes : suis l'algorithme du document ci-dessous (étapes 0 à 11). Étapes 1 à 3 silencieuses ; questions seulement si nécessaires (défaut : zéro), en choix multiples, avant de rédiger. Le Document 2 est privé, pour le thérapeute : jamais une note de dossier. Avant de le donner, appelle controler_texte (type document2) et corrige les erreurs ; examine les avertissements. Puis présente-le au clinicien (dans un Canvas si disponible), suivi au plus de quelques lignes de points à signaler (relecture). Le référentiel détaillé du livre (fichier 11-reperes-ipb.md) n'est pas disponible dans cette app : appuie-toi sur les repères du document ci-dessous et sur tes connaissances de ces méthodes, sans citer de chiffres ni de grilles que tu n'as pas.\n\nBASE DE DONNÉES — ${BASE}\n\n=== DOCUMENT MAÎTRE : RÈGLES D'ANALYSE ===\n${ref('10-analyse-ipb.md')}`);
+    if (type === 'redaction_analyse') return texte(`PROCÉDURE RÉDACTIONS LIÉES À L'ANALYSE (G1/G2, Document 3, courriers). Seulement sur demande explicite, à partir des Documents 2 validés dans la conversation. Pour une note de suite ou de 4e entretien, appelle plutôt demarrer_note_clinique(type suite).\n\n=== RÈGLES ===\n${ref('12-redactions-analyse.md')}\n\n=== RÈGLES TRANSVERSALES (rappel) ===\n${ref('10-analyse-ipb.md').split('## Règles transversales')[1].split('## Grille de relecture')[0]}`);
     return texte(`${PROCEDURE}\n\nTEXTE DEMANDÉ : ${type}\n\n=== RÈGLES DE L'ÉTAPE 1 ===\n${ref('1-comprehension.md')}`);
   });
 
@@ -205,13 +207,14 @@ function creerServeur(baseUrl = '') {
 
   s.registerTool('controler_texte', {
     title: 'Contrôler un texte',
-    description: "Étape 6. Contrôle mécanique d'une note ou d'une synthèse : rubriques, items du status, expressions interdites, sigles, résidus du canevas, cohérence avec la fiche et la décision. Renvoie les erreurs à corriger.",
-    inputSchema: { type: z.enum(['note', 'synthese', 'suite-courte', 'suite-transmission']), texte: z.string(), fiche: FICHE.optional().describe('Fiche validée (avec le bloc decision pour la note et la synthèse)') },
+    description: "Contrôle mécanique d'un texte : note ou synthèse (étape 6), note de suite, ou Document 2 (analyse IPB : formules interdites, sous-titres dans le corps, différentiels sans arguments, contre-transfert, cotations chiffrées, longueur). Renvoie les erreurs à corriger.",
+    inputSchema: { type: z.enum(['note', 'synthese', 'suite-courte', 'suite-transmission', 'document2']), texte: z.string(), fiche: FICHE.optional().describe('Fiche validée (avec le bloc decision pour la note et la synthèse)') },
     annotations: LECTURE,
   }, async ({ type, texte: t, fiche }) => {
-    const r = { note: C.controlerNote, synthese: C.controlerSynthese, 'suite-courte': C.controlerSuiteCourte, 'suite-transmission': C.controlerSuiteTransmission }[type](t, fiche || null);
+    const r = { note: C.controlerNote, synthese: C.controlerSynthese, 'suite-courte': C.controlerSuiteCourte, 'suite-transmission': C.controlerSuiteTransmission, document2: C.controlerDocument2 }[type](t, fiche || null);
     const res = resumeRapport(r);
-    const consigne = res.erreurs.length ? 'Corrige UNIQUEMENT les passages visés (le reste mot pour mot), puis rappelle controler_texte.' : 'Aucune erreur : passe à l\'étape 7 (regles_etape(7), puis afficher_resultat).';
+    const suite = { document2: 'présente le Document 2 au clinicien (Canvas si disponible) ; examine d\'abord chaque avertissement.', 'suite-courte': 'présente la note avec afficher_note_de_suite.', 'suite-transmission': 'présente la note avec afficher_note_de_suite.' }[type] || 'passe à l\'étape 7 (regles_etape(7), puis afficher_resultat).';
+    const consigne = res.erreurs.length ? 'Corrige UNIQUEMENT les passages visés (le reste mot pour mot), puis rappelle controler_texte.' : 'Aucune erreur : ' + suite;
     return texte(JSON.stringify(res, null, 1) + '\n\n' + consigne);
   });
 
