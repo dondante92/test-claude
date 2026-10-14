@@ -82,6 +82,10 @@ const PONT = (() => {
       return requete('ui/message', { role: 'user', content: [{ type: 'text', text: texte }] }).then(() => true, () => false);
     },
     taille,
+    lien: url => {
+      try { if (O().openExternal) { O().openExternal({ href: url }); return; } } catch { /* ancien format sans cette fonction */ }
+      requete('ui/open-link', { url }).catch(() => window.open(url, '_blank', 'noopener'));
+    },
   };
 })();
 function appliquerTheme() { document.documentElement.dataset.theme = PONT.theme() === 'dark' ? 'dark' : 'light'; }
@@ -108,7 +112,7 @@ function recevoir(sortie) {
   const garde = O().widgetState;
   W = garde && garde.signature === sig ? garde.W : JSON.parse(JSON.stringify(sortie));
   appliquerTheme();
-  ({ fiche: vueFiche, decision: vueDecision, resultat: vueResultat, refus: vueRefus })[W.vue]?.();
+  ({ fiche: vueFiche, decision: vueDecision, resultat: vueResultat, refus: vueRefus, releve: vueReleve })[W.vue]?.();
 }
 
 /* ---------------- Étape 2 : fiche de faits ---------------- */
@@ -209,8 +213,10 @@ async function copier(texte, bouton) {
 function vueResultat() {
   const textes = Object.entries(W.textes || {}), an = W.anomalies || {};
   const champs = [...new Set(textes.map(([, v]) => v.texte).join('\n').match(/\[À COMPLÉTER[^\]]*\]/g) || [])];
-  $('#racine').innerHTML = `<div class="etape">Étape 7 sur 7 · texte contrôlé</div>
-    ${textes.map(([t, v]) => `<h2>${t === 'note' ? 'Note du premier entretien' : 'Synthèse'}</h2><div class="texte-final">${surligner(v.texte)}</div>
+  const TITRES = { note: 'Note du premier entretien', synthese: 'Synthèse', 'suite-courte': 'Note de suite', 'suite-transmission': 'Note de suite de transmission' };
+  const suite = textes.some(([t]) => t.startsWith('suite'));
+  $('#racine').innerHTML = `<div class="etape">${suite ? 'Note de suite' : 'Étape 7 sur 7'} · texte contrôlé</div>
+    ${textes.map(([t, v]) => `<h2>${TITRES[t] || t}</h2><div class="texte-final">${surligner(v.texte)}</div>
       <div class="actions"><button class="primaire" data-copier="${t}">Copier pour le dossier</button></div>${boite('info', 'À vérifier', v.avertissements)}`).join('')}
     <p style="color:var(--doux);font-size:12px">Mode : ${esc(W.mode || '—')}</p>
     ${boite('info', 'Anomalies corrigées : langage', an.langage)}${boite('info', 'Anomalies corrigées : cohérence', an.coherence)}${boite('att', 'Signalement', W.signalement)}
@@ -229,6 +235,21 @@ function vueResultat() {
       signale(b.parentElement, msg);
     }
   };
+}
+function vueReleve() {
+  const lib = k => k.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+  const lignes = (W.reponses || []).map(([k, v]) => `<tr><td>${esc(lib(k))}</td><td>${esc(v)}</td></tr>`).join('');
+  const ded = Object.entries(W.deductions || {}).map(([k, v]) => `${lib(k)} : ${v}`);
+  $('#racine').innerHTML = `<div class="etape">Relevé de données UNIL-EPFL</div><h2>Relevé prêt</h2>
+    <div class="actions"><a class="primaire" id="pdf" href="${esc(W.lien)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block;padding:7px 14px;border-radius:6px;background:var(--accent);color:var(--accent-texte)">Télécharger le PDF rempli</a></div>
+    <p style="color:var(--doux);font-size:12px">Lien valable 15 minutes. Formulaire original, réponses écrites en noir et entourées.</p>
+    ${boite('att', 'Rubriques laissées vides : à compléter (répondez dans la conversation)', (W.vides || []).map(lib))}
+    ${boite('info', 'En attente de documents (jamais déduites) : étiquette ou photo', (W.attente || []).map(lib))}
+    ${boite('err', 'Textes trop longs pour la ligne', (W.tropLongs || []).map(lib))}
+    ${boite('info', 'Déductions (à relire)', ded)}
+    ${boite('info', 'Valeurs par défaut appliquées (à relire)', W.appliques || [])}
+    <h3>Réponses inscrites</h3><div class="tableau"><table><tr><th>Rubrique</th><th>Réponse</th></tr>${lignes}</table></div>`;
+  $('#pdf').onclick = e => { e.preventDefault(); PONT.lien(W.lien); };
 }
 function vueRefus() {
   $('#racine').innerHTML = `<div class="etape">Contrôle final</div><h2>Texte refusé par le contrôle</h2>${boite('err', "Le texte n'est pas affiché tant que ces erreurs ne sont pas corrigées. ChatGPT doit les corriger et réessayer.", W.blocages)}`;

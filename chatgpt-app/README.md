@@ -7,6 +7,8 @@ Une **app ChatGPT** (Apps SDK d'OpenAI, protocole MCP) : vous travaillez dans Ch
 | 2 | **La fiche de faits**, modifiable. Le bouton « Valider » reste grisé tant qu'il y a une question bloquante. |
 | 3 | **La décision** : diagnostic, compartiment et branches en menus, avec le refus des combinaisons incohérentes. |
 | 7 | **Le texte final**, surligné, avec « Copier pour le dossier », les champs à compléter et les questions à choix. |
+| Notes de suite | **La note de suite** (courte ou de transmission), contrôlée, avec « Copier pour le dossier ». |
+| Relevé de données | **Le relevé** : bouton « Télécharger le PDF rempli » (formulaire original, lien valable 15 minutes), rubriques vides, déductions et valeurs par défaut à relire. |
 
 ## Pourquoi c'est plus sûr qu'un GPT personnalisé
 
@@ -77,6 +79,9 @@ OpenAI déplace parfois ces menus. Si un intitulé diffère, chercher « mode d�
 ---
 
 ## Utilisation
+
+- **Note de suite** : dans la conversation du patient, `Note de suite :` + notes. Écrire une fois `transmission` pour un patient transmis.
+- **Relevé de données** : dans la conversation du patient, `Relevé de données`. L'identité reste vide (coller l'étiquette).
 
 1. Nouvelle conversation. Bouton **+** → **Mode développeur** (ou **Plus**) → choisir **Note clinique EPFL**.
 2. Écrire, par exemple : `Utilise Note clinique EPFL. Fais la note du premier entretien : E1 : …` puis coller les notes.

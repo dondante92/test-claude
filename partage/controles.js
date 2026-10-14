@@ -83,12 +83,12 @@ function controlerDecision(f, r, noteSeule) {
   if (issue === 3 && d.indication_psychotherapie) r.erreur('issue 3 (absence d\'indication) alors que l\'indication est cochée');
 }
 
-function detecterRubriques(lignes) {
+function detecterRubriques(lignes, rubriques = R.rubriques_note) {
   const vus = [];
   lignes.forEach((l, n) => {
     const p = plat(l).replace(/^[\s:#*_-]+|[\s:#*_-]+$/g, '');
     if (!p || p.length > 60) return;
-    R.rubriques_note.forEach((rub, i) => {
+    rubriques.forEach((rub, i) => {
       if ([rub.nom, ...rub.alias].map(plat).includes(p) && !vus.some(v => v[1] === n)) vus.push([i, n]);
     });
   });
@@ -177,12 +177,39 @@ function controlerSynthese(texte, f) {
   return r;
 }
 
+const mentionneIS = t => { const p = plat(t); return p.includes('ideation suicidaire') || p.includes('idees suicidaires'); };
+
+function controlerSuiteCourte(texte, f) {
+  const r = rapport();
+  const phrases = texte.trim().split(/(?<=[.!?])\s+/).filter(x => x.trim());
+  if (phrases.length > 8) r.av(`note courte de ${phrases.length} phrases : 2 à 6 attendues ; sinon, régime de transmission ?`);
+  if (detecterRubriques(texte.split('\n'), R.rubriques_suite_transmission).length) r.erreur('note courte : pas de titres de rubriques (réservés à la note de transmission)');
+  if (!/entretien|ne s'est pas présenté|ne s’est pas présenté/i.test(texte)) r.av("note courte : le cadre de l'entretien n'est pas indiqué");
+  if (f && etat(f, 'aigu.idees_suicidaires') !== 'PRESENT' && mentionneIS(texte)) r.erreur("note courte : idées suicidaires mentionnées alors qu'il n'y en avait pas au départ (règle du 14.10.2026)");
+  if (f && etat(f, 'aigu.idees_suicidaires') === 'PRESENT' && !mentionneIS(texte)) r.erreur('note courte : idées suicidaires présentes au départ, réévaluation à mentionner');
+  controlerCommun(texte, r);
+  return r;
+}
+
+function controlerSuiteTransmission(texte) {
+  const r = rapport(), lignes = texte.split('\n'), rubs = R.rubriques_suite_transmission;
+  const vus = detecterRubriques(lignes, rubs), presents = vus.map(v => v[0]);
+  rubs.forEach((rub, i) => { if (rub.obligatoire && !presents.includes(i)) r.erreur(`note de transmission : rubrique manquante : ${rub.nom}`); });
+  if (presents.join() !== [...presents].sort((a, b) => a - b).join()) r.erreur('note de transmission : rubriques dans le désordre');
+  const status = contenuRubrique(lignes, vus, 4);
+  if (status && !mentionneIS(status)) r.erreur("note de transmission : le status mentionne l'idéation suicidaire à chaque entretien");
+  const comp = contenuRubrique(lignes, vus, 3);
+  if (comp && comp.split(/\s+/).filter(Boolean).length < 15) r.av('éléments de compréhension très courts : suffisent-ils pour que le collègue ne reparte pas de zéro ?');
+  controlerCommun(texte, r);
+  return r;
+}
+
 function nettoyer(texte, sansAccents = false) {
   for (const a of cles(R.typographie)) texte = texte.split(a).join(R.typographie[a]);
   if (sansAccents) texte = texte.normalize('NFKD').replace(/\p{M}/gu, '');
   return texte;
 }
 
-return { cles, ETATS, plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, nettoyer, persistants };
+return { cles, ETATS, plat, etat, libelle, controlerFiche, controlerNote, controlerSynthese, controlerSuiteCourte, controlerSuiteTransmission, nettoyer, persistants };
 }
 if (typeof module !== 'undefined') module.exports = { creerControles };

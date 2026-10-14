@@ -13,6 +13,9 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/server/streamableHttp.js');
 const { z } = require('zod');
 const { creerControles } = require('../partage/controles.js');
+const { verifierReleve } = require('../partage/releve.js');
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
+const crypto = require('crypto');
 
 const RACINE = path.join(__dirname, '..');
 const SKILL = path.join(RACINE, 'note-clinique-epfl');
@@ -21,6 +24,9 @@ const lire = p => fs.readFileSync(path.join(SKILL, p), 'utf8');
 const R = JSON.parse(lire('scripts/regles.json'));
 const MODELE = JSON.parse(lire('scripts/fiche_modele.json'));
 const C = creerControles(R);
+const RELEVE_MODELE = JSON.parse(lire('scripts/releve_modele.json'));
+const RELEVE_POSITIONS = JSON.parse(lire('scripts/releve_positions.json'));
+const RELEVE_VIERGE = fs.readFileSync(path.join(SKILL, 'releve', 'releve_vierge.pdf'));
 const REFS = {
   1: ['1-comprehension.md'],
   2: ['2-fiche-faits.md'],
@@ -52,6 +58,7 @@ const LECTURE = { readOnlyHint: true, destructiveHint: false, openWorldHint: fal
 
 /* ---- Utilitaires ---- */
 const TYPE = z.enum(['note', 'synthese', 'les_deux']).describe("note = note du premier entretien ; synthese = synthèse ; les_deux = note et synthèse");
+const DEMANDE = z.enum(['note', 'synthese', 'les_deux', 'suite', 'releve']).describe("note, synthese, les_deux : procédure en 7 étapes ; suite : note de suite (courte ou transmission) ; releve : relevé de données UNIL-EPFL");
 const FICHE = z.record(z.string(), z.any()).describe('Fiche de faits : même structure que fiche_modele.json (champ → {etat, valeur, source} ; listes aigu.symptomes, chronique.elements, instruments ; bloc decision).');
 const texte = t => ({ content: [{ type: 'text', text: t }] });
 function completerFiche(f) {
@@ -76,12 +83,49 @@ const PROCEDURE = `PROCÉDURE NOTE CLINIQUE EPFL — 7 étapes. Suis-la strictem
 7. VÉRIFICATION : appelle regles_etape(7), puis afficher_resultat. Cet outil REFUSE un texte qui ne passe pas le contrôle.
 
 Le texte final n'est JAMAIS donné en texte libre dans la conversation : il est présenté uniquement par afficher_resultat.
+Pour une note de suite ou le relevé de données, appelle demarrer_note_clinique avec type = suite ou releve.
 Si le clinicien écrit « enchaîne », continue sans t'arrêter aux étapes 1, mais les écrans des étapes 2 et 3 restent obligatoires s'il reste une question bloquante ou une incohérence.
 
 BASE DE DONNÉES — ${BASE}`;
 
 /* ---- Outils ---- */
-function creerServeur() {
+/* ---- Relevé de données : PDF écrit sur le formulaire original, gardé 15 minutes en mémoire ---- */
+const PDFS = new Map();
+const DUREE_PDF = 15 * 60 * 1000;
+function garderPdf(octets) {
+  const id = crypto.randomBytes(18).toString('base64url');
+  PDFS.set(id, octets);
+  setTimeout(() => PDFS.delete(id), DUREE_PDF).unref();
+  return id;
+}
+async function produireReleve({ choix, textes, types }) {
+  const doc = await PDFDocument.load(RELEVE_VIERGE);
+  const police = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages(), noir = rgb(0, 0, 0), tropLongs = [];
+  for (const [cle, val] of Object.entries(choix)) {
+    const p = RELEVE_POSITIONS.choix[cle][val];
+    for (const [x0, y0, x1, y1] of [p.boite, ...(p.boites_suivantes || [])]) {
+      pages[p.page - 1].drawEllipse({ x: (x0 + x1) / 2, y: (y0 + y1) / 2, xScale: (x1 - x0) / 2 + 3, yScale: (y1 - y0) / 2 + 2.5, borderColor: noir, borderWidth: 0.8 });
+    }
+  }
+  for (const ty of types) {
+    const p = RELEVE_POSITIONS.cases_screening[ty], [x0, y0, x1, y1] = p.boite, pg = pages[p.page - 1];
+    pg.drawLine({ start: { x: x0 + 1.5, y: y0 + 1.5 }, end: { x: x1 - 1.5, y: y1 - 1.5 }, thickness: 0.8, color: noir });
+    pg.drawLine({ start: { x: x0 + 1.5, y: y1 - 1.5 }, end: { x: x1 - 1.5, y: y0 + 1.5 }, thickness: 0.8, color: noir });
+  }
+  for (const [cle, brut] of Object.entries(textes)) {
+    const val = C.nettoyer(String(brut ?? '').trim());
+    if (!val) continue;
+    const p = RELEVE_POSITIONS.textes[cle], place = p.x_fin - p.x - 2;
+    let taille = 10.5;
+    while (taille > 7.5 && police.widthOfTextAtSize(val, taille) > place) taille -= 0.25;
+    if (police.widthOfTextAtSize(val, taille) > place) tropLongs.push(cle);
+    pages[p.page - 1].drawText(val, { x: p.x + 1, y: p.ligne, size: taille, font: police, color: noir });
+  }
+  return { octets: Buffer.from(await doc.save()), tropLongs };
+}
+
+function creerServeur(baseUrl = '') {
   const s = new McpServer({ name: 'note-clinique-epfl', version: '1.0.0' });
 
   s.registerResource('ecran-note-clinique', WIDGET_URI, { title: 'Note clinique EPFL', mimeType: 'text/html+skybridge' }, async () => ({
@@ -93,10 +137,14 @@ function creerServeur() {
 
   s.registerTool('demarrer_note_clinique', {
     title: 'Démarrer une note clinique',
-    description: "À appeler EN PREMIER dès que le clinicien colle des notes d'entretien et demande une note du premier entretien, une synthèse ou la correction d'une note (Consultation psychothérapeutique pour étudiants CHUV/EPFL). Renvoie la procédure en 7 étapes et les règles de l'étape 1.",
-    inputSchema: { type: TYPE },
+    description: "À appeler EN PREMIER dès que le clinicien demande, pour la Consultation psychothérapeutique pour étudiants (CHUV/EPFL) : une note du premier entretien, une synthèse, la correction d'une note, une note de suite (courte ou de transmission) ou le relevé de données. Renvoie la procédure et les règles à suivre.",
+    inputSchema: { type: DEMANDE },
     annotations: LECTURE,
-  }, async ({ type }) => texte(`${PROCEDURE}\n\nTEXTE DEMANDÉ : ${type}\n\n=== RÈGLES DE L'ÉTAPE 1 ===\n${ref('1-comprehension.md')}`));
+  }, async ({ type }) => {
+    if (type === 'suite') return texte(`PROCÉDURE NOTE DE SUITE. Pas de procédure en 7 étapes. Note courte par défaut ; note de transmission si le clinicien a écrit « transmission » pour ce patient (cela vaut pour toutes ses notes de suite). Appuie-toi sur la compréhension et la fiche déjà validées dans la conversation, mises à jour avec cet entretien. Rédige selon les règles ci-dessous, contrôle avec controler_texte (type suite-courte ou suite-transmission) jusqu'à zéro erreur, puis présente la note UNIQUEMENT avec afficher_note_de_suite. Ne donne pas la note en texte libre.\n\nBASE DE DONNÉES — ${BASE}\n\n=== RÈGLES DES NOTES DE SUITE ===\n${ref('8-notes-de-suite.md')}\n\n=== RÈGLES DE LANGAGE ===\n${ref('4-langage.md')}`);
+    if (type === 'releve') return texte(`PROCÉDURE RELEVÉ DE DONNÉES. Lis les règles ci-dessous. Construis l'objet releve {choix, textes, screening_types, deductions} à partir de la conversation (fiche et décisions validées en priorité) : pour chaque rubrique à choix, exactement une option du modèle ; n'inclus pas les rubriques qui ont une valeur par défaut, sauf si le dossier dit autre chose ; pour chaque réponse déduite, sa raison dans deductions. Identité et dates : seulement si fournies explicitement (par défaut vides : étiquette). Puis appelle preparer_releve : il refuse les incohérences, applique les valeurs par défaut, écrit le PDF original et l'affiche au clinicien.\n\n=== RÈGLES DU RELEVÉ ===\n${ref('9-releve-donnees.md')}\n\n=== MODÈLE DES RUBRIQUES (options exactes, valeurs par défaut) ===\n${JSON.stringify(RELEVE_MODELE.rubriques)}`);
+    return texte(`${PROCEDURE}\n\nTEXTE DEMANDÉ : ${type}\n\n=== RÈGLES DE L'ÉTAPE 1 ===\n${ref('1-comprehension.md')}`);
+  });
 
   s.registerTool('regles_etape', {
     title: "Règles d'une étape",
@@ -158,10 +206,10 @@ function creerServeur() {
   s.registerTool('controler_texte', {
     title: 'Contrôler un texte',
     description: "Étape 6. Contrôle mécanique d'une note ou d'une synthèse : rubriques, items du status, expressions interdites, sigles, résidus du canevas, cohérence avec la fiche et la décision. Renvoie les erreurs à corriger.",
-    inputSchema: { type: z.enum(['note', 'synthese']), texte: z.string(), fiche: FICHE.describe('Fiche validée avec le bloc decision') },
+    inputSchema: { type: z.enum(['note', 'synthese', 'suite-courte', 'suite-transmission']), texte: z.string(), fiche: FICHE.optional().describe('Fiche validée (avec le bloc decision pour la note et la synthèse)') },
     annotations: LECTURE,
   }, async ({ type, texte: t, fiche }) => {
-    const r = type === 'note' ? C.controlerNote(t, fiche) : C.controlerSynthese(t, fiche);
+    const r = { note: C.controlerNote, synthese: C.controlerSynthese, 'suite-courte': C.controlerSuiteCourte, 'suite-transmission': C.controlerSuiteTransmission }[type](t, fiche || null);
     const res = resumeRapport(r);
     const consigne = res.erreurs.length ? 'Corrige UNIQUEMENT les passages visés (le reste mot pour mot), puis rappelle controler_texte.' : 'Aucune erreur : passe à l\'étape 7 (regles_etape(7), puis afficher_resultat).';
     return texte(JSON.stringify(res, null, 1) + '\n\n' + consigne);
@@ -202,6 +250,52 @@ function creerServeur() {
     };
   });
 
+  s.registerTool('afficher_note_de_suite', {
+    title: 'Afficher la note de suite',
+    description: "Présente une note de suite (courte ou de transmission) dans un écran, avec « Copier pour le dossier ». REFUSE une note qui ne passe pas le contrôle.",
+    inputSchema: { regime: z.enum(['suite-courte', 'suite-transmission']), texte: z.string(), fiche: FICHE.optional(), incertains: z.array(z.object({ question: z.string(), options: z.array(z.string()).optional() })).optional() },
+    annotations: LECTURE,
+    _meta: avecEcran('Contrôle de la note de suite…', 'Note de suite affichée'),
+  }, async ({ regime, texte: t, fiche, incertains }) => {
+    const r = regime === 'suite-courte' ? C.controlerSuiteCourte(t, fiche || null) : C.controlerSuiteTransmission(t);
+    if (r.erreurs.length) return {
+      structuredContent: { vue: 'refus', blocages: r.erreurs },
+      content: [{ type: 'text', text: 'REFUSÉ : corrige ces erreurs (controler_texte), puis rappelle afficher_note_de_suite. Ne donne pas la note en clair.\n- ' + r.erreurs.join('\n- ') }],
+    };
+    return {
+      structuredContent: { vue: 'resultat', type: regime, textes: { [regime]: { texte: t.trim(), avertissements: r.avert } }, mode: '', anomalies: {}, incertains: incertains || [], signalement: [] },
+      content: [{ type: 'text', text: 'Note de suite affichée et contrôlée. Ne la recopie pas dans la conversation.' }],
+    };
+  });
+
+  s.registerTool('preparer_releve', {
+    title: 'Préparer le relevé de données',
+    description: "Relevé de données UNIL-EPFL : vérifie les réponses, applique les valeurs par défaut du clinicien, écrit le PDF original (2 pages) et l'affiche avec un lien de téléchargement valable 15 minutes. REFUSE les options inexistantes et les rubriques incohérentes.",
+    inputSchema: {
+      releve: z.object({
+        choix: z.record(z.string(), z.string()).optional().describe('rubrique → option exacte du formulaire'),
+        textes: z.record(z.string(), z.string()).optional().describe('rubrique → texte'),
+        screening_types: z.array(z.string()).optional(),
+        deductions: z.record(z.string(), z.string()).optional().describe('rubrique → raison de la déduction'),
+      }),
+    },
+    annotations: LECTURE,
+    _meta: avecEcran('Remplissage du relevé…', 'Relevé prêt'),
+  }, async ({ releve }) => {
+    const v = verifierReleve(releve, RELEVE_MODELE, RELEVE_POSITIONS, true);
+    if (v.erreurs.length) return {
+      structuredContent: { vue: 'refus', blocages: v.erreurs },
+      content: [{ type: 'text', text: 'REFUSÉ : corrige ces points dans releve, puis rappelle preparer_releve.\n- ' + v.erreurs.join('\n- ') }],
+    };
+    const { octets, tropLongs } = await produireReleve(v);
+    const lien = `${baseUrl}/releve/${garderPdf(octets)}.pdf`;
+    const reponses = Object.entries(v.choix).map(([k, val]) => [k, val]).concat(Object.entries(v.textes).filter(([, val]) => String(val).trim()));
+    return {
+      structuredContent: { vue: 'releve', lien, reponses, appliques: v.appliques, deductions: releve.deductions || {}, vides: v.vides, attente: v.attente, tropLongs, types: v.types },
+      content: [{ type: 'text', text: `Relevé prêt (lien valable 15 minutes, affiché dans l'écran). Rubriques laissées vides : ${v.vides.join(', ') || 'aucune'}. En attente de documents : ${v.attente.join(', ') || 'rien'}. Pose en un seul bloc les questions pour les rubriques vides.` }],
+    };
+  });
+
   s.registerTool('nettoyer_pour_dossier', {
     title: 'Nettoyer pour le dossier',
     description: 'Rend un texte compatible Latin-1 pour le logiciel du dossier (apostrophes, guillemets, tirets, points de suspension ; accents conservés).',
@@ -219,7 +313,9 @@ app.post('/mcp', async (req, res) => {
   // Journal minimal pour le diagnostic : nom de la méthode et de l'outil, jamais le contenu.
   const b = req.body || {};
   for (const m of Array.isArray(b) ? b : [b]) if (m && m.method) console.log('MCP', m.method, m.params && (m.params.name || m.params.uri) || '');
-  const serveur = creerServeur();
+  const hote = req.get('x-forwarded-host') || req.get('host');
+  const proto = req.get('x-forwarded-proto') || req.protocol;
+  const serveur = creerServeur(`${proto}://${hote}`);
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   res.on('close', () => { transport.close(); serveur.close(); });
   try {
@@ -231,6 +327,11 @@ app.post('/mcp', async (req, res) => {
   }
 });
 app.all('/mcp', (req, res) => res.status(405).json({ jsonrpc: '2.0', error: { code: -32000, message: 'Méthode non autorisée' }, id: null }));
+app.get('/releve/:id.pdf', (req, res) => {
+  const octets = PDFS.get(req.params.id);
+  if (!octets) return res.status(404).type('text').send('Lien expiré (15 minutes) : redemandez le relevé dans ChatGPT.');
+  res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="releve_donnees.pdf"', 'Cache-Control': 'no-store' }).send(octets);
+});
 app.get('/', (req, res) => res.type('text').send('Note clinique EPFL : serveur actif. Adresse à donner à ChatGPT : <cette adresse>/mcp'));
 
 if (require.main === module) {

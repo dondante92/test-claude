@@ -7,7 +7,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test/test_serveur.js && node test/test_widget.js && node test/test_mcpapps.js"
+    "test": "node test/test_serveur.js && node test/test_widget.js && node test/test_mcpapps.js && node test/test_suite_releve.js"
   },
   "engines": {
     "node": ">=18"
@@ -15,6 +15,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
     "express": "^5.3.0",
+    "pdf-lib": "^1.17.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
