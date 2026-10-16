@@ -29,7 +29,8 @@ Paramètres (en bas à gauche) :
   - `Note de suite :` (ajoutez `transmission` une fois pour un patient que vous transmettez)
   - `Relevé de données`
   - `Analyse (Document 2), séance n° :`
-  - `G1/G2`, `Document 3`, `Courrier d'adressage`
+  - `Bilan` (ou `G1/G2`) après le 3e entretien : G1 pour vous (discussion diagnostique critère par critère, indication TDAH, orientation) et G2 à lire au patient au 4e entretien
+  - `Document 3`, `Courrier d'adressage`
 - `Enchaîne` : il continue sans s'arrêter, sauf question bloquante.
 - `Formation` (ou `pas à pas`) : pour l'analyse, il explique les sigles et le livre à partir du cas, avance axe par axe et vous laisse essayer avant de donner sa lecture ; le Document 2 vient à la fin.
 
@@ -37,7 +38,7 @@ Paramètres (en bas à gauche) :
 
 - Marquez **(S)** ce que le patient a dit spontanément et **(Q)** ce qui répond à une de vos questions.
 - Trois à cinq phrases du patient mot pour mot.
-- Vos interventions importantes, et sa réaction immédiate.
+- Vos interventions importantes, **avec vos mots**, et sa réaction immédiate : chaque Document 2 les commente (nom de l'intervention, IPB ou TCC, critique, comment faire).
 - Une ligne sur ce que vous avez ressenti.
 - Son âge.
 - Ce que vous n'écrivez pas (le risque suicidaire par exemple) est lu comme exploré sans élément notable, pas comme oublié.

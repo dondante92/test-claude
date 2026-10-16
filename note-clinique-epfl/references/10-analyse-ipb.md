@@ -5,7 +5,7 @@
 > - **11-reperes-ipb.md** : le référentiel théorique du livre (TRCC de Luborsky, axe II de l'OPD, DMRS, Kernberg, interaction de transfert, déroulement, compétence), à ouvrir pour la section utile (lecture entière permise quand plusieurs sections servent). Ce fichier est privé : il n'est pas publié sur GitHub ;
 > - **12-redactions-analyse.md** : G1/G2, Document 3, courriers, notes (rédactions sur demande uniquement).
 >
-> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩ ; ils ont été validés par Rami le 14.10.2026 (ARBITRAGES A23 à A36). Mise à jour du 16.10.2026 après le premier bilan d'un Document 2 (A37 à A52) : longueur, hypothèses, silence de la note, mode formation.
+> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩ ; ils ont été validés par Rami le 14.10.2026 (ARBITRAGES A23 à A36). Mise à jour du 16.10.2026 après le premier bilan d'un Document 2 (A37 à A52) : longueur, hypothèses, silence de la note, mode formation ; puis retour sur les interventions (A53) et bilan du 4e entretien (A54-A56, 12-redactions-analyse.md).
 
 ## Portée et hiérarchie des règles
 
@@ -57,7 +57,7 @@ L'intervention compte en règle générale quatre séances, ajustables selon la 
 7. **Vérifier le volet psychiatrique.** Risque, aggravation, traitement, suivi spécialisé, investigations : bloc dédié seulement s'il y a un enjeu.
 8. **Calibrer selon la séance.** Indication IPB, orientation thérapeutique, ce qu'on attend à cette étape des quatre entretiens.
 9. **Préparer la suite.** Questions, hypothèses à tester, pièges, priorités pour l'entretien suivant.
-10. **Réflexivité.** Angles morts, incertitudes, réactions du clinicien, quand il y a matière.
+10. **Réflexivité et retour sur les interventions.** Angles morts, incertitudes, réactions du clinicien, quand il y a matière. Si la note rapporte des interventions du clinicien : bloc « Retour sur vos interventions ».
 11. **Relire.** Grille de relecture finale (dernière section) ; corriger avant d'envoyer. ⟨garde-fou IA⟩ Puis contrôle automatique : `controle.py texte doc2.txt --type document2` (ou l'outil `controler_texte`, type `document2`). Le contrôle porte sur le script du projet lui-même, jamais sur une copie retapée ; si le script n'est pas accessible, le contrôle se fait à la main et le document le dit. Relire aussi chiffres, âges et tournures temporelles contre la note (un âge de début ne devient pas une durée), et l'ordre des faits avant d'imputer un effet à une intervention du clinicien.
 
 ## Questions de clarification
@@ -77,7 +77,7 @@ Trois vérifications avant de poser une question :
 
 Le Document 2 est réservé au thérapeute et n'est jamais partagé tel quel : une analyse psychodynamique et psychiatrique en profondeur, qu'on peut lire en entier.
 
-**Forme.** Le corps de l'analyse est un texte continu, sans sous-titres, où les éléments s'articulent entre eux au lieu d'être traités comme des cases. Seuls trois blocs peuvent être isolés en fin de document, annoncés par un intitulé court : le volet psychiatrique (s'il y a un enjeu), la préparation du prochain entretien, la réflexivité du clinicien.
+**Forme.** Le corps de l'analyse est un texte continu, sans sous-titres, où les éléments s'articulent entre eux au lieu d'être traités comme des cases. Seuls quatre blocs peuvent être isolés en fin de document, annoncés par un intitulé court : le volet psychiatrique (s'il y a un enjeu), la préparation du prochain entretien, la réflexivité du clinicien, et le retour sur vos interventions (dès que la note en rapporte une ; sous-titres permis à l'intérieur).
 
 **Demande explicite.** Le corps s'ouvre par ce que le patient dit attendre, dans ses mots, en une ou deux phrases ; c'est le point de départ conscient du travail, repris au bilan. Ce n'est pas une introduction.
 
@@ -195,13 +195,35 @@ Ces volets ancrent l'analyse dans le cadre des quatre entretiens ; leur longueur
 
 **Réflexivité du clinicien.** Strictement privée, jamais reprise ailleurs, même condensée. Quand il y a matière : difficultés de l'entretien, incertitudes réelles, hypothèses en construction, réactions émotionnelles, moments où une erreur technique a failli se produire et pourquoi. Registre brut, non formaté. Signaler directement un risque de contamination contre-transférentielle du jugement, ou une erreur de raisonnement ou de cotation.
 
+## Retour sur vos interventions ⟨A53⟩
+
+Le clinicien se forme entre l'IPB (psychodynamique) et la TCC. À chaque Document 2 où la note rapporte une ou plusieurs de ses interventions, un bloc final « Retour sur vos interventions » les commente une par une, pour qu'il sache ce qu'il a fait, comment cela s'appelle, et comment faire. Ce bloc est pédagogique et critique par nature : l'interdit de posture pédagogique ne s'y applique pas.
+
+**Quelles interventions.** Celles qui comptent : la formulation de fin d'entretien, une interprétation, une confrontation, un moment de réassurance ou de structuration, une technique TCC, un tournant de la séance, une intervention qui a produit une réaction nette. Pas les relances banales. Si aucune intervention n'est rapportée, le bloc est absent, et une ligne en préparation peut demander d'en noter une au prochain entretien.
+
+**Pour chaque intervention, un sous-titre** (l'intervention en quelques mots ou entre guillemets), puis :
+- **Ce que vous avez fait.** Vos mots, ou la description de la note.
+- **Comment ça s'appelle.** Le nom technique exact et son registre : IPB / psychodynamique, TCC, ou commun aux deux (lexique ci-dessous). Si l'intervention mélange deux registres, le dire : c'est souvent là que l'identité de thérapeute se cherche.
+- **Ce que ça a produit.** La réaction du patient rapportée par la note ; sinon, « réaction non rapportée ».
+- **Critique.** Ce qui était juste et ce qui pose problème, au regard du moment de l'intervention (séance, configuration), du niveau défensif, du conflit, de l'alliance. Direct et argumenté : pourquoi c'était pertinent, prématuré, trop découvrant, trop soutenant, hors cadre.
+- **Comment faire.** Ce qu'il aurait été possible de dire, mot pour mot, avec le nom de cette intervention, et pourquoi elle conviendrait mieux ici. Si l'intervention était juste, le dire et dire ce qui la rendait juste, pour pouvoir la refaire.
+
+**Votre posture dans cet entretien.** Un court paragraphe final : de quel registre relevaient surtout vos interventions (IPB, TCC, mélange), si le mélange était cohérent avec la configuration et le moment, ou s'il a brouillé le cadre ; d'une séance à l'autre, ce qui se consolide.
+
+**Lexique (noms à utiliser, sans en inventer).**
+- *IPB / psychodynamique*, du plus expressif au plus soutenant : interprétation (du conflit, de la défense, du transfert ; génétique quand elle relie au passé), interprétation initiale ou formulation de l'hypothèse de crise (les cinq temps du livre), observation, confrontation, clarification, encouragement à élaborer, validation empathique, conseil et éloge, affirmation ; soutien du Moi ; prescription du cadre.
+- *TCC* : établissement de l'agenda, résumé, feedback, psychoéducation, normalisation, questionnement socratique (découverte guidée), flèche descendante, analyse fonctionnelle, conceptualisation de cas, identification des pensées automatiques, restructuration cognitive, expérience comportementale, exposition, activation comportementale, résolution de problème, prescription de tâche.
+- *Commun* : question ouverte, question fermée, reformulation, reflet, recadrage, réassurance, auto-dévoilement.
+
+Le nom suit ce que l'intervention fait, pas son intention : « je me demande si vous ne vous protégez pas de… » est une interprétation de la défense ; « vous dites que tout va bien, et vous avez pleuré deux fois » est une confrontation ; « qu'est-ce qui vous fait penser que… ? » est du questionnement socratique.
+
 ## Garde-fous propres à l'IA ⟨garde-fou IA⟩
 
 Ces règles ne viennent pas du document maître. Elles corrigent des erreurs typiques d'une IA. Validées le 14.10.2026.
 
 1. **Contre-transfert et réflexivité : uniquement ce que le clinicien a rapporté.** L'IA n'a pas de contre-transfert : elle n'a que ce qui est dicté. Sans élément rapporté, aucune affirmation sur ce que le clinicien a ressenti ou fait ; à la place, une ou deux questions en fin de réflexivité (« Qu'avez-vous ressenti quand… ? »). Ce qui est rapporté est repris dans ses mots ; toute extrapolation (un sentiment qu'il n'a pas nommé, un motif prêté à un mot) devient une question, et ne sert jamais à valider une hypothèse. La perspective B de l'axe II (comment les autres, thérapeute compris, vivent la relation) n'est remplie que par du contre-transfert rapporté ou par ce que le patient rapporte des autres.
 2. **Pas de cotation chiffrée à partir d'une note résumée.** FDG, numéros d'items OPD, scores de compétence : ces cotations exigent un verbatim. Le niveau défensif dominant s'écrit en mots (« surtout narcissique et par le désaveu »).
-3. **Grille de compétence : seulement si la note rapporte les interventions du clinicien.** Sinon, l'IA ne peut pas juger la technique. Quand elle rapporte une formulation mot pour mot, la relire avec les cinq temps de l'interprétation initiale et la grille de compétence (11-reperes-ipb.md).
+3. **Grille de compétence et retour sur les interventions : seulement sur ce que la note rapporte.** Sinon, l'IA ne peut pas juger la technique. Une intervention décrite sans ses mots (« je lui ai expliqué… ») est nommée avec prudence, et la formulation exacte est demandée. Pas de score. Quand elle rapporte une formulation mot pour mot, la relire avec les cinq temps de l'interprétation initiale et la grille de compétence (11-reperes-ipb.md).
 4. **Les référentiels sont des outils internes.** DMRS, axe II de l'OPD, catégories du TRCC, grille de Kernberg : le texte nomme un outil seulement quand il éclaire. Jamais d'inventaire de grilles.
 5. **Supervision.** Une décision de supervision fait foi pour la conduite à tenir ; un désaccord de lecture va dans la réflexivité, sans plus.
 6. **Données.** Pas de nom, de date de naissance ni de détail identifiant : un code patient. Une conversation = un seul patient.
@@ -213,7 +235,7 @@ Déclenché quand le clinicien écrit « formation », « pas à pas » ou « ex
 - **Théorie minimale, à partir du cas.** Chaque sigle est expliqué à sa première apparition (TRCC, D/RO/RS, DMRS, OPD…). Pour chaque notion du livre utilisée : ce que dit le livre, ce que cela donne dans ce cas, comment faire en séance ou dans la rédaction.
 - **Travail réactif.** Avancer axe par axe plutôt que livrer d'un bloc : proposer et expliquer, puis poser une question au clinicien ou le laisser essayer d'abord (par exemple son D / RO / RS d'un épisode) avant de montrer sa propre lecture, et commenter la sienne avec le livre.
 - **Présentation.** Titres courts et tableaux permis dans ces échanges ; exercices tirés du cas possibles.
-- **Fin.** Le Document 2 est consolidé à la fin, dans sa forme habituelle (texte continu, trois blocs finaux), et passe le contrôle automatique.
+- **Fin.** Le Document 2 est consolidé à la fin, dans sa forme habituelle (texte continu, blocs finaux), et passe le contrôle automatique.
 
 ## Règles transversales
 
@@ -252,3 +274,4 @@ Avant d'envoyer un Document 2, chaque question doit recevoir un oui ; un non imp
 - ⟨garde-fou IA⟩ Chaque lecture est-elle écrite comme hypothèse, avec ce qui la fonde ? Les citations qui fondent les conclusions sont-elles là ?
 - ⟨garde-fou IA⟩ Rien n'est écrit « non fait » quand la note est seulement silencieuse ? Chiffres, âges et chronologie sont-ils fidèles à la note ?
 - ⟨garde-fou IA⟩ Longueur : aucune coupe faite sans l'accord du clinicien ?
+- Chaque intervention rapportée importante est-elle nommée, critiquée et suivie d'une alternative formulée ?

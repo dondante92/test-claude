@@ -202,6 +202,10 @@
    "reflexivite",
    "reflexivite du clinicien"
   ],
+  "blocs_libres": [
+   "retour sur vos interventions",
+   "retour sur les interventions"
+  ],
   "longueur_max_mots": 1500,
   "interdits": {
    "clinicien moins experimente": "formule supprimée par le document maître",

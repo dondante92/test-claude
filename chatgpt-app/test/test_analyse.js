@@ -23,5 +23,7 @@ const lire = n => fs.readFileSync(path.join(EX, n), 'utf8');
     const res = resultat(r);
     assert.strictEqual(res.conforme, false); assert.strictEqual(res.erreurs.length, 4); assert.strictEqual(res.avertissements.length, 5);
     ok('Document 2 fautif : 4 erreurs, 5 avertissements (formules, sous-titre, TDAH, contre-transfert, FDG…)');
+    r = await appel('controler_texte', { type: 'document2', texte: lire('document2_exemple.txt') + '\n\nRetour sur vos interventions\n\nFormulation de fin d\'entretien\nVous avez nommé le conflit : interprétation initiale.\n' });
+    assert.strictEqual(resultat(r).conforme, true); ok('Document 2 : sous-titres permis dans « Retour sur vos interventions »');
   } finally { await fermer(); }
 })().catch(e => { console.error('ÉCHEC', e); process.exit(1); });

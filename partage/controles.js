@@ -227,12 +227,13 @@ function controlerDocument2(texte) {
     if (!l || puce.test(l) || l.split(/\s+/).length > 8 || /[.!?…»)"]$/.test(l)) return null;
     return plat(l.replace(/^[#*_ :]+|[#*_ :]+$/g, ''));
   };
-  let premierBloc = null, puces = 0;
+  let premierBloc = null, puces = 0, libre = false;
   texte.split('\n').forEach((ligne, n) => {
     const h = intitule(ligne);
     if (h !== null) {
-      if (d.blocs_autorises.some(b => h.startsWith(b))) { if (premierBloc === null) premierBloc = n; }
-      else r.erreur(`sous-titre « ${ligne.trim()} » : le corps est un texte continu ; seuls trois blocs finaux (volet psychiatrique, préparation du prochain entretien, réflexivité)`);
+      if (d.blocs_libres.some(b => h.startsWith(b))) { if (premierBloc === null) premierBloc = n; libre = true; }
+      else if (d.blocs_autorises.some(b => h.startsWith(b))) { if (premierBloc === null) premierBloc = n; libre = false; }
+      else if (!libre) r.erreur(`sous-titre « ${ligne.trim()} » : le corps est un texte continu ; seuls quatre blocs finaux (volet psychiatrique, préparation du prochain entretien, réflexivité, retour sur vos interventions)`);
     } else if (puce.test(ligne) && premierBloc === null) puces++;
   });
   if (puces) r.av(`${puces} ligne(s) en liste dans le corps : texte continu attendu (listes admises seulement dans les blocs finaux)`);

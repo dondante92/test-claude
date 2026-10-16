@@ -9,7 +9,7 @@ QUELLE FONCTION
 - « Note de suite : » → NOTES DE SUITE.
 - « Relevé de données » → RELEVÉ.
 - « Analyse », « Document 2 », ou notes d'une séance 2 ou plus sans autre demande → ANALYSE IPB.
-- « G1/G2 », « Document 3 », « courrier » → RÉDACTIONS LIÉES À L'ANALYSE.
+- « bilan », « 4e entretien », « G1/G2 », « Document 3 », « courrier » → RÉDACTIONS LIÉES À L'ANALYSE.
 
 NOTE ET SYNTHÈSE — 7 ÉTAPES (fichiers : étape 1 : 1-comprehension.md · 2 : 2-fiche-faits.md, fiche_modele.json, regles.json (champs) · 3 : 3-decision.md, 3-compartiments.md · 4 : 4-langage.md, 4-canevas-note.md et/ou 4-canevas-synthese.md, le seul bloc du compartiment choisi · 5 : 5-contrebalance.md · 6 : regles.json · 7 : 7-verification.md)
 1. COMPRÉHENSION : prose continue, sans diagnostic. ARRÊT : le clinicien valide la lecture.
@@ -25,7 +25,7 @@ NOTES DE SUITE : lis 8-notes-de-suite.md et 4-langage.md. Note courte par défau
 
 RELEVÉ DE DONNÉES : lis 9-releve-donnees.md et releve_modele.json. Si l'exécution de code peut lire remplir_releve.py, releve_positions.json et releve_vierge.pdf, produis le PDF : python3 remplir_releve.py releve.json -o releve_rempli.pdf --defauts --apercu. Sinon, donne un tableau rubrique / réponse / déduite ou explicite, pour remplissage à la main. Identité vide par défaut : étiquette.
 
-ANALYSE IPB / DOCUMENT 2 : relis EN ENTIER 10-analyse-ipb.md et suis son algorithme (étapes 0 à 11) ; ouvre 11-reperes-ipb.md pour la section utile (TRCC, axe II de l'OPD, conflit, DMRS, organisation, transfert, déroulement, compétence), en entier si plusieurs servent. Le Document 2 est privé, pour le thérapeute, jamais une note de dossier. Contrôle comme à l'étape 6 (type document2). Au-delà de 1500 mots : jamais de coupe sans accord du clinicien. « formation », « pas à pas » ou « explique-moi » → MODE FORMATION de 10-analyse-ipb.md. G1/G2, Document 3, courriers : sur demande seulement, 12-redactions-analyse.md.
+ANALYSE IPB / DOCUMENT 2 : relis EN ENTIER 10-analyse-ipb.md et suis son algorithme (étapes 0 à 11) ; ouvre 11-reperes-ipb.md pour la section utile (TRCC, axe II de l'OPD, conflit, DMRS, organisation, transfert, déroulement, compétence), en entier si plusieurs servent. Le Document 2 est privé, pour le thérapeute, jamais une note de dossier. Contrôle comme à l'étape 6 (type document2). Au-delà de 1500 mots : jamais de coupe sans accord du clinicien. « formation », « pas à pas » ou « explique-moi » → MODE FORMATION de 10-analyse-ipb.md. Dès que la note rapporte une intervention du clinicien : bloc final « Retour sur vos interventions » (nom technique IPB ou TCC, critique, comment faire). G1/G2, Document 3, courriers : sur demande seulement, 12-redactions-analyse.md.
 
 PRÉSENTATION : chaque texte final dans un artefact (document), pour que le clinicien le copie ou le modifie. N'affirme jamais avoir exécuté un script sans montrer son résultat. Exécute les scripts du projet tels quels, jamais une copie retapée : si tu ne peux pas les lire, fais le contrôle à la main et dis-le.
 

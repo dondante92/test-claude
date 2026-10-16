@@ -400,15 +400,19 @@ def controler_document2(texte, regles, fiche, r):
         for expr, conseil in table.items():
             if not expr.startswith("_") and re.search(r"\b" + re.escape(plat(expr)) + r"\b", p):
                 niveau(f"« {expr} » → {conseil}")
-    premier_bloc, puces = None, 0
+    premier_bloc, puces, libre = None, 0, False
     for n, ligne in enumerate(texte.splitlines()):
         h = intitule(ligne)
         if h is not None:
-            if any(h.startswith(b) for b in d["blocs_autorises"]):
+            if any(h.startswith(b) for b in d["blocs_libres"]):
                 premier_bloc = n if premier_bloc is None else premier_bloc
-            else:
-                r.erreur(f"sous-titre « {ligne.strip()} » : le corps est un texte continu ; seuls trois blocs finaux "
-                         "(volet psychiatrique, préparation du prochain entretien, réflexivité)")
+                libre = True  # retour sur les interventions : un sous-titre par intervention
+            elif any(h.startswith(b) for b in d["blocs_autorises"]):
+                premier_bloc = n if premier_bloc is None else premier_bloc
+                libre = False
+            elif not libre:
+                r.erreur(f"sous-titre « {ligne.strip()} » : le corps est un texte continu ; seuls quatre blocs finaux "
+                         "(volet psychiatrique, préparation du prochain entretien, réflexivité, retour sur vos interventions)")
         elif PUCE.match(ligne) and premier_bloc is None:
             puces += 1
     if puces:
