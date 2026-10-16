@@ -2,10 +2,10 @@
 
 > Document maître de Rami, version du 14.10.2026 (hors note de premier entretien), découpé en trois fichiers :
 > - **10-analyse-ipb.md** (ce fichier) : le noyau, toujours lu en entier ;
-> - **11-reperes-ipb.md** : le référentiel théorique du livre (TRCC de Luborsky, axe II de l'OPD, DMRS, Kernberg, interaction de transfert, déroulement, compétence), à ouvrir pour la section utile. Ce fichier est privé : il n'est pas publié sur GitHub ;
+> - **11-reperes-ipb.md** : le référentiel théorique du livre (TRCC de Luborsky, axe II de l'OPD, DMRS, Kernberg, interaction de transfert, déroulement, compétence), à ouvrir pour la section utile (lecture entière permise quand plusieurs sections servent). Ce fichier est privé : il n'est pas publié sur GitHub ;
 > - **12-redactions-analyse.md** : G1/G2, Document 3, courriers, notes (rédactions sur demande uniquement).
 >
-> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩ ; ils ont été validés par Rami le 14.10.2026 (ARBITRAGES A23 à A36).
+> Les ajouts qui ne viennent pas du document maître sont signalés ⟨garde-fou IA⟩ ; ils ont été validés par Rami le 14.10.2026 (ARBITRAGES A23 à A36). Mise à jour du 16.10.2026 après le premier bilan d'un Document 2 (A37 à A52) : longueur, hypothèses, silence de la note, mode formation.
 
 ## Portée et hiérarchie des règles
 
@@ -18,7 +18,7 @@ Ce document rassemble toutes les règles appliquées à l'analyse d'un patient, 
 | Rubriques « obligatoires » ou « toujours présentes » dans le Document 2 | La pertinence décide de ce qui est traité et de sa longueur |
 | Analyse « sans contrainte de concision » | Densité réduite : le texte doit pouvoir être lu en entier |
 | Traçabilité explicite avec marqueurs détaillés | Traçabilité prise en compte dans le poids du matériel, rarement écrite |
-| Posture pédagogique dans chaque section, « ce qu'un clinicien moins expérimenté aurait raté » | Expliquer un raisonnement seulement s'il n'est pas évident ; formule supprimée |
+| Posture pédagogique dans chaque section, « ce qu'un clinicien moins expérimenté aurait raté » | Expliquer un raisonnement seulement s'il n'est pas évident ; formule supprimée. Posture pédagogique disponible sur demande : mode formation (A50) |
 | Différentiels présentés explicitement, dépistage TSA/TDAH à signaler | Différentiel seulement avec arguments positifs, convergents et spontanés |
 | Questions de clarification « systématiques » | Analyse systématique des ambiguïtés ; question seulement si nécessaire (défaut : zéro) |
 | Note de suivi produite à chaque séance | Document 2 par défaut ; note de suivi sur demande |
@@ -48,17 +48,17 @@ L'intervention compte en règle générale quatre séances, ajustables selon la 
 À chaque note, la même séquence : situer, pondérer, vérifier, hiérarchiser, analyser, relire. Les trois premières étapes sont silencieuses, sauf si une question est réellement nécessaire.
 
 0. ⟨garde-fou IA⟩ **Sécurité.** Si la note contient un risque aigu (idées suicidaires avec scénario ou intentionnalité, risque hétéro-agressif, décompensation, contre-indication psychiatrique à l'IPB), le volet psychiatrique ouvre le Document 2 au lieu de le clore, et le reste de l'analyse s'y subordonne.
-1. **Situer.** Numéro de séance, configuration, livrable demandé. Configuration par défaut : investigation psychiatrique avec raisonnement IPB, sauf si la note mentionne explicitement la pose du cadre IPB ou une formulation du conflit faite au patient. Livrable par défaut, à toute séance : Document 2 seul. Aucune rédaction (notes de dossier, G1/G2, Document 3, courriers) sans demande explicite. La note de premier entretien relève d'un autre modèle et n'est jamais produite ici.
-2. **Pondérer le matériel.** Tri silencieux entre ce que le patient apporte spontanément, ce qui répond à une relance, ce qui est co-construit, et ce qui relève de mon inférence. Ce tri fixe le poids de chaque élément : spontané > élaboré en réponse > co-construit > inférence. Le matériel obtenu par questions ciblées ne compte pas comme argument diagnostique indépendant.
+1. **Situer.** Numéro de séance, configuration, livrable demandé. Configuration par défaut : investigation psychiatrique avec raisonnement IPB, sauf si la note mentionne explicitement la pose du cadre IPB ou une formulation du conflit faite au patient. Livrable par défaut, à toute séance : Document 2 seul. Aucune rédaction (notes de dossier, G1/G2, Document 3, courriers) sans demande explicite. La note de premier entretien relève d'un autre modèle et n'est jamais produite ici. ⟨garde-fou IA⟩ Si la note annonce une suite (« je complète », « à suivre »), demander avant de rédiger : attendre, ou analyser ce qui est là. Si plusieurs séances sont analysées ensemble, garder un paragraphe argumenté sur l'indication IPB et la configuration (séance 1).
+2. **Pondérer le matériel.** Tri silencieux entre ce que le patient apporte spontanément, ce qui répond à une relance, ce qui est co-construit, et ce qui relève de mon inférence. Ce tri fixe le poids de chaque élément : spontané > élaboré en réponse > co-construit > inférence. Le matériel obtenu par questions ciblées ne compte pas comme argument diagnostique indépendant. ⟨garde-fou IA⟩ Un passage qui ressemble à la réponse à une question du clinicien (« ce qui a fait… », « ce qui est resté… ») est pondéré comme relance, même si la note ne le précise pas ; s'il porte une conclusion, le dire en une incise. Les marques (S) spontané et (Q) réponse à une question, quand le clinicien les met, font foi.
 3. **Vérifier les ambiguïtés.** Les trois vérifications de la section suivante. S'il faut poser une question : QCM avant toute rédaction, puis rédaction une fois la réponse reçue. Sinon, rédaction directe.
-4. **Hiérarchiser avant d'interpréter.** Données objectives solides, éléments convergents, éléments qui résistent, hypothèses alternatives, zones ouvertes. Repérer le niveau structural primaire et ce qui s'y est greffé.
-5. **Distinguer crise et trouble.** Ce qui déborde actuellement (déclencheurs, temporalité) et ce qui est structurel (trouble constitué, organisation de personnalité).
+4. **Hiérarchiser avant d'interpréter.** Données objectives solides, éléments convergents, éléments qui résistent, hypothèses alternatives, zones ouvertes. Repérer le niveau structural primaire et ce qui s'y est greffé. ⟨garde-fou IA⟩ Pour chaque hypothèse, chercher l'élément du matériel qui la contredit avant de l'écrire.
+5. **Distinguer crise et trouble.** Ce qui déborde actuellement (déclencheurs, temporalité) et ce qui est structurel (trouble constitué, organisation de personnalité). Le déclencheur se cherche par ce qu'il a déséquilibré (l'appui qui a cédé, l'image de soi mise en cause), pas par sa gravité : un événement heureux peut en être un.
 6. **Analyser selon la pertinence.** Retenir les axes psychodynamiques qui portent ce cas à ce moment, et les articuler en un texte continu.
 7. **Vérifier le volet psychiatrique.** Risque, aggravation, traitement, suivi spécialisé, investigations : bloc dédié seulement s'il y a un enjeu.
 8. **Calibrer selon la séance.** Indication IPB, orientation thérapeutique, ce qu'on attend à cette étape des quatre entretiens.
 9. **Préparer la suite.** Questions, hypothèses à tester, pièges, priorités pour l'entretien suivant.
 10. **Réflexivité.** Angles morts, incertitudes, réactions du clinicien, quand il y a matière.
-11. **Relire.** Grille de relecture finale (dernière section) ; corriger avant d'envoyer. ⟨garde-fou IA⟩ Puis contrôle automatique : `controle.py texte doc2.txt --type document2` (ou l'outil `controler_texte`, type `document2`).
+11. **Relire.** Grille de relecture finale (dernière section) ; corriger avant d'envoyer. ⟨garde-fou IA⟩ Puis contrôle automatique : `controle.py texte doc2.txt --type document2` (ou l'outil `controler_texte`, type `document2`). Le contrôle porte sur le script du projet lui-même, jamais sur une copie retapée ; si le script n'est pas accessible, le contrôle se fait à la main et le document le dit. Relire aussi chiffres, âges et tournures temporelles contre la note (un âge de début ne devient pas une durée), et l'ordre des faits avant d'imputer un effet à une intervention du clinicien.
 
 ## Questions de clarification
 
@@ -71,7 +71,7 @@ Trois vérifications avant de poser une question :
 
 **Forme.** Questions à choix multiple avec une option de réponse libre, posées avant la rédaction, en nombre strictement nécessaire : aucune, une ou plusieurs. Jamais pour confirmer ce qui est déductible, combler un trou périphérique ou atteindre un nombre habituel.
 
-**Attribution.** Une question sur qui a dit quoi n'est posée que si l'attribution change le poids clinique d'un élément central de l'analyse. Une fois tranchée, elle n'est plus commentée dans le texte.
+**Attribution.** Une question sur qui a dit quoi n'est posée que si l'attribution change le poids clinique d'un élément central de l'analyse. Une fois tranchée, elle n'est plus commentée dans le texte. ⟨garde-fou IA⟩ Une attribution douteuse qui porte le transfert ou le contre-transfert (ressenti du clinicien ou propos rapporté ?) n'est jamais tranchée en silence : question avant de rédiger, ou, à défaut, lecture écrite comme hypothèse.
 
 ## Document 2 — nature, forme et ton
 
@@ -79,13 +79,17 @@ Le Document 2 est réservé au thérapeute et n'est jamais partagé tel quel : u
 
 **Forme.** Le corps de l'analyse est un texte continu, sans sous-titres, où les éléments s'articulent entre eux au lieu d'être traités comme des cases. Seuls trois blocs peuvent être isolés en fin de document, annoncés par un intitulé court : le volet psychiatrique (s'il y a un enjeu), la préparation du prochain entretien, la réflexivité du clinicien.
 
+**Demande explicite.** Le corps s'ouvre par ce que le patient dit attendre, dans ses mots, en une ou deux phrases ; c'est le point de départ conscient du travail, repris au bilan. Ce n'est pas une introduction.
+
 **Densité.** Chaque volet n'est traité que s'il éclaire ce patient à cette séance, et sa longueur suit son utilité. Si un passage risque d'être sauté à la lecture, il est trop long. Pas d'introduction, pas de résumé final, pas de reformulation de ce qui a déjà été dit. La profondeur vient du mécanisme dégagé, pas du nombre d'observations ; la surface reste inacceptable.
 
-⟨garde-fou IA⟩ **Test de pertinence** : un volet est pertinent s'il change une décision (diagnostic, risque, intervention, prochain entretien) ou s'il explique un élément qui résiste. Repère de longueur : le contrôle automatique avertit au-delà de 1500 mots.
+⟨garde-fou IA⟩ **Test de pertinence** : un volet est pertinent s'il change une décision (diagnostic, risque, intervention, prochain entretien) ou s'il explique un élément qui résiste. Repère de longueur : le contrôle automatique avertit au-delà de 1500 mots. Ce repère est un signal, pas une limite : ne jamais couper pour passer sous le seuil. Au-delà, livrer la version complète, signaler la longueur, et proposer une version condensée en disant ce qu'elle retirerait ; couper est la décision du clinicien. Une version condensée retire des conclusions secondaires, jamais les citations du patient ni les éléments qui fondent les conclusions gardées.
 
 **Structural et affectif.** L'analyse structurale (défenses, organisation, patterns relationnels) pèse autant que l'affective. Corriger activement la tendance à chercher l'émotion cachée au détriment de la structure.
 
 **Ton.** Celui d'un superviseur qui pense à voix haute : direct, honnête sur les incertitudes, précis sur les outils. Un raisonnement n'est explicité que s'il n'est pas évident et que c'est utile — l'indice qui l'a fondé, le concept qui permet de le nommer — sans plus. L'expression « ce qu'un clinicien moins expérimenté aurait raté » et ses équivalents ne sont jamais utilisés.
+
+⟨garde-fou IA⟩ **Hypothèses, pas constats.** Une lecture (identification, conflit, organisation, place assignée, diagnostic) est écrite comme une hypothèse, avec en une incise ce qui la fonde et ce qui la ferait tomber ou la vérifierait au prochain entretien. Une perception du patient reste une perception : « vécu comme dégradant » ne devient pas « dégradant ». Une phrase de la note n'est attribuée à personne si la note ne le dit pas.
 
 **Traçabilité implicite.** Le poids donné à chaque élément tient compte de sa source, mais le texte ne décrit pas qui a dit quoi. Une attribution n'est écrite que lorsqu'elle change le poids clinique : une formulation forte qui porte l'analyse, un lien causal que le patient n'a pas fait lui-même, une lecture structurale (toujours présentée comme hypothèse). Une incise brève suffit alors. Test : sans ses marqueurs d'attribution, l'analyse doit tenir seule ; si l'attribution devient le squelette, le dosage est mauvais.
 
@@ -156,7 +160,7 @@ Quand le diagnostic catégoriel ne suffit pas ou que plusieurs lectures sont pos
 
 Le diagnostic retenu doit être défendable critère par critère, sans diagnostic de confort et sans différentiel de principe.
 
-**Pas de diagnostic par défaut.** Ne pas s'arrêter au trouble de l'adaptation par confort. Vérifier les critères CIM-10 des diagnostics que le matériel rend probables (⟨garde-fou IA⟩ vérification en ligne du code, de l'intitulé et des critères, comme pour la note : A10). Si aucun trouble constitué n'atteint ses critères, un code Z est plus honnête qu'un diagnostic forcé.
+**Pas de diagnostic par défaut.** Ne pas s'arrêter au trouble de l'adaptation par confort. Vérifier les critères CIM-10 des diagnostics que le matériel rend probables (⟨garde-fou IA⟩ vérification en ligne du code, de l'intitulé et des critères, comme pour la note : A10 ; nommer la source lue, CIM-10-GM de l'OFS, sinon OMS ; à défaut, le dire et marquer « non vérifié » chaque critère non trouvé ; jamais un critère complété de mémoire). Si aucun trouble constitué n'atteint ses critères, un code Z est plus honnête qu'un diagnostic forcé.
 
 **Différentiel seulement avec arguments positifs.** Un diagnostic différentiel n'est mentionné que si des arguments cliniques positifs, convergents et spontanés l'imposent ; il est alors discuté sérieusement. Jamais par hygiène, jamais pour « écarter activement », jamais parce qu'il est dans l'air du temps, TSA et TDAH notamment. « Reste à écarter » est un piège : une recherche orientée finit par trouver ce qu'elle cherche. L'absence d'un diagnostic dans le document signifie que le matériel ne le motive pas, pas qu'il a été oublié.
 
@@ -175,7 +179,9 @@ Bloc distinct en fin de Document 2 dès qu'il y a un enjeu concret ; absent sino
 - Orientation : suivi spécialisé, entretiens rapprochés ou prolongés, lien avec le médecin traitant ou le réseau, urgence si nécessaire.
 - Investigations : bilan somatique ou évaluation spécialisée quand un argument positif le justifie.
 
-Si le cadre bref ne suffit plus à contenir la situation, le dire clairement et proposer la suite. Les contre-indications à l'IPB sont dans 11-reperes-ipb.md.
+Si le cadre bref ne suffit plus à contenir la situation, le dire clairement et proposer la suite. Les contre-indications à l'IPB sont dans 11-reperes-ipb.md : elles sont passées en revue dans les Documents 2 des premières séances (antécédent du spectre psychotique ou bipolaire, violence conjugale ou familiale, par exemple).
+
+⟨garde-fou IA⟩ **Silence de la note.** Le clinicien explore et ne note que ce qui compte : un point non mentionné, le risque suicidaire en particulier, est lu comme exploré sans élément notable, pas comme oublié. Il peut être mentionné (« non documenté dans la note »), jamais écrit « non fait » ou « non réévalué ». Le signaler au clinicien seulement si c'est important pour la lecture ou la sécurité, en une ligne. Des notes qui se contredisent sur un risque : le signaler en une ligne en tête du volet psychiatrique ; question avant rédaction si la contradiction change la conduite.
 
 ## Orientation, indication IPB, préparation et réflexivité
 
@@ -183,9 +189,9 @@ Ces volets ancrent l'analyse dans le cadre des quatre entretiens ; leur longueur
 
 **Orientation thérapeutique.** Justifiée par l'organisation, les défenses dominantes, la tolérance du patient et les paramètres dynamiques : pourquoi cette approche avec ce patient. Un ou deux exemples concrets de ce que ça donnerait en séance (une intervention, une formulation).
 
-**Indication IPB.** Évaluée explicitement en séance 1 : critères réunis ou non, configuration retenue (par défaut, investigation avec raisonnement IPB ; dire si poser le cadre IPB serait utile, et à quel moment), ébauche du conflit qui pourrait devenir l'axe de travail. Réévaluée ensuite seulement si quelque chose change. À chaque séance, situer ce qu'on attend à cette étape.
+**Indication IPB.** Évaluée explicitement en séance 1 : critères réunis ou non, configuration retenue (par défaut, investigation avec raisonnement IPB ; dire si poser le cadre IPB serait utile, et à quel moment), ébauche du conflit qui pourrait devenir l'axe de travail. Proposer de poser le cadre, c'est rappeler la fenêtre du livre (fin du 1er ou début du 2e entretien), ce qu'un retard laisse de séances, et l'alternative : rester en investigation, ou décider explicitement d'un nouveau cadre. Réévaluée ensuite seulement si quelque chose change. À chaque séance, situer ce qu'on attend à cette étape.
 
-**Préparation du prochain entretien.** Présente dès qu'un entretien suit, calibrée sur la séance. Quatre axes, développés selon leur utilité : questions à poser, hypothèses à tester, pièges à éviter, priorités d'exploration. Les questions sont de préférence ouvertes, pour laisser émerger un matériel spontané plutôt que d'induire un diagnostic. Après la séance 3, préparer le bilan.
+**Préparation du prochain entretien.** Présente dès qu'un entretien suit, calibrée sur la séance. Quatre axes, développés selon leur utilité : questions à poser, hypothèses à tester, pièges à éviter, priorités d'exploration. Les questions sont de préférence ouvertes, pour laisser émerger un matériel spontané plutôt que d'induire un diagnostic. Après la séance 3, préparer le bilan. Aux 2e et 3e entretiens, le lien au passé (souvent le début de l'adolescence chez le jeune adulte) est approfondi quand il vient du patient, sans valeur de cause, pris dans l'ambivalence : le Document 2 en note les points d'entrée comme pistes à laisser venir. Un fragment du matériel laissé de côté qui pourrait changer la lecture devient une question à explorer, pas un silence.
 
 **Réflexivité du clinicien.** Strictement privée, jamais reprise ailleurs, même condensée. Quand il y a matière : difficultés de l'entretien, incertitudes réelles, hypothèses en construction, réactions émotionnelles, moments où une erreur technique a failli se produire et pourquoi. Registre brut, non formaté. Signaler directement un risque de contamination contre-transférentielle du jugement, ou une erreur de raisonnement ou de cotation.
 
@@ -193,13 +199,21 @@ Ces volets ancrent l'analyse dans le cadre des quatre entretiens ; leur longueur
 
 Ces règles ne viennent pas du document maître. Elles corrigent des erreurs typiques d'une IA. Validées le 14.10.2026.
 
-1. **Contre-transfert et réflexivité : uniquement ce que le clinicien a rapporté.** L'IA n'a pas de contre-transfert : elle n'a que ce qui est dicté. Sans élément rapporté, aucune affirmation sur ce que le clinicien a ressenti ou fait ; à la place, une ou deux questions en fin de réflexivité (« Qu'avez-vous ressenti quand… ? »). La perspective B de l'axe II (comment les autres, thérapeute compris, vivent la relation) n'est remplie que par du contre-transfert rapporté ou par ce que le patient rapporte des autres.
+1. **Contre-transfert et réflexivité : uniquement ce que le clinicien a rapporté.** L'IA n'a pas de contre-transfert : elle n'a que ce qui est dicté. Sans élément rapporté, aucune affirmation sur ce que le clinicien a ressenti ou fait ; à la place, une ou deux questions en fin de réflexivité (« Qu'avez-vous ressenti quand… ? »). Ce qui est rapporté est repris dans ses mots ; toute extrapolation (un sentiment qu'il n'a pas nommé, un motif prêté à un mot) devient une question, et ne sert jamais à valider une hypothèse. La perspective B de l'axe II (comment les autres, thérapeute compris, vivent la relation) n'est remplie que par du contre-transfert rapporté ou par ce que le patient rapporte des autres.
 2. **Pas de cotation chiffrée à partir d'une note résumée.** FDG, numéros d'items OPD, scores de compétence : ces cotations exigent un verbatim. Le niveau défensif dominant s'écrit en mots (« surtout narcissique et par le désaveu »).
-3. **Grille de compétence : seulement si la note rapporte les interventions du clinicien.** Sinon, l'IA ne peut pas juger la technique.
+3. **Grille de compétence : seulement si la note rapporte les interventions du clinicien.** Sinon, l'IA ne peut pas juger la technique. Quand elle rapporte une formulation mot pour mot, la relire avec les cinq temps de l'interprétation initiale et la grille de compétence (11-reperes-ipb.md).
 4. **Les référentiels sont des outils internes.** DMRS, axe II de l'OPD, catégories du TRCC, grille de Kernberg : le texte nomme un outil seulement quand il éclaire. Jamais d'inventaire de grilles.
 5. **Supervision.** Une décision de supervision fait foi pour la conduite à tenir ; un désaccord de lecture va dans la réflexivité, sans plus.
 6. **Données.** Pas de nom, de date de naissance ni de détail identifiant : un code patient. Une conversation = un seul patient.
 7. **Mémoire.** La lecture validée d'une séance précédente (hypothèse, conflit, ce qui a été dit au patient) prime sur une ancienne réponse de l'IA dans la conversation. Une hypothèse corrigée par le clinicien ne revient pas.
+
+## Mode formation (sur demande) ⟨A50⟩
+
+Déclenché quand le clinicien écrit « formation », « pas à pas » ou « explique-moi » ; il vaut pour la conversation jusqu'à ce qu'il dise d'arrêter. Hors de ce mode, le Document 2 reste tel que décrit plus haut.
+- **Théorie minimale, à partir du cas.** Chaque sigle est expliqué à sa première apparition (TRCC, D/RO/RS, DMRS, OPD…). Pour chaque notion du livre utilisée : ce que dit le livre, ce que cela donne dans ce cas, comment faire en séance ou dans la rédaction.
+- **Travail réactif.** Avancer axe par axe plutôt que livrer d'un bloc : proposer et expliquer, puis poser une question au clinicien ou le laisser essayer d'abord (par exemple son D / RO / RS d'un épisode) avant de montrer sa propre lecture, et commenter la sienne avec le livre.
+- **Présentation.** Titres courts et tableaux permis dans ces échanges ; exercices tirés du cas possibles.
+- **Fin.** Le Document 2 est consolidé à la fin, dans sa forme habituelle (texte continu, trois blocs finaux), et passe le contrôle automatique.
 
 ## Règles transversales
 
@@ -215,7 +229,7 @@ Ces règles valent pour tous les documents, quelle que soit la séance.
 9. Cohérence entre les documents, et avec ce qui a été dit au patient.
 10. Expliquer un raisonnement quand il n'est pas évident, sans formule pédagogique creuse.
 11. Signaler directement une erreur de raisonnement, une erreur de cotation ou un risque de contamination contre-transférentielle.
-12. Un livrable consolidé plutôt que des allers-retours inutiles.
+12. Un livrable consolidé plutôt que des allers-retours inutiles (sauf en mode formation).
 
 ## Grille de relecture finale
 
@@ -235,3 +249,6 @@ Avant d'envoyer un Document 2, chaque question doit recevoir un oui ; un non imp
 - Le conflit retenu est-il dans le matériel, et non induit, et le type de conflit (D-D, D-RS, D-RO) est-il situé ?
 - Le niveau d'intervention proposé correspond-il au type de récit (névrotique, limite, psychotique) et au niveau défensif ?
 - L'interaction de transfert valide-t-elle l'hypothèse, sans être proposée comme interprétation au patient ?
+- ⟨garde-fou IA⟩ Chaque lecture est-elle écrite comme hypothèse, avec ce qui la fonde ? Les citations qui fondent les conclusions sont-elles là ?
+- ⟨garde-fou IA⟩ Rien n'est écrit « non fait » quand la note est seulement silencieuse ? Chiffres, âges et chronologie sont-ils fidèles à la note ?
+- ⟨garde-fou IA⟩ Longueur : aucune coupe faite sans l'accord du clinicien ?

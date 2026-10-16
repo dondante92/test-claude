@@ -114,3 +114,24 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 | A34 | Idéalisation / dévalorisation | Ne signent pas à elles seules une organisation limite. |
 | A35 | Livrable par défaut, séances 2 à 4 | Document 2 ; note de suite sur demande (« Note de suite : »). |
 | A36 | Orientation sexuelle | Interdite dans notes, synthèses, G2, Document 3, courriers ; permise dans le Document 2 seulement si cliniquement centrale (avertissement du script). |
+
+## Analyse IPB — décisions du 16.10.2026 (premier bilan d'un Document 2)
+
+| N° | Point | Décision |
+|---|---|---|
+| A37 | Longueur | 1500 mots = signal, pas limite. Au-delà : version complète, longueur signalée, version condensée proposée avec ce qu'elle retirerait. Jamais de coupe sans accord. |
+| A38 | Condensation | Retire des conclusions secondaires, jamais les citations ni les éléments qui fondent les conclusions gardées. |
+| A39 | Hypothèses | Écrites comme hypothèses, avec ce qui les fonde et ce qui les ferait tomber ; chercher l'élément contraire avant d'écrire. |
+| A40 | Pondération | Un passage qui ressemble à une réponse à une question compte comme relance ; marques (S)/(Q) du clinicien font foi. |
+| A41 | Demande explicite | Le Document 2 s'ouvre par la demande du patient, dans ses mots. |
+| A42 | Déclencheur | Cherché par ce qu'il a déséquilibré, pas par sa gravité (un événement heureux peut l'être). |
+| A43 | Passé | Aux 2e et 3e entretiens, points d'entrée vers le passé notés comme pistes à laisser venir, non étiologiques. Fragment laissé de côté qui pourrait changer la lecture → question. |
+| A44 | Contre-indications | Passées en revue dans les Documents 2 des premières séances. |
+| A45 | Attribution | Douteuse et portant le transfert ou le contre-transfert → question avant rédaction, sinon hypothèse. |
+| A46 | Contre-transfert | Repris dans les mots du clinicien ; toute extrapolation devient une question et ne valide rien. |
+| A47 | Silence de la note | Un point non mentionné (risque suicidaire compris) est lu comme exploré sans élément notable, pas comme oublié. Mention possible « non documenté dans la note », jamais « non fait ». Signalé au clinicien seulement si important. Contradiction sur un risque : une ligne en tête du volet psychiatrique ; question si elle change la conduite. |
+| A48 | CIM-10 | Source lue nommée (OFS, sinon OMS) ; à défaut, critère « non vérifié » ; jamais de mémoire. |
+| A49 | Cadre IPB | Le proposer = rappeler la fenêtre du livre (fin 1er / début 2e), ce qu'un retard laisse de séances, et l'alternative. |
+| A50 | Mode formation | Sur demande (« formation », « pas à pas », « explique-moi ») : sigles expliqués, théorie à partir du cas, travail axe par axe avec question ou essai du clinicien d'abord, titres et tableaux permis ; Document 2 consolidé à la fin dans sa forme habituelle. Par défaut, rien ne change. |
+| A51 | Contrôle | Sur le script du projet, jamais une copie retapée ; sinon à la main, et le dire. Relire chiffres, âges, chronologie, et l'ordre des faits avant d'imputer un effet à une intervention. |
+| A52 | Suite annoncée ; plusieurs séances | Note qui annonce une suite → demander : attendre ou analyser. Plusieurs séances ensemble → garder le paragraphe indication / configuration. |

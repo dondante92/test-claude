@@ -238,7 +238,7 @@ function controlerDocument2(texte) {
   if (puces) r.av(`${puces} ligne(s) en liste dans le corps : texte continu attendu (listes admises seulement dans les blocs finaux)`);
   if (/\bFDG\b\s*(?:de|=|:|à)?\s*\d/.test(texte) || /\bitems?\s+\d+/i.test(texte)) r.av("cotation chiffrée (FDG, numéro d'item) : impossible sans verbatim ; écrire le niveau en mots");
   const mots = texte.split(/\s+/).filter(Boolean).length;
-  if (mots > d.longueur_max_mots) r.av(`${mots} mots : peut-il être lu en entier ? (repère : ${d.longueur_max_mots})`);
+  if (mots > d.longueur_max_mots) r.av(`${mots} mots (repère : ${d.longueur_max_mots}) : livrer la version complète, signaler la longueur et proposer une version condensée en disant ce qu'elle retirerait ; jamais de coupe sans accord`);
   return r;
 }
 

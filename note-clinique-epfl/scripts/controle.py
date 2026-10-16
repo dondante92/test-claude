@@ -417,7 +417,8 @@ def controler_document2(texte, regles, fiche, r):
         r.avert("cotation chiffrée (FDG, numéro d'item) : impossible sans verbatim ; écrire le niveau en mots")
     mots = len(texte.split())
     if mots > d["longueur_max_mots"]:
-        r.avert(f"{mots} mots : peut-il être lu en entier ? (repère : {d['longueur_max_mots']})")
+        r.avert(f"{mots} mots (repère : {d['longueur_max_mots']}) : livrer la version complète, signaler la longueur "
+                "et proposer une version condensée en disant ce qu'elle retirerait ; jamais de coupe sans accord")
 
 
 # ---------------------------------------------------------------- nettoie

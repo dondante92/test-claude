@@ -31,6 +31,20 @@ Paramètres (en bas à gauche) :
   - `Analyse (Document 2), séance n° :`
   - `G1/G2`, `Document 3`, `Courrier d'adressage`
 - `Enchaîne` : il continue sans s'arrêter, sauf question bloquante.
+- `Formation` (ou `pas à pas`) : pour l'analyse, il explique les sigles et le livre à partir du cas, avance axe par axe et vous laisse essayer avant de donner sa lecture ; le Document 2 vient à la fin.
+
+## Ce qui aide le plus l'analyse (dans vos notes)
+
+- Marquez **(S)** ce que le patient a dit spontanément et **(Q)** ce qui répond à une de vos questions.
+- Trois à cinq phrases du patient mot pour mot.
+- Vos interventions importantes, et sa réaction immédiate.
+- Une ligne sur ce que vous avez ressenti.
+- Son âge.
+- Ce que vous n'écrivez pas (le risque suicidaire par exemple) est lu comme exploré sans élément notable, pas comme oublié.
+
+## Mettre à jour le projet après une modification des règles
+
+Remplacez seulement les fichiers indiqués dans le message de mise à jour : dans « Connaissances du projet », supprimez l'ancien fichier (même nom), puis chargez le nouveau. Si `instructions.txt` a changé : effacez les instructions du projet et collez le nouveau texte en entier. Les conversations déjà ouvertes gardent l'ancienne version : ouvrez une nouvelle conversation.
 
 ## Ce qui change par rapport à ChatGPT
 
