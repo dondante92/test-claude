@@ -16,6 +16,10 @@
 - **Format court** : collez une situation ou posez une question (« Analyse cette situation : … »).
 - **Format long** : collez les notes d'entretien en précisant la séance (« Séance 2 : … »).
 
+## Retour sur vos interventions
+
+Notez vos interventions importantes **avec vos mots**, et la réaction du patient. Chaque réponse se termine alors par « Retour sur vos interventions » : ce que vous avez fait, comment ça s'appelle (TCC, IPB ou commun), critique, comment faire, puis votre posture.
+
 ## Quand vous mettez le document à jour
 
 Remplacez seulement `TCC-document-maitre.md` dans les Connaissances (supprimer l'ancien, charger le nouveau). Les instructions ne changent pas.
