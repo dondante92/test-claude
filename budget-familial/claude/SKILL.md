@@ -52,6 +52,17 @@ Reprends toujours les chiffres du script ; montre sa sortie quand tu dis l'avoir
 - **Montrer à deux** : rappelle le bouton « Vue foyer » du tableau (masque le détail des dépenses personnelles).
 - **Résumé pour le couple** : une page simple, sans jargon, à partir du rapport.
 
+## Visionneuse interactive (artifact)
+
+Quand l'utilisateur écrit « visionneuse », « artifact », « tableau interactif » ou veut explorer son budget dans Claude :
+1. Lis `$SK/scripts/tableau_modele.html` et crée un **artifact HTML** avec son contenu **exact et complet** (ne résume rien, ne retire rien).
+2. Sans données intégrées, l'artifact affiche « Ouvrir mon tableau » : l'utilisateur y choisit son dernier `tableau-budget-….html` ; la page s'en souvient (« Rouvrir le dernier tableau »). Tout reste dans la page.
+3. Explique en 3 lignes : menu des rubriques en haut, « Comment lire ? » dans chaque rubrique, toucher un chiffre affiche ses transactions, ‹ › change de mois, « Vue foyer » pour regarder à deux.
+
+Pour **améliorer l'affichage**, modifie l'artifact directement (nouvelle rubrique, graphique, couleurs, ordre) et itère avec l'utilisateur jusqu'à ce qu'il soit satisfait. Garde intacts : la fonction `demarre(D)` (D = {etat, calcul, categories, genere_le}), le repère `<!--ETAT-->` et le bloc de chargement. Quand la version plaît, reporte-la dans `scripts/tableau_modele.html` d'une copie de la skill (étape suivante) : les prochains tableaux auront le même affichage.
+
+Pour une vue rapide sans artifact : `graphiques`, puis montre l'image.
+
 ## Faire évoluer l'outil
 
 L'utilisateur veut améliorer l'outil au fil du temps.

@@ -14,6 +14,8 @@ Raccourcis :
 « maj » + captures ou relevés : mise à jour complète.
 « relevés » + PDF PostFinance : import des relevés mensuels.
 « bilan » : où on en est.
+« visionneuse » : crée l'artifact interactif du tableau de bord (j'y ouvre mon dernier tableau) ; ensuite, j'améliore l'affichage avec toi dans cet artifact.
+« montre » : le tableau de bord en image dans la conversation.
 « et si … » : simulation sans toucher à l'état.
 « mode récupération de déficit » / « mode mois chargé » / « mode événement planifié » : plan chiffré.
 « résumé pour le couple » : une page simple pour en parler à deux.

@@ -98,6 +98,15 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
+<div class="wrap" id="chargeur" hidden>
+  <h1>Budget du foyer</h1>
+  <section class="card" style="margin-top:14px">
+    <h2>Ouvrir mon tableau</h2>
+    <p>Choisissez le dernier fichier <b>tableau-budget-AAAA-MM-JJ.html</b> rendu par l'assistant (ou glissez-le ici). Rien n'est envoyé : tout reste dans cette page.</p>
+    <p><input type="file" id="fichier" accept=".html,.htm,.json"> <button id="dernier" hidden>Rouvrir le dernier tableau</button></p>
+    <p class="sub" id="chargeur-msg"></p>
+  </section>
+</div>
 <div class="wrap" id="app">
   <header>
     <div>
@@ -162,9 +171,9 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
 <div class="tip" id="tip"></div>
 <!--ETAT-->
 <script>
-(() => {
-const el = document.getElementById("etat-budget");
-const D = JSON.parse(el.textContent);
+function demarre(D) {
+document.getElementById("chargeur").hidden = true;
+document.getElementById("app").hidden = false;
 const E = D.etat, C = D.calcul, K = D.categories, N = C.noms;
 const $ = id => document.getElementById(id);
 const lab = s => String(s || "").replaceAll("{moi}", N.moi).replaceAll("{conjoint}", N.conjoint).replaceAll("{enfant}", N.enfant);
@@ -430,6 +439,50 @@ $("f-cat").onchange = e => { filtre.cat = e.target.value; filtre.ids = null; fil
 $("f-reset").onclick = () => { Object.assign(filtre, { q: "", env: "", cat: "", ids: null, titre: "" }); $("q").value = ""; $("f-env").value = ""; $("f-cat").value = ""; rendTx(); };
 $("foot").innerHTML = `Ce fichier contient tout l'historique du budget : le garder et le redonner à l'assistant avec les nouvelles captures. ${E.transactions.length} transactions · ${E.salaires.length} salaires · généré le ${new Date(D.genere_le).toLocaleString("fr-CH")}.`;
 rend();
+}
+
+// Le fichier peut être un tableau complet (données intégrées) ou une simple visionneuse :
+// sans données intégrées, il propose d'ouvrir un tableau-budget-….html, et se souvient du dernier ouvert.
+(() => {
+  const CLE = "budget-foyer-dernier";
+  const memoire = {
+    async lire() {
+      try { if (window.storage?.get) { const r = await window.storage.get(CLE); if (r?.value) return r.value; } } catch (e) {}
+      try { return localStorage.getItem(CLE); } catch (e) { return null; }
+    },
+    async ecrire(v) {
+      try { if (window.storage?.set) { await window.storage.set(CLE, v); return; } } catch (e) {}
+      try { localStorage.setItem(CLE, v); } catch (e) {}
+    },
+  };
+  const extrait = texte => {
+    const i = texte.indexOf("<scr" + 'ipt id="etat-budget" type="application/json">');
+    if (i >= 0) {
+      const j = texte.indexOf("</" + "script>", i);
+      return texte.slice(texte.indexOf(">", i) + 1, j).replaceAll("<\\/", "</");
+    }
+    return texte.trim().startsWith("{") ? texte : null;
+  };
+  const ouvre = async (brut, garder) => {
+    const D = JSON.parse(brut);
+    if (!D.calcul) throw new Error("Ce fichier ne contient pas de calculs : utiliser un tableau-budget-….html.");
+    if (garder) await memoire.ecrire(brut);
+    demarre(D);
+  };
+  const el = document.getElementById("etat-budget");
+  if (el) { demarre(JSON.parse(el.textContent)); return; }
+  document.getElementById("app").hidden = true;
+  const ch = document.getElementById("chargeur");
+  ch.hidden = false;
+  const msg = document.getElementById("chargeur-msg");
+  const lit = async f => {
+    try { const b = extrait(await f.text()); if (!b) throw new Error("Aucun budget trouvé dans ce fichier."); await ouvre(b, true); }
+    catch (e) { msg.textContent = e.message; }
+  };
+  document.getElementById("fichier").addEventListener("change", e => e.target.files[0] && lit(e.target.files[0]));
+  ch.addEventListener("dragover", e => e.preventDefault());
+  ch.addEventListener("drop", e => { e.preventDefault(); e.dataTransfer.files[0] && lit(e.dataTransfer.files[0]); });
+  memoire.lire().then(b => { if (b) { const btn = document.getElementById("dernier"); btn.hidden = false; btn.onclick = () => ouvre(b, false).catch(e => msg.textContent = e.message); } });
 })();
 </script>
 </body>

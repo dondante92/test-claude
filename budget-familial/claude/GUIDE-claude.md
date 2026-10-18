@@ -36,6 +36,17 @@ Dans le projet, nouvelle conversation : `Lance le test du moteur budget-foyer.` 
 - **Le jour du salaire** : joindre la fiche de salaire → `bilan du cycle`.
 - **Questions libres** : « pourquoi cette semaine est haute ? », « est-ce que je peux acheter… ? », « et si la crèche commence le 1er décembre ? », « résumé pour le couple ».
 
+## 5 bis. La visionneuse interactive (artifact)
+
+Dans une conversation du projet, écrivez `visionneuse`. Claude crée un **artifact** : le tableau de bord interactif, dans le panneau à droite (ou en plein écran sur téléphone).
+1. Touchez **Ouvrir mon tableau** et choisissez votre dernier `tableau-budget-….html`.
+2. Explorez : menu des rubriques, « Comment lire ? », toucher un chiffre pour voir ses achats, ‹ › pour changer de mois, « Vue foyer ».
+3. La visionneuse se souvient du dernier tableau ouvert (« Rouvrir le dernier tableau »).
+
+Pour **améliorer l'affichage**, restez dans cette conversation et demandez simplement : « ajoute un graphique de mes courses par semaine », « mets la projection tout en haut », « une rubrique Joud avec ses achats par mois ». Claude modifie l'artifact, vous voyez le résultat tout de suite. Quand c'est bien, dites « intègre-le à la skill » : il vous rend un nouveau `budget-foyer.zip`, et tous les prochains tableaux auront ce nouvel affichage.
+
+Le fichier `visionneuse.html` fourni fait la même chose hors de Claude : ouvrez-le dans Chrome et choisissez votre tableau.
+
 ## 6. Améliorer l'outil au fur et à mesure
 
 - **Une habitude** (« Migros Lavigny, c'est toujours mon repas ») ou un **paramètre** (budget jour, enveloppe, charges fixes) : dites-le simplement, Claude l'enregistre dans le tableau. Rien à réinstaller.
