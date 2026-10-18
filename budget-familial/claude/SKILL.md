@@ -27,6 +27,7 @@ python3 $SK/scripts/budget.py importer-releve ETAT.html RELEVE.pdf [...] -o SORT
 python3 $SK/scripts/budget.py importer ETAT.html nouvelles.json -o SORTIE.html             # captures lues par toi (format : methode.md § 3)
 python3 $SK/scripts/budget.py appliquer ETAT.html modifs.json -o SORTIE.html              # corrections, règles, ajustements, prévus, salaires, paramètres
 python3 $SK/scripts/budget.py rapport ETAT.html                                           # les 4 blocs
+python3 $SK/scripts/budget.py graphiques ETAT.html -o /mnt/user-data/outputs/graphiques     # tableau de bord en image (à montrer dans la conversation)
 python3 $SK/scripts/budget.py test                                                        # tests de non-régression
 ```
 
@@ -37,7 +38,7 @@ Si `pdfplumber` manque : `pip install pdfplumber` ; si l'installation est imposs
 1. **Relevés PDF** joints → `importer-releve` d'abord (ils priment sur les captures).
 2. **Captures** → lis chaque ligne (compte, date, libellé, montant signé, réservation ou non, devise ; soldes et ordres en suspens s'ils sont visibles). Recopie tout ce qui est visible, même déjà envoyé : le moteur élimine les doublons. Écris `nouvelles.json`, puis `importer`.
 3. Lis toute la sortie du script. Pour les transactions **à vérifier**, pose les questions **de façon interactive** : par lots de 3 à 4, chaque question avec 2 à 4 réponses proposées (ta proposition en premier) et la possibilité d'une réponse libre. Regroupe par commerçant. Si l'utilisateur dit « toujours » ou « d'habitude », crée une **règle** dans `modifs.json` (`regles`), pas une simple correction.
-4. `appliquer` les réponses, puis `rapport`.
+4. `appliquer` les réponses, puis `rapport` et `graphiques` : montre l'image `tableau-de-bord.png` dans la conversation.
 5. Réponds selon methode.md § 8 : ce qui a été lu → les 4 blocs (semaine par semaine, semaine en cours avec l'origine du dépassement, situation globale, projection prudente et réaliste) → **une** action concrète → le fichier à télécharger.
 
 Reprends toujours les chiffres du script ; montre sa sortie quand tu dis l'avoir exécuté.

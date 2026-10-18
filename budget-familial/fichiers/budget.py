@@ -979,6 +979,109 @@ def tableau_html(etat, res, cats):
     return gabarit.replace("/*__DONNEES__*/", "").replace("<!--ETAT-->", MARQUE_DEBUT + brut + MARQUE_FIN)
 
 
+def graphiques(etat, res, cats, dossier):
+    """Tableau de bord en images PNG, pour l'afficher directement dans la conversation."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    noms = res["noms"]
+    cyc = next(c for c in res["cycles"] if c["debut"] == res["cycle_courant"])
+    pos, proj = res.get("position"), res.get("projection")
+    BLEU, ORANGE, ROUGE, VERT, GRIS, ENCRE = "#2a78d6", "#eb6834", "#d03b3b", "#0ca30c", "#c9c7c0", "#52514e"
+    plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False,
+                         "axes.edgecolor": GRIS, "axes.labelcolor": ENCRE, "xtick.color": ENCRE, "ytick.color": ENCRE})
+    dossier = Path(dossier)
+    dossier.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(figsize=(11, 13), dpi=110)
+    g = fig.add_gridspec(4, 2, height_ratios=[0.32, 1.2, 1.2, 1.2], hspace=0.5, wspace=0.3)
+    # bandeau
+    ax = fig.add_subplot(g[0, :]); ax.axis("off")
+    sem = next((x for x in cyc["semaines"] if x["en_cours"]), None)
+    tuiles = []
+    if pos:
+        tuiles += [("Cash", pos["cash"]), ("Dette carte", -pos["dette_carte"]), ("Position nette", pos["nette"])]
+    if sem:
+        tuiles.append(("Reste cette semaine", sem["disponible"] - sem["depense"]))
+    if proj:
+        tuiles.append(("Veille du salaire", proj["scenarios"]["realiste"]["veille_salaire"]))
+    for i, (k, v) in enumerate(tuiles):
+        x = i / max(1, len(tuiles))
+        ax.text(x + 0.01, 0.75, k, fontsize=10, color=ENCRE, transform=ax.transAxes)
+        ax.text(x + 0.01, 0.2, chf(round(v)).split(".")[0], fontsize=20, weight="bold",
+                color=ROUGE if v < 0 else "#0b0b0b", transform=ax.transAxes)
+    fig.suptitle(f"Budget du foyer · cycle {cyc['debut'][8:]}.{cyc['debut'][5:7]} → {cyc['fin'][8:]}.{cyc['fin'][5:7]} · soldes du "
+                 f"{pos['date'][8:]}.{pos['date'][5:7] if pos else ''}", x=0.06, ha="left", fontsize=14, weight="bold")
+    # semaines
+    ax = fig.add_subplot(g[1, 0])
+    S = [x for x in cyc["semaines"] if not x.get("non_suivi")]
+    xs = range(len(S))
+    dispo = [x["normal"] if x["futur"] else max(0, x["disponible"]) for x in S]
+    dep = [0 if x["futur"] else x["depense"] for x in S]
+    ax.bar(xs, dispo, color="none", edgecolor=GRIS, linestyle="--", linewidth=1.3, width=0.62, label="disponible")
+    ax.bar(xs, [min(a, b) for a, b in zip(dep, dispo)], color=BLEU, width=0.62, label="dépensé")
+    ax.bar(xs, [max(0, a - b) for a, b in zip(dep, dispo)], bottom=dispo, color=ROUGE, width=0.62, label="dépassement")
+    for i, x in enumerate(S):
+        if not x["futur"]:
+            ax.text(i, max(dep[i], dispo[i]) + 10, f"{dep[i]:.0f}", ha="center", fontsize=9, weight="bold")
+    ax.set_xticks(list(xs), [f"{x['debut'][8:]}.{x['debut'][5:7]}" for x in S])
+    ax.set_title("Semaine par semaine (budget 30/j + 200/week-end, avec report)", loc="left", fontsize=10.5)
+    ax.legend(frameon=False, fontsize=8, loc="upper left")
+    # semaine en cours
+    ax = fig.add_subplot(g[1, 1])
+    sc = res.get("semaine_courante")
+    if sc:
+        L = sorted(sc["lignes"], key=lambda l: (not l["base"], -l["montant"]))[:8][::-1]
+        ys = range(len(L))
+        cols = [ROUGE if l["cible"] and l["montant"] > l["cible"] else BLEU for l in L]
+        ax.barh(ys, [l["montant"] for l in L], color=cols, height=0.55)
+        for i, l in enumerate(L):
+            if l["cible"]:
+                ax.plot([l["cible"]] * 2, [i - 0.38, i + 0.38], color="#0b0b0b", linewidth=2)
+            ax.text(l["montant"] + 3, i, f"{l['montant']:.0f}" + (f" / {l['cible']:.0f}" if l["cible"] else ""), va="center", fontsize=9)
+        ax.set_yticks(list(ys), [l["label"][:26] for l in L])
+        ax.set_title(f"Semaine du {sc['semaine']['debut'][8:]}.{sc['semaine']['debut'][5:7]} : {sc['semaine']['depense']:.0f} sur "
+                     f"{sc['semaine']['disponible']:.0f} (trait = cible)", loc="left", fontsize=10.5)
+        ax.margins(x=0.25)
+    # enveloppes
+    ax = fig.add_subplot(g[2, 0])
+    E = [(label(cats["enveloppes"][k], noms), v) for k, v in cyc["enveloppes"].items() if v["budget"] > 0][::-1]
+    for i, (n, v) in enumerate(E):
+        r = v["depense"] / v["budget"]
+        ax.barh(i, 1, color="#f0efec", height=0.5)
+        ax.barh(i, min(r, 1), color=ROUGE if r > 1 else "#fab219" if r > 0.85 else BLEU, height=0.5)
+        ax.text(1.02, i, f"{v['depense']:.0f} / {v['budget']:.0f}  (reste {v['reste']:.0f})", va="center", fontsize=9)
+    ax.set_yticks(range(len(E)), [n for n, _ in E]); ax.set_xticks([]); ax.set_xlim(0, 1.75)
+    ax.spines["bottom"].set_visible(False)
+    ax.set_title("Enveloppes du cycle", loc="left", fontsize=10.5)
+    # projection
+    ax = fig.add_subplot(g[2, 1])
+    if proj:
+        pts = ["aujourdhui", "veille_salaire", "apres_salaire", "fin_cycle_suivant"]
+        lab = ["aujourd'hui", "veille\nsalaire", "après\nsalaire", "fin cycle\nsuivant"]
+        for k, n, c in (("realiste", "Réaliste", BLEU), ("prudent", "Prudent", ORANGE)):
+            v = [proj["scenarios"][k][p_] for p_ in pts]
+            ax.plot(range(4), v, color=c, linewidth=2, marker="o", label=n)
+            ax.text(3.08, v[-1], f"{n} {v[-1]:.0f}", color=c, va="bottom" if k == "realiste" else "top", fontsize=9, weight="bold")
+        ax.axhline(0, color=ENCRE, linewidth=0.8)
+        ax.set_xticks(range(4), lab); ax.legend(frameon=False, fontsize=8); ax.set_xlim(-0.2, 3.9)
+        ax.set_title("Projection (position nette)", loc="left", fontsize=10.5)
+    # où va l'argent
+    ax = fig.add_subplot(g[3, :])
+    P = [(label(cats["categories"].get(k, {}).get("label", k), noms), v) for k, v in cyc["par_categorie"].items() if v > 0.5][::-1]
+    ax.barh(range(len(P)), [v for _, v in P], color=BLEU, height=0.6)
+    for i, (_, v) in enumerate(P):
+        ax.text(v + 15, i, f"{v:.0f}", va="center", fontsize=9)
+    ax.set_yticks(range(len(P)), [n for n, _ in P])
+    ax.set_title(f"Où va l'argent ce cycle : {cyc['consommation']:.0f} CHF (hors transferts)", loc="left", fontsize=10.5)
+    ax.margins(x=0.12)
+    if sc:
+        fig.text(0.06, 0.005, "Verdict : " + sc["verdict"], fontsize=10, style="italic", color=ENCRE)
+    chemin = dossier / "tableau-de-bord.png"
+    fig.savefig(chemin, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return [chemin]
+
+
 def ecrit(etat, chemin, cats, auj=None):
     chemin = Path(chemin)
     etat["mis_a_jour"] = dt.datetime.now().isoformat(timespec="minutes")
@@ -1123,7 +1226,7 @@ def tests():
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for nom in ("init", "importer", "importer-releve", "appliquer", "rapport", "tableau", "exporter"):
+    for nom in ("init", "importer", "importer-releve", "appliquer", "rapport", "tableau", "exporter", "graphiques"):
         s = sp.add_parser(nom)
         s.add_argument("etat")
         if nom in ("importer", "appliquer"):
@@ -1146,6 +1249,10 @@ def main():
         print(rapport_texte(etat, calcule(etat, a.date, cats), cats))
         return
     etat = charge_etat(a.etat)
+    if a.cmd == "graphiques":
+        for c in graphiques(etat, calcule(etat, a.date, cats), cats, a.sortie or "graphiques"):
+            print(f"Image : {c}")
+        return
     if a.cmd in ("importer", "importer-releve"):
         if a.cmd == "importer-releve":
             sys.path.insert(0, str(ICI))
