@@ -83,6 +83,15 @@ svg .strong { fill: var(--text); font-weight: 600; }
 .hide-foyer .perso-detail { display: none; }
 details summary { cursor: pointer; color: var(--text-2); font-size: 14px; }
 .empty { color: var(--muted); font-size: 14px; }
+nav.menu { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 8px 0 10px; margin: 0 0 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); }
+nav.menu::-webkit-scrollbar { display: none; }
+nav.menu a { flex: 0 0 auto; text-decoration: none; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; font-size: 13px; white-space: nowrap; }
+nav.menu a:active { background: var(--surface-2); }
+.aide { font-size: 13px; color: var(--text-2); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; margin: -2px 0 10px; }
+.aide summary { cursor: pointer; color: var(--text-2); font-size: 12px; }
+.aide p { margin: 6px 0 0; }
+#c-guide ol { margin: 6px 0 0 18px; padding: 0; } #c-guide li { margin: 4px 0; }
+#c-guide code { background: var(--surface-2); padding: 1px 6px; border-radius: 6px; font-size: 13px; }
 footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
 @media (max-width: 600px) { #tx th:nth-child(4), #tx td:nth-child(4) { display: none; } .row { grid-template-columns: minmax(90px, 1fr) 1.3fr auto; } }
 @media print { .ctrl, #tx-ctrl { display: none; } .card { break-inside: avoid; } }
@@ -104,20 +113,26 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
     </div>
   </header>
 
+  <nav class="menu" aria-label="Rubriques">
+    <a href="#c-auj">Aujourd'hui</a><a href="#c-frise">Frise</a><a href="#c-semaines">Semaines</a><a href="#c-semaine">Cette semaine</a>
+    <a href="#c-env">Enveloppes</a><a href="#c-proj">Projection</a><a href="#c-water">Salaire</a><a href="#c-cat">Où va l'argent</a>
+    <a href="#c-norm">Mois normal</a><a href="#c-alertes">Alertes</a><a href="#c-tx">Transactions</a><a href="#c-guide">Mode d'emploi</a>
+  </nav>
   <div class="grid">
-    <section class="card" id="c-auj"><h2>Aujourd'hui</h2><div class="tiles" id="tiles"></div></section>
-    <section class="card" id="c-frise"><h2>Frise du cycle</h2><div class="frise" id="frise"></div><div class="legend" id="frise-leg"></div></section>
-    <section class="card w6" id="c-semaines"><h2>Semaine par semaine</h2><div id="semaines-svg"></div><div class="scroll"><table id="semaines"></table></div></section>
-    <section class="card w6" id="c-semaine"><h2 id="t-semaine">Semaine en cours</h2><div id="semaine"></div></section>
-    <section class="card w6" id="c-env"><h2>Enveloppes du cycle</h2><div id="env"></div></section>
-    <section class="card w6" id="c-proj"><h2>Projection</h2><div id="proj"></div></section>
-    <section class="card w6" id="c-water"><h2>Où part le salaire</h2><div id="water"></div></section>
-    <section class="card w6" id="c-cat"><h2>Où va l'argent</h2><div id="cats"></div></section>
-    <section class="card w6" id="c-norm"><h2>Mois normal</h2><div id="norm"></div></section>
-    <section class="card w6" id="c-alertes"><h2>Alertes et à vérifier</h2><div id="alertes"></div></section>
+    <section class="card" id="c-auj"><h2>Aujourd'hui</h2>
+      <details class="aide"><summary>Comment lire ?</summary><p><b>Cash</b> = ce qu'il y a sur le compte. <b>Dette carte</b> = achats déjà faits avec la carte de crédit (réservations comprises). <b>Position nette</b> = cash − dette carte : votre vraie situation aujourd'hui, avant les factures à venir. <b>Reste cette semaine</b> = ce que vous pouvez encore dépenser jusqu'à dimanche dans le budget 30/jour + 200/week-end.</p></details><div class="tiles" id="tiles"></div></section>
+    <section class="card" id="c-frise"><h2>Frise du cycle</h2><details class="aide"><summary>Comment lire ?</summary><p>Du jour du salaire à la veille du suivant. Chaque bloc = une semaine : vert dans le budget, orange proche, rouge dépassé. Le chiffre = ce qui reste après report. Touchez un bloc pour voir ses achats.</p></details><div class="frise" id="frise"></div><div class="legend" id="frise-leg"></div></section>
+    <section class="card w6" id="c-semaines"><h2>Semaine par semaine</h2><details class="aide"><summary>Comment lire ?</summary><p>Pointillés = ce que vous aviez le droit de dépenser (budget normal + reste ou dépassement de la semaine d'avant). Bleu = dépensé, rouge = au-delà. Touchez une barre ou une ligne pour voir les achats.</p></details><div id="semaines-svg"></div><div class="scroll"><table id="semaines"></table></div></section>
+    <section class="card w6" id="c-semaine"><h2 id="t-semaine">Semaine en cours</h2><details class="aide"><summary>Comment lire ?</summary><p>Chaque poste face à sa cible (trait noir). « Base » = courses et dépenses perso : s'ils dépassent souvent, c'est le fonctionnement normal qui coûte plus. Les autres postes peuvent varier selon les événements. Touchez un poste pour voir ses achats.</p></details><div id="semaine"></div></section>
+    <section class="card w6" id="c-env"><h2>Enveloppes du cycle</h2><details class="aide"><summary>Comment lire ?</summary><p>Chaque poche d'argent du cycle : dépensé / prévu, puis le reste. Le coussin non utilisé est reporté au mois suivant. Touchez une enveloppe pour voir ce qu'elle a payé.</p></details><div id="env"></div></section>
+    <section class="card w6" id="c-proj"><h2>Projection</h2><details class="aide"><summary>Comment lire ?</summary><p>Votre position nette à quatre moments. Prudent = vous ne dépensez plus que l'essentiel. Réaliste = vous vivez normalement. Sous 0 = déficit. Le point « fin cycle suivant » dit si le déficit se résorbe.</p></details><div id="proj"></div></section>
+    <section class="card w6" id="c-water"><h2>Où part le salaire</h2><details class="aide"><summary>Comment lire ?</summary><p>Du salaire au résultat du cycle : chaque barre orange est une sortie. Le paiement de la carte n'y figure pas : ce n'est pas une nouvelle dépense.</p></details><div id="water"></div></section>
+    <section class="card w6" id="c-cat"><h2>Où va l'argent</h2><details class="aide"><summary>Comment lire ?</summary><p>Les postes du plus gros au plus petit. L'exceptionnel (voyages, permis, formation) est à part pour ne pas fausser le mois normal. Touchez un poste pour voir ses achats.</p></details><div id="cats"></div></section>
+    <section class="card w6" id="c-norm"><h2>Mois normal</h2><details class="aide"><summary>Comment lire ?</summary><p>Ce qui reste chaque mois sans imprévu, avec vos règles actuelles. C'est votre capacité réelle à rembourser le déficit ou à épargner.</p></details><div id="norm"></div></section>
+    <section class="card w6" id="c-alertes"><h2>Alertes et à vérifier</h2><details class="aide"><summary>Comment lire ?</summary><p>Ce qui demande votre attention : échéances, réservations anciennes, achats encore à classer. Pour les classer, répondez aux questions de l'assistant.</p></details><div id="alertes"></div></section>
     <section class="card" id="c-appr"><h2>Ce que le foyer dépense vraiment</h2><div id="appr"></div></section>
     <section class="card" id="c-tx">
-      <h2>Transactions</h2>
+      <h2>Transactions</h2><details class="aide"><summary>Comment lire ?</summary><p>Toutes les opérations du cycle choisi. Cherchez un mot (Migros, Helsana, IQOS, {enfant}…) ou filtrez : le total se calcule seul. Pour corriger une ligne, dites-le à l'assistant (ex. « le Galaxus du 12.10 est pour {enfant} »).</p></details>
       <div class="ctrl" id="tx-ctrl" style="margin-bottom:8px">
         <input type="search" id="q" placeholder="Rechercher…" aria-label="Rechercher">
         <select id="f-env" aria-label="Enveloppe"></select>
@@ -126,6 +141,20 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
         <span class="sub" id="tx-total"></span>
       </div>
       <div class="scroll"><table id="tx"></table></div>
+    </section>
+    <section class="card" id="c-guide">
+      <h2>Mode d'emploi</h2>
+      <p><b>Ce fichier se lit, il ne se modifie pas.</b> Tout changement passe par l'assistant (projet ChatGPT ou Claude), qui vous rend un nouveau fichier à jour.</p>
+      <ol>
+        <li><b>Explorer</b> : utilisez le menu en haut, touchez n'importe quel chiffre ou barre pour voir les achats qui le composent, changez de mois avec ‹ ›.</li>
+        <li><b>Mettre à jour</b> : joignez ce fichier + vos captures PostFinance (ou les relevés PDF du mois) et écrivez <code>maj</code> (ou <code>relevés</code>).</li>
+        <li><b>Corriger</b> : « <code>le Galaxus du 12.10 est pour {enfant}</code> », « <code>Migros Lavigny, c'est toujours mon repas</code> » (« toujours » = règle retenue).</li>
+        <li><b>Changer une règle</b> : « <code>passe le budget jour à 28</code> », « <code>coussin à 600 en novembre</code> », « <code>active l'argent personnel de {conjoint} dès le 23.11</code> ».</li>
+        <li><b>Prévoir</b> : « <code>prévois la visite de ma famille du 15 au 22.12, 600 CHF</code> ».</li>
+        <li><b>Simuler</b> : « <code>et si la crèche commence le 1er décembre, 3 jours par semaine ?</code> ».</li>
+        <li><b>Comprendre</b> : « <code>montre</code> », « <code>pourquoi cette semaine est haute ?</code> », « <code>résumé pour en parler à deux</code> ».</li>
+      </ol>
+      <p class="sub">Le bouton « Vue foyer » en haut masque le détail des dépenses personnelles, pour regarder le budget à deux.</p>
     </section>
   </div>
   <footer id="foot"></footer>
@@ -384,6 +413,7 @@ function rendTx() {
   }).join("");
 }
 
+document.querySelectorAll(".aide p, #c-guide").forEach(n => { n.innerHTML = lab(n.innerHTML); });
 // contrôles
 $("cycle").innerHTML = C.cycles.map((c, i) => `<option value="${i}">${dfr(c.debut)} → ${dfr(c.fin)}${c.en_cours ? " (en cours)" : ""}</option>`).join("");
 $("cycle").value = idx;
