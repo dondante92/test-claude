@@ -204,7 +204,8 @@ function rendFrise(cy) {
   cy.semaines.forEach((s, i) => {
     const w = s.jours / tot * 100;
     let bg = "var(--surface-2)", txt = "à venir";
-    if (!s.futur) { const r = s.depense / Math.max(1, s.disponible); bg = s.depense > s.disponible ? "color-mix(in srgb, var(--crit) 35%, var(--surface))" : r > .85 ? "color-mix(in srgb, var(--warn) 40%, var(--surface))" : "color-mix(in srgb, var(--good) 30%, var(--surface))"; txt = fmt(s.disponible - s.depense); }
+    if (s.non_suivi) { txt = "non suivi"; }
+    else if (!s.futur) { const r = s.depense / Math.max(1, s.disponible); bg = s.depense > s.disponible ? "color-mix(in srgb, var(--crit) 35%, var(--surface))" : r > .85 ? "color-mix(in srgb, var(--warn) 40%, var(--surface))" : "color-mix(in srgb, var(--good) 30%, var(--surface))"; txt = fmt(s.disponible - s.depense); }
     h += `<div class="seg" data-i="${i}" style="left:${x(s.debut)}%;width:calc(${w}% - 2px);background:${bg}">${txt}</div>`;
   });
   if (C.aujourd_hui >= cy.debut && C.aujourd_hui <= cy.fin) h += `<div class="today" style="left:${x(C.aujourd_hui) + 0.5 / tot * 100}%"><span>aujourd'hui</span></div>`;
@@ -232,7 +233,7 @@ function rendSemaines(cy) {
     const x0 = pad.l + i * bw + bw * .18, w = bw * .64;
     const dispo = s.futur ? s.normal : Math.max(0, s.disponible);
     g += `<rect x="${x0}" y="${y(dispo)}" width="${w}" height="${y(0) - y(dispo)}" rx="4" fill="none" stroke="var(--neutral)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
-    if (!s.futur) {
+    if (!s.futur && !s.non_suivi) {
       const dep = Math.max(0, s.depense), within = Math.min(dep, dispo), over = dep - within;
       g += `<rect x="${x0}" y="${y(within)}" width="${w}" height="${Math.max(0, y(0) - y(within))}" rx="4" fill="var(--s1)"/>`;
       if (over > 0) g += `<rect x="${x0}" y="${y(dep)}" width="${w}" height="${y(within) - y(dep) - 2}" rx="4" fill="var(--crit)"/>`;
@@ -244,7 +245,7 @@ function rendSemaines(cy) {
   $("semaines-svg").innerHTML = `<div class="legend"><span><i style="background:var(--s1)"></i>dépensé</span><span><i style="background:var(--crit)"></i>au-delà du disponible</span><span><i style="border:1.5px dashed var(--neutral)"></i>disponible (normal + report)</span></div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Dépenses par semaine">${g}</svg>`;
   $("semaines-svg").querySelectorAll(".hit").forEach(n => { const s = S[+n.dataset.i]; bindTip(n, `<b>${dfr(s.debut)}–${dfr(s.fin)}</b> (${s.jours} j${s.weekend ? ", week-end" : ""})<br>normal ${fmt(s.normal)}${s.futur ? "" : `<br>report entrant ${fmt(s.report_entrant)}<br>dépensé ${fmt(s.depense)} → solde ${fmt(s.report_sortant)}`}`); n.onclick = () => montre(s.ids, `semaine du ${dfr(s.debut)}`); });
   $("semaines").innerHTML = `<tr><th>Semaine</th><th class="num">Normal</th><th class="num">Report</th><th class="num">Dispo</th><th class="num">Dépensé</th><th class="num">Solde</th></tr>` +
-    S.map((s, i) => `<tr class="click ${s.en_cours ? "now" : ""}" data-i="${i}"><td>${dfr(s.debut)}–${dfr(s.fin)}${s.en_cours ? " ●" : ""}</td><td class="num">${fmt(s.normal)}</td><td class="num">${s.futur ? "" : fmt(s.report_entrant)}</td><td class="num">${s.futur ? "" : fmt(s.disponible)}</td><td class="num">${s.futur ? "" : fmt(s.depense)}</td><td class="num ${s.report_sortant < 0 ? "neg" : ""}">${s.futur ? "" : fmt(s.report_sortant)}</td></tr>`).join("") +
+    S.map((s, i) => s.non_suivi ? `<tr><td>${dfr(s.debut)}–${dfr(s.fin)}</td><td class="num">${fmt(s.normal)}</td><td colspan="4" class="sub">avant le début du suivi</td></tr>` : `<tr class="click ${s.en_cours ? "now" : ""}" data-i="${i}"><td>${dfr(s.debut)}–${dfr(s.fin)}${s.en_cours ? " ●" : ""}</td><td class="num">${fmt(s.normal)}</td><td class="num">${s.futur ? "" : fmt(s.report_entrant)}</td><td class="num">${s.futur ? "" : fmt(s.disponible)}</td><td class="num">${s.futur ? "" : fmt(s.depense)}</td><td class="num ${s.report_sortant < 0 ? "neg" : ""}">${s.futur ? "" : fmt(s.report_sortant)}</td></tr>`).join("") +
     (cy.ajustements.length ? `<tr><td colspan="6" class="sub">${cy.ajustements.map(a => `Ajustement ${fmt2(a.montant)} : ${envLabel(a.de)} → ${envLabel(a.vers)}${a.motif ? " (" + esc(a.motif) + ")" : ""}`).join("<br>")}</td></tr>` : "");
   $("semaines").querySelectorAll("tr.click").forEach(n => n.onclick = () => { const s = S[+n.dataset.i]; montre(s.ids, `semaine du ${dfr(s.debut)}`); });
 }

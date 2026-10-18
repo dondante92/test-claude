@@ -54,6 +54,7 @@ PARAMETRES_DEFAUT = {
     "frais_change": 0.015,
     "limite_carte": 5000.0,
     "reserve_cible": 1000.0,
+    "debut_suivi": None,
     "comptes_liquides": ["courant"],
     "comptes_epargne": [],
     "fixes": [],
@@ -277,8 +278,14 @@ def proches(a, b, jours, tolerance):
 def importe(etat, lot, cats, regles_defaut):
     """lot = {"transactions": [...], "soldes": {...} | [...], "source": "capture du ..."}"""
     p = etat["parametres"]
-    rapport = {"ajoutees": [], "doublons": [], "remplacees": [], "a_verifier": [], "soldes": 0}
+    rapport = {"ajoutees": [], "doublons": [], "remplacees": [], "a_verifier": [], "soldes": 0, "debut_suivi": None}
     existantes = [t for t in etat["transactions"] if t["statut"] not in ("remplace",)]
+    if not existantes and not p.get("debut_suivi") and lot.get("transactions"):
+        premiere = min(d(t["date"]) for t in lot["transactions"])
+        p["debut_suivi"] = (premiere - dt.timedelta(days=premiere.weekday())).isoformat()
+        rapport_debut = p["debut_suivi"]
+    else:
+        rapport_debut = None
     stock = Counter((t["compte"], t["date"], normalise(t["libelle"]), t["montant"])
                     for t in existantes if t["statut"] in ("comptabilise", "reservation", "estimation", "ordre"))
     vus_lot = Counter()
@@ -346,6 +353,7 @@ def importe(etat, lot, cats, regles_defaut):
                                          "remboursements": 0, "variable": 0, "estimation": True,
                                          "note": "Créé depuis le relevé ; préciser avec la fiche de salaire."})
                 etat["salaires"].sort(key=lambda s: s["date"])
+    rapport["debut_suivi"] = rapport_debut
     note_journal(etat, "importer", {k: len(v) if isinstance(v, list) else v for k, v in rapport.items()})
     return rapport
 
@@ -495,7 +503,9 @@ def calcule(etat, aujourd_hui=None, cats=None):
         cyc = {"debut": c["debut"], "fin": c["fin"], "salaire": c["salaire"], "estime_fin": c["estime_fin"],
                "en_cours": c["debut"] <= auj <= c["fin"], "futur": auj < c["debut"]}
         txc = [t for t in tx if t["_cycle"] == c["debut"]]
-        ajc = [a for a in etat["ajustements"] if (a.get("cycle") or cycle_de(a["date"], liste)) == c["debut"]]
+        debut_suivi = p.get("debut_suivi")
+        ajc = [a for a in etat["ajustements"] if (a.get("cycle") or cycle_de(a["date"], liste)) == c["debut"]
+               and not (debut_suivi and (a.get("semaine") or a["date"]) < debut_suivi)]
         # --- semaines
         segs = segments(c["debut"], c["fin"], p)
         report = report_var if p["report_entre_cycles"] else 0.0
@@ -520,14 +530,19 @@ def calcule(etat, aujourd_hui=None, cats=None):
                       "par_categorie": {k: arrondi(v) for k, v in sorted(par_cat.items(), key=lambda x: -x[1])},
                       "cibles": {k: cible_prorata(v, s["jours"]) for k, v in p["cibles_semaine"].items()},
                       "en_cours": s["debut"] <= auj <= s["fin"], "futur": auj < s["debut"],
+                      "non_suivi": bool(debut_suivi and s["fin"] < debut_suivi),
                       "ids": [t["id"] for t in sem]})
+            if s["non_suivi"]:
+                # semaine antérieure au début du suivi : pas de données complètes, donc ni solde ni report
+                s.update({"report_entrant": 0.0, "disponible": s["normal"], "report_sortant": None})
+                continue
             s["report_sortant"] = arrondi(s["disponible"] - s["depense"]) if not s["futur"] else None
             if not s["futur"]:
                 report = s["disponible"] - s["depense"]
         report_var = report
         cyc["semaines"] = segs
-        normal_total = sum(s["normal"] for s in segs)
-        dep_var = sum(s["depense"] for s in segs if not s["futur"])
+        normal_total = sum(s["normal"] for s in segs if not s["non_suivi"])
+        dep_var = sum(s["depense"] for s in segs if not s["futur"] and not s["non_suivi"])
         # --- enveloppes
         def env_total(nom):
             v = sum(depense(t) for t in txc if t["enveloppe"] == nom)
@@ -808,7 +823,9 @@ def rapport_texte(etat, res, cats):
     L.append("| Semaine | Normal | Report entrant | Disponible | Dépensé | Solde / report |")
     L.append("|---|---:|---:|---:|---:|---:|")
     for s in cyc["semaines"]:
-        if s["futur"]:
+        if s["non_suivi"]:
+            L.append(f"| {s['debut'][5:]}→{s['fin'][5:]} (avant le début du suivi) | {chf(s['normal'])} | | | {chf(s['depense'])} (partiel) | |")
+        elif s["futur"]:
             L.append(f"| {s['debut'][5:]}→{s['fin'][5:]} (à venir) | {chf(s['normal'])} | | | | |")
         else:
             L.append(f"| {s['debut'][5:]}→{s['fin'][5:]}{' (en cours)' if s['en_cours'] else ''} | {chf(s['normal'])} | {chf(s['report_entrant'])} | "
@@ -997,6 +1014,16 @@ def tests():
     r = calcule(e, "2026-10-06", cats)
     verifie("report négatif : 410 − 80 = 330 disponibles", r["cycles"][0]["semaines"][1]["disponible"] == 330)
 
+    # 11. premier import en cours de cycle : semaines antérieures non évaluées, pas de faux report positif
+    e = base()
+    e["ajustements"] = [{"id": "a1", "date": "2026-09-26", "montant": 201.76, "de": "semaine", "vers": "enfant"}]
+    importe(e, {"transactions": [{"date": "2026-10-13", "compte": "carte", "libelle": "Migros", "montant": -100}]}, cats, regles)
+    r = calcule(e, "2026-10-14", cats)
+    c = r["cycles"][0]
+    sem = next(s for s in c["semaines"] if s["en_cours"])
+    verifie("début du suivi au 12.10 : semaine en cours sans report fictif", e["parametres"]["debut_suivi"] == "2026-10-12"
+            and sem["report_entrant"] == 0 and c["enveloppes"]["enfant"]["depense"] == 0)
+
     for nom, v in ok:
         print(("OK   " if v else "ÉCHEC ") + nom)
     n_ko = sum(not v for _, v in ok)
@@ -1033,6 +1060,8 @@ def main():
     if a.cmd == "importer":
         lot = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
         r = importe(etat, lot, cats, regles)
+        if r["debut_suivi"]:
+            print(f"Premier import : suivi semaine par semaine à partir du {r['debut_suivi']} (les semaines précédentes ne sont pas évaluées).")
         print(f"Ajoutées : {len(r['ajoutees'])} · doublons ignorés : {len(r['doublons'])} · réservations/estimations finalisées : "
               f"{len(r['remplacees'])} · soldes : {r['soldes']} · à vérifier : {len(r['a_verifier'])}")
         for t in r["doublons"]:

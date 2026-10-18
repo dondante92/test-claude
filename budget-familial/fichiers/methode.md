@@ -33,6 +33,10 @@ Pour chaque capture, identifier :
 - **la devise** : pour un achat en EUR non encore converti, donner `montant_devise` (négatif), `devise` et `taux` (taux du jour, cherché sur le web si besoin). Le moteur ajoute 1,5 % de frais et remplacera l'estimation par le montant CHF final.
 - **les soldes** si visibles : solde du compte courant, montant comptabilisé de la carte, réservations de la carte, paiements de carte « en route », ordres en suspens (avec `type: "paiement_carte"` pour le paiement de la carte).
 
+**Ordres en suspens** : si la capture ne montre que leur total (« Afficher les ordres en suspens … 4'271.32 »), ne pas l'interpréter : demander la capture du détail (toucher la ligne), car il contient souvent le paiement de la carte (déjà compté dans la dette) et des charges fixes. Sans détail, ne rien soustraire et le signaler.
+
+**Premier import en cours de cycle** : le moteur fixe automatiquement le début du suivi au lundi de la plus ancienne capture ; les semaines d'avant sont affichées « non suivies » (ni solde ni report). Le dire en une ligne, sans en faire un problème.
+
 Ne recopier que ce qui est lisible. Un chiffre illisible ou coupé = le signaler, ne pas l'inventer. Les captures se chevauchent : envoyer **toutes** les lignes visibles, le moteur élimine les doublons (et garde deux cafés identiques le même jour).
 
 Format du fichier `nouvelles.json` :
