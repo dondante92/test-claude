@@ -1,44 +1,983 @@
 {
-  "_info": "Règles par défaut (commerçants suisses courants). Elles ne remplacent jamais le contexte : confiance 'basse' = l'IA doit demander. Les règles propres au foyer (dans l'état) passent avant celles-ci, et une correction manuelle passe avant tout. Conditions : contient (un des mots, sans accents, minuscules), compte, sens ('sortie'/'entree'), montant_min / montant_max (valeur absolue CHF).",
+  "_info": "Règles par défaut (commerçants suisses courants). Elles ne remplacent jamais le contexte : confiance 'basse' = l'IA doit demander. Les règles propres au foyer (dans l'état) passent avant celles-ci, et une correction manuelle passe avant tout. Conditions : contient (un des mots, sans accents, minuscules), compte, sens ('sortie'/'entree'), montant_min / montant_max (valeur absolue CHF). Les relevés de carte ajoutent le type de commerce (ex. « Station-service »), utilisé par les règles « mcc-* » en dernier recours.",
   "regles": [
-    {"id": "carte-paiement-debit", "priorite": 100, "si": {"contient": ["carte de credit", "facture carte", "postfinance visa", "postfinance mastercard", "remboursement carte", "paiement carte", "credit card"], "compte": "courant", "sens": "sortie"}, "alors": {"categorie": "flux", "sous_categorie": "paiement carte", "lien": "paiement_carte"}},
-    {"id": "carte-paiement-credit", "priorite": 100, "si": {"contient": ["paiement", "versement", "merci", "payment", "remboursement"], "compte": "carte", "sens": "entree"}, "alors": {"categorie": "flux", "sous_categorie": "paiement carte reçu", "lien": "paiement_carte"}},
-    {"id": "salaire", "priorite": 95, "si": {"contient": ["salaire", "chuv", "hospices", "etat de vaud", "lohn"], "sens": "entree", "montant_min": 3000}, "alors": {"categorie": "revenu", "sous_categorie": "salaire"}},
-    {"id": "virement-propre", "priorite": 90, "si": {"contient": ["revolut", "virement compte propre", "transfert entre comptes", "epargne"]}, "alors": {"categorie": "flux", "sous_categorie": "virement interne", "confiance": "moyenne"}},
-    {"id": "retrait", "priorite": 90, "si": {"contient": ["retrait", "bancomat", "postomat", "atm", "cash"], "sens": "sortie"}, "alors": {"categorie": "especes", "confiance": "basse"}},
-    {"id": "twint", "priorite": 20, "si": {"contient": ["twint"]}, "alors": {"categorie": "a_verifier", "confiance": "basse"}},
-
-    {"id": "loyer", "priorite": 80, "si": {"contient": ["loyer", "gerance", "regie", "immobilier"], "sens": "sortie", "montant_min": 500}, "alors": {"categorie": "fixes", "sous_categorie": "loyer"}},
-    {"id": "lamal", "priorite": 70, "si": {"contient": ["helsana", "groupe mutuel", "assura", "css", "swica", "sanitas", "visana", "concordia", "kpt", "atupri", "sympany", "philos", "mutuel"]}, "alors": {"categorie": "fixes", "sous_categorie": "assurance", "confiance": "moyenne"}},
-    {"id": "credits", "priorite": 70, "si": {"contient": ["cembra", "heylight", "cashgate", "bank-now", "byjuno", "klarna", "powerpay"]}, "alors": {"categorie": "fixes", "sous_categorie": "crédit"}},
-    {"id": "telecom", "priorite": 70, "si": {"contient": ["salt", "swisscom", "sunrise", "wingo", "yallo", "m-budget mobile", "upc", "quickline"]}, "alors": {"categorie": "fixes", "sous_categorie": "télécom"}},
-    {"id": "abonnements", "priorite": 70, "si": {"contient": ["openai", "chatgpt", "anthropic", "claude.ai", "spotify", "netflix", "youtube", "google", "apple.com", "icloud", "disney", "rakuten", "capcut", "amazon prime", "canal+", "dazn", "blue tv"]}, "alors": {"categorie": "fixes", "sous_categorie": "abonnement"}},
-    {"id": "frais-banque", "priorite": 70, "si": {"contient": ["frais de tenue", "cotisation carte", "frais bancaires", "prix du forfait", "smart", "frais de compte"], "sens": "sortie", "montant_max": 60}, "alors": {"categorie": "fixes", "sous_categorie": "banque"}},
-    {"id": "energie", "priorite": 70, "si": {"contient": ["romande energie", "services industriels", "sil lausanne", "groupe e", "sig ", "serafe"]}, "alors": {"categorie": "obligations", "sous_categorie": "électricité"}},
-    {"id": "admin", "priorite": 70, "si": {"contient": ["population", "migration", "permis", "administration cantonale", "impots", "aci ", "commune de", "amende", "police", "radar", "office des"]}, "alors": {"categorie": "ponctuel", "sous_categorie": "administratif", "confiance": "moyenne"}},
-    {"id": "formation", "priorite": 70, "si": {"contient": ["unil", "universite", "epfl", "arbitration", "academy", "fmh", "isfm", "siwf", "sspp", "asmac", "vsao"]}, "alors": {"categorie": "ponctuel", "sous_categorie": "formation", "confiance": "moyenne"}},
-
-    {"id": "boucherie", "priorite": 60, "si": {"contient": ["boucherie", "halal", "metzgerei"]}, "alors": {"categorie": "courses", "sous_categorie": "boucherie"}},
-    {"id": "boulangerie", "priorite": 60, "si": {"contient": ["boulangerie", "patisserie", "bakery", "panetteria", "bachmann"]}, "alors": {"categorie": "courses", "sous_categorie": "appoints"}},
-    {"id": "supermarches", "priorite": 50, "si": {"contient": ["migros", "coop", "denner", "lidl", "aldi", "aligro", "volg", "spar", "manor food", "carrefour", "leclerc", "intermarche", "auchan", "marche"]}, "alors": {"categorie": "courses", "sous_categorie": "courses principales", "confiance": "moyenne"}},
-    {"id": "kiosque", "priorite": 55, "si": {"contient": ["migrolino", "coop pronto", "k kiosk", "kkiosk", "press & books", "iqos", "tabac"], "montant_max": 40}, "alors": {"categorie": "perso_moi", "sous_categorie": "tabac", "confiance": "moyenne"}},
-
-    {"id": "essence", "priorite": 50, "si": {"contient": ["eni", "shell", "bp ", "avia", "tamoil", "migrol", "socar", "agrola", "esso", "ruedi russel", "total"], "montant_min": 25}, "alors": {"categorie": "voiture", "sous_categorie": "essence"}},
-    {"id": "station-petit", "priorite": 50, "si": {"contient": ["eni", "shell", "bp ", "avia", "tamoil", "migrol", "socar", "agrola", "esso", "total"], "montant_max": 24.99}, "alors": {"categorie": "perso_moi", "sous_categorie": "tabac", "confiance": "moyenne"}},
-    {"id": "parking", "priorite": 50, "si": {"contient": ["parking", "parcmetre", "easypark", "parkingpay", "twint parking", "onepark"]}, "alors": {"categorie": "voiture", "sous_categorie": "parking"}},
-    {"id": "transport-public", "priorite": 50, "si": {"contient": ["cff", "sbb", " tl ", "transports lausannois", "mobilis", "publibike", "uber", "taxi"]}, "alors": {"categorie": "voiture", "sous_categorie": "transport public"}},
-
-    {"id": "pharmacie", "priorite": 50, "si": {"contient": ["pharmacie", "benu", "amavita", "sun store", "sunstore", "apopharma", "zur rose", "dropa", "medbase", "toppharm"]}, "alors": {"categorie": "sante", "confiance": "moyenne", "note": "Vérifier le bénéficiaire (enfant ?)"}},
-    {"id": "medecin", "priorite": 50, "si": {"contient": ["dr ", "dre ", "cabinet", "medical", "dentiste", "osteo", "physio", "laboratoire", "hopital"]}, "alors": {"categorie": "sante", "confiance": "moyenne"}},
-
-    {"id": "bricolage", "priorite": 45, "si": {"contient": ["ikea", "jumbo", "obi", "hornbach", "do it", "landi", "conforama", "pfister", "maisons du monde", "action", "tedi", "nordisk"]}, "alors": {"categorie": "maison", "sous_categorie": "aménagement", "confiance": "moyenne"}},
-    {"id": "en-ligne", "priorite": 30, "si": {"contient": ["galaxus", "digitec", "brack", "amazon", "aliexpress", "temu", "interdiscount", "fust", "mediamarkt"]}, "alors": {"categorie": "maison", "confiance": "basse", "note": "Finalité à préciser : maison, enfant, perso ?"}},
-    {"id": "enfant-magasins", "priorite": 45, "si": {"contient": ["babywalz", "baby", "vertbaudet", "smyths", "pharmapets", "pampers", "mothercare", "jacadi", "okaidi", "petit bateau"]}, "alors": {"categorie": "enfant", "confiance": "moyenne"}},
-    {"id": "vetements", "priorite": 40, "si": {"contient": ["h&m", "zara", "c&a", "manor", "zalando", "kiabi", "primark", "uniqlo", "decathlon", "ochsner", "bershka", "mango", "snipes", "vögele", "chicoree"]}, "alors": {"categorie": "vetements", "confiance": "moyenne"}},
-
-    {"id": "restaurants", "priorite": 40, "si": {"contient": ["restaurant", "cafe", "caffe", "starbucks", "mcdonald", "burger", "kebab", "pizza", "sushi", "brasserie", "bar ", "uber eats", "smood", "just eat", "eat.ch", "takeaway"]}, "alors": {"categorie": "sorties", "confiance": "moyenne"}},
-    {"id": "loisirs", "priorite": 40, "si": {"contient": ["pathe", "cinema", "ticketcorner", "musee", "zoo", "aquaparc", "piscine", "fitness"]}, "alors": {"categorie": "sorties"}},
-    {"id": "voyage", "priorite": 40, "si": {"contient": ["easyjet", "swiss.com", "tunisair", "nouvelair", "booking", "airbnb", "hotel", "lyria", "sncf", "flixbus"]}, "alors": {"categorie": "ponctuel", "sous_categorie": "voyage", "confiance": "moyenne"}},
-    {"id": "cadeaux-dons", "priorite": 40, "si": {"contient": ["don ", "fondation", "unicef", "msf", "croix-rouge", "cadeau", "fleuriste"]}, "alors": {"categorie": "ponctuel", "sous_categorie": "don / cadeau", "confiance": "moyenne"}}
+    {
+      "id": "carte-paiement-debit",
+      "priorite": 100,
+      "si": {
+        "contient": [
+          "carte de credit",
+          "facture carte",
+          "postfinance visa",
+          "postfinance mastercard",
+          "remboursement carte",
+          "paiement carte",
+          "credit card",
+          "credit cards",
+          "card center"
+        ],
+        "compte": "courant",
+        "sens": "sortie"
+      },
+      "alors": {
+        "categorie": "flux",
+        "sous_categorie": "paiement carte",
+        "lien": "paiement_carte"
+      }
+    },
+    {
+      "id": "carte-paiement-credit",
+      "priorite": 100,
+      "si": {
+        "contient": [
+          "paiement",
+          "versement",
+          "merci",
+          "payment",
+          "remboursement"
+        ],
+        "compte": "carte",
+        "sens": "entree"
+      },
+      "alors": {
+        "categorie": "flux",
+        "sous_categorie": "paiement carte reçu",
+        "lien": "paiement_carte"
+      }
+    },
+    {
+      "id": "salaire",
+      "priorite": 95,
+      "si": {
+        "contient": [
+          "salaire",
+          "chuv",
+          "hospices",
+          "etat de vaud",
+          "lohn"
+        ],
+        "sens": "entree",
+        "montant_min": 3000
+      },
+      "alors": {
+        "categorie": "revenu",
+        "sous_categorie": "salaire"
+      }
+    },
+    {
+      "id": "virement-propre",
+      "priorite": 90,
+      "si": {
+        "contient": [
+          "revolut",
+          "virement compte propre",
+          "transfert entre comptes",
+          "epargne"
+        ]
+      },
+      "alors": {
+        "categorie": "flux",
+        "sous_categorie": "virement interne",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "retrait",
+      "priorite": 90,
+      "si": {
+        "contient": [
+          "retrait",
+          "bancomat",
+          "postomat",
+          "atm",
+          "cash"
+        ],
+        "sens": "sortie"
+      },
+      "alors": {
+        "categorie": "especes",
+        "confiance": "basse"
+      }
+    },
+    {
+      "id": "twint",
+      "priorite": 20,
+      "si": {
+        "contient": [
+          "twint"
+        ]
+      },
+      "alors": {
+        "categorie": "a_verifier",
+        "confiance": "basse"
+      }
+    },
+    {
+      "id": "loyer",
+      "priorite": 80,
+      "si": {
+        "contient": [
+          "loyer",
+          "gerance",
+          "regie",
+          "immobilier"
+        ],
+        "sens": "sortie",
+        "montant_min": 500
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "loyer"
+      }
+    },
+    {
+      "id": "lamal",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "helsana",
+          "groupe mutuel",
+          "assura",
+          "css",
+          "swica",
+          "sanitas",
+          "visana",
+          "concordia",
+          "kpt",
+          "atupri",
+          "sympany",
+          "philos",
+          "mutuel"
+        ]
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "assurance",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "credits",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "cembra",
+          "heylight",
+          "cashgate",
+          "bank-now"
+        ]
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "crédit"
+      }
+    },
+    {
+      "id": "telecom",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "salt",
+          "swisscom",
+          "sunrise",
+          "wingo",
+          "yallo",
+          "m-budget mobile",
+          "upc",
+          "quickline"
+        ]
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "télécom"
+      }
+    },
+    {
+      "id": "abonnements",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "openai",
+          "chatgpt",
+          "anthropic",
+          "claude.ai",
+          "spotify",
+          "netflix",
+          "youtube",
+          "google",
+          "apple.com",
+          "icloud",
+          "disney",
+          "rakuten",
+          "capcut",
+          "amazon prime",
+          "canal+",
+          "dazn",
+          "blue tv"
+        ]
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "abonnement"
+      }
+    },
+    {
+      "id": "frais-banque",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "frais de tenue",
+          "cotisation carte",
+          "frais bancaires",
+          "prix du forfait",
+          "smart",
+          "frais de compte",
+          "package bancaire",
+          "prix pour",
+          "commission pour retrait",
+          "majoration en chf"
+        ],
+        "sens": "sortie",
+        "montant_max": 60
+      },
+      "alors": {
+        "categorie": "fixes",
+        "sous_categorie": "banque"
+      }
+    },
+    {
+      "id": "energie",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "romande energie",
+          "services industriels",
+          "sil lausanne",
+          "groupe e",
+          "sig ",
+          "serafe"
+        ]
+      },
+      "alors": {
+        "categorie": "obligations",
+        "sous_categorie": "électricité"
+      }
+    },
+    {
+      "id": "admin",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "population",
+          "migration",
+          "permis",
+          "administration cantonale",
+          "impots",
+          "aci ",
+          "commune de",
+          "amende",
+          "police",
+          "radar",
+          "office des",
+          "ambassade",
+          "consulat",
+          "ville de lausanne"
+        ]
+      },
+      "alors": {
+        "categorie": "ponctuel",
+        "sous_categorie": "administratif",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "formation",
+      "priorite": 70,
+      "si": {
+        "contient": [
+          "unil",
+          "universite",
+          "epfl",
+          "arbitration",
+          "academy",
+          "fmh",
+          "isfm",
+          "siwf",
+          "sspp",
+          "asmac",
+          "vsao"
+        ]
+      },
+      "alors": {
+        "categorie": "ponctuel",
+        "sous_categorie": "formation",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "boucherie",
+      "priorite": 60,
+      "si": {
+        "contient": [
+          "boucherie",
+          "halal",
+          "metzgerei"
+        ]
+      },
+      "alors": {
+        "categorie": "courses",
+        "sous_categorie": "boucherie"
+      }
+    },
+    {
+      "id": "boulangerie",
+      "priorite": 60,
+      "si": {
+        "contient": [
+          "boulangerie",
+          "patisserie",
+          "bakery",
+          "panetteria",
+          "bachmann"
+        ]
+      },
+      "alors": {
+        "categorie": "courses",
+        "sous_categorie": "appoints"
+      }
+    },
+    {
+      "id": "supermarches",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "migros",
+          "coop",
+          "denner",
+          "lidl",
+          "aldi",
+          "aligro",
+          "volg",
+          "spar",
+          "manor food",
+          "carrefour",
+          "leclerc",
+          "intermarche",
+          "auchan",
+          "marche"
+        ]
+      },
+      "alors": {
+        "categorie": "courses",
+        "sous_categorie": "courses principales",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "kiosque",
+      "priorite": 55,
+      "si": {
+        "contient": [
+          "migrolino",
+          "coop pronto",
+          "k kiosk",
+          "kkiosk",
+          "press & books",
+          "iqos",
+          "tabac"
+        ],
+        "montant_max": 40
+      },
+      "alors": {
+        "categorie": "perso_moi",
+        "sous_categorie": "tabac",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "essence",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "eni",
+          "shell",
+          "bp ",
+          "avia",
+          "tamoil",
+          "migrol",
+          "socar",
+          "agrola",
+          "esso",
+          "ruedi russel",
+          "total"
+        ],
+        "montant_min": 25
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "essence"
+      }
+    },
+    {
+      "id": "station-petit",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "eni",
+          "shell",
+          "bp ",
+          "avia",
+          "tamoil",
+          "migrol",
+          "socar",
+          "agrola",
+          "esso",
+          "total"
+        ],
+        "montant_max": 24.99
+      },
+      "alors": {
+        "categorie": "perso_moi",
+        "sous_categorie": "tabac",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "parking",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "parking",
+          "parcmetre",
+          "easypark",
+          "parkingpay",
+          "twint parking",
+          "onepark",
+          "paybyphone",
+          "parkingpay-twint",
+          "stationnement"
+        ]
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "parking"
+      }
+    },
+    {
+      "id": "transport-public",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "cff",
+          "sbb",
+          " tl ",
+          "transports lausannois",
+          "mobilis",
+          "publibike",
+          "uber",
+          "taxi"
+        ]
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "transport public"
+      }
+    },
+    {
+      "id": "pharmacie",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "pharmacie",
+          "benu",
+          "amavita",
+          "sun store",
+          "sunstore",
+          "apopharma",
+          "zur rose",
+          "dropa",
+          "medbase",
+          "toppharm"
+        ]
+      },
+      "alors": {
+        "categorie": "sante",
+        "confiance": "moyenne",
+        "note": "Vérifier le bénéficiaire (enfant ?)"
+      }
+    },
+    {
+      "id": "medecin",
+      "priorite": 50,
+      "si": {
+        "contient": [
+          "dr ",
+          "dre ",
+          "cabinet",
+          "medical",
+          "dentiste",
+          "osteo",
+          "physio",
+          "laboratoire",
+          "hopital"
+        ]
+      },
+      "alors": {
+        "categorie": "sante",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "bricolage",
+      "priorite": 45,
+      "si": {
+        "contient": [
+          "ikea",
+          "jumbo",
+          "obi",
+          "hornbach",
+          "do it",
+          "landi",
+          "conforama",
+          "pfister",
+          "maisons du monde",
+          "action",
+          "tedi",
+          "nordisk"
+        ]
+      },
+      "alors": {
+        "categorie": "maison",
+        "sous_categorie": "aménagement",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "en-ligne",
+      "priorite": 30,
+      "si": {
+        "contient": [
+          "galaxus",
+          "digitec",
+          "brack",
+          "amazon",
+          "aliexpress",
+          "temu",
+          "interdiscount",
+          "fust",
+          "mediamarkt",
+          "temu",
+          "shein",
+          "otto's",
+          "manor"
+        ]
+      },
+      "alors": {
+        "categorie": "maison",
+        "confiance": "basse",
+        "note": "Finalité à préciser : maison, enfant, perso ?"
+      }
+    },
+    {
+      "id": "enfant-magasins",
+      "priorite": 45,
+      "si": {
+        "contient": [
+          "babywalz",
+          "baby",
+          "vertbaudet",
+          "smyths",
+          "pharmapets",
+          "pampers",
+          "mothercare",
+          "jacadi",
+          "okaidi",
+          "petit bateau"
+        ]
+      },
+      "alors": {
+        "categorie": "enfant",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "vetements",
+      "priorite": 40,
+      "si": {
+        "contient": [
+          "h&m",
+          "zara",
+          "c&a",
+          "manor",
+          "zalando",
+          "kiabi",
+          "primark",
+          "uniqlo",
+          "decathlon",
+          "ochsner",
+          "bershka",
+          "mango",
+          "snipes",
+          "vögele",
+          "chicoree",
+          "hennes",
+          "h m hennes",
+          "la redoute"
+        ]
+      },
+      "alors": {
+        "categorie": "vetements",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "restaurants",
+      "priorite": 40,
+      "si": {
+        "contient": [
+          "restaurant",
+          "cafe",
+          "caffe",
+          "starbucks",
+          "mcdonald",
+          "burger",
+          "kebab",
+          "pizza",
+          "sushi",
+          "brasserie",
+          "bar ",
+          "uber eats",
+          "smood",
+          "just eat",
+          "eat.ch",
+          "takeaway"
+        ]
+      },
+      "alors": {
+        "categorie": "sorties",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "loisirs",
+      "priorite": 40,
+      "si": {
+        "contient": [
+          "pathe",
+          "cinema",
+          "ticketcorner",
+          "musee",
+          "zoo",
+          "aquaparc",
+          "piscine",
+          "fitness"
+        ]
+      },
+      "alors": {
+        "categorie": "sorties"
+      }
+    },
+    {
+      "id": "voyage",
+      "priorite": 40,
+      "si": {
+        "contient": [
+          "easyjet",
+          "swiss.com",
+          "tunisair",
+          "nouvelair",
+          "booking",
+          "airbnb",
+          "hotel",
+          "lyria",
+          "sncf",
+          "flixbus",
+          "edreams",
+          "flix",
+          "flixbus",
+          "duty-free",
+          "avolta",
+          "newrest",
+          "agence de voyages",
+          "autobus, autocars"
+        ]
+      },
+      "alors": {
+        "categorie": "ponctuel",
+        "sous_categorie": "voyage",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "cadeaux-dons",
+      "priorite": 40,
+      "si": {
+        "contient": [
+          "don ",
+          "fondation",
+          "unicef",
+          "msf",
+          "croix-rouge",
+          "cadeau",
+          "fleuriste"
+        ]
+      },
+      "alors": {
+        "categorie": "ponctuel",
+        "sous_categorie": "don / cadeau",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "uber-eats",
+      "priorite": 56,
+      "si": {
+        "contient": [
+          "uber eats",
+          "eats",
+          "smood",
+          "just eat"
+        ]
+      },
+      "alors": {
+        "categorie": "sorties",
+        "sous_categorie": "livraison repas",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "paiement-differe",
+      "priorite": 75,
+      "si": {
+        "contient": [
+          "riverty",
+          "swissbilling",
+          "klarna",
+          "powerpay",
+          "byjuno",
+          "mf group"
+        ]
+      },
+      "alors": {
+        "categorie": "a_verifier",
+        "confiance": "basse",
+        "note": "Paiement d'une facture différée : de quel achat s'agit-il ?"
+      }
+    },
+    {
+      "id": "parking-semestriel",
+      "priorite": 76,
+      "si": {
+        "contient": [
+          "office du stationnement"
+        ],
+        "montant_min": 100
+      },
+      "alors": {
+        "categorie": "periodique",
+        "sous_categorie": "parking"
+      }
+    },
+    {
+      "id": "mcc-essence",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "station-service",
+          "self-service"
+        ]
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "essence",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-restaurant",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "restaurants, bar",
+          "restaurants"
+        ]
+      },
+      "alors": {
+        "categorie": "sorties",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-tabac",
+      "priorite": 60,
+      "si": {
+        "contient": [
+          "marchand de tabac",
+          "philip morris",
+          "iqos"
+        ]
+      },
+      "alors": {
+        "categorie": "perso_moi",
+        "sous_categorie": "tabac",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-parking",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "parking"
+        ]
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "parking",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-pharmacie",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "droguerie",
+          "pharmacie"
+        ]
+      },
+      "alors": {
+        "categorie": "sante",
+        "confiance": "moyenne",
+        "note": "Vérifier le bénéficiaire (enfant ?)"
+      }
+    },
+    {
+      "id": "mcc-vetements",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "magasin de vetements",
+          "chaussures"
+        ]
+      },
+      "alors": {
+        "categorie": "vetements",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-boulangerie",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "boulangerie"
+        ]
+      },
+      "alors": {
+        "categorie": "courses",
+        "sous_categorie": "appoints",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-alimentation",
+      "priorite": 12,
+      "si": {
+        "contient": [
+          "magasin d'alimentation"
+        ]
+      },
+      "alors": {
+        "categorie": "courses",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-loisirs",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "theatre",
+          "installations de loisirs",
+          "cinema"
+        ]
+      },
+      "alors": {
+        "categorie": "sorties",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-transport",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "services de transport",
+          "transport"
+        ]
+      },
+      "alors": {
+        "categorie": "voiture",
+        "sous_categorie": "transport public",
+        "confiance": "moyenne"
+      }
+    },
+    {
+      "id": "mcc-cadeaux",
+      "priorite": 15,
+      "si": {
+        "contient": [
+          "magasin de cadeaux"
+        ]
+      },
+      "alors": {
+        "categorie": "ponctuel",
+        "sous_categorie": "don / cadeau",
+        "confiance": "basse"
+      }
+    },
+    {
+      "id": "mcc-retrait",
+      "priorite": 91,
+      "si": {
+        "contient": [
+          "retrait d'argent"
+        ]
+      },
+      "alors": {
+        "categorie": "especes",
+        "confiance": "basse"
+      }
+    },
+    {
+      "id": "commission-retrait",
+      "priorite": 93,
+      "si": {
+        "contient": [
+          "commission pour retrait"
+        ]
+      },
+      "alors": {
+        "categorie": "obligations",
+        "sous_categorie": "frais bancaires"
+      }
+    },
+    {
+      "id": "poste",
+      "priorite": 45,
+      "si": {
+        "contient": [
+          "poste ch",
+          "la poste"
+        ],
+        "montant_max": 30
+      },
+      "alors": {
+        "categorie": "obligations",
+        "sous_categorie": "administratif",
+        "confiance": "moyenne"
+      }
+    }
   ]
 }

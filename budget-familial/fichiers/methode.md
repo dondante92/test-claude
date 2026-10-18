@@ -55,6 +55,12 @@ Format du fichier `nouvelles.json` :
 ```
 `categorie_proposee` et `enveloppe_proposee` : seulement quand le contexte (message du foyer, habitude connue) le justifie. Les règles du foyer et les corrections manuelles restent prioritaires.
 
+## 3 bis. Relevés PDF : la base exacte
+
+Chaque mois, PostFinance produit l'**extrait du compte privé** et la **facture de carte de crédit** (PDF). Ils s'importent avec `budget.py importer-releve` : chaque ligne est lue avec sa date d'achat, son commerçant, son type de commerce (« Station-service », « Restaurants, Bar »…), ses frais de change, et le script vérifie au centime la chaîne des soldes et le total de la facture. Les captures ne servent plus qu'à couvrir les jours **après** le dernier relevé ; quand le relevé suivant arrive, il remplace les lignes des captures (même compte, même montant, ±3 jours) sans doublon.
+
+Les ordres en suspens datés après la fin du cycle sont automatiquement comptés dans le cycle suivant ; seule la part qui dépasse les charges fixes prévues s'y ajoute (ex. un supplément d'assurance).
+
 ## 4. Anti-double-comptage (non négociable)
 
 1. Le **paiement de la carte** depuis le compte est un transfert vers une dette déjà comptée : catégorie `flux`. Le crédit correspondant sur la carte aussi.

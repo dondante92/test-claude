@@ -8,6 +8,7 @@ Durée : 10 minutes, une seule fois, depuis un ordinateur (chatgpt.com). Il faut
 |---|---|---|
 | `instructions.txt` | Le mode d'emploi de l'assistant | à coller dans les **instructions** du projet |
 | `fichiers/budget.py` | Le moteur : dédoublonnage, cycles, semaines, enveloppes, projection, tableau | fichiers du projet |
+| `fichiers/releves.py` | Lit les relevés PDF PostFinance (extrait de compte, facture de carte), vérifiés au centime | fichiers du projet |
 | `fichiers/tableau_modele.html` | Le gabarit du tableau de bord | fichiers du projet |
 | `fichiers/categories.json`, `fichiers/regles_commercants.json` | Catégories et commerçants suisses | fichiers du projet |
 | `fichiers/methode.md` | Toutes les règles (anti-double-comptage, modes, conseils) | fichiers du projet |
@@ -18,10 +19,10 @@ Durée : 10 minutes, une seule fois, depuis un ordinateur (chatgpt.com). Il faut
 
 1. chatgpt.com → menu de gauche → **Projets** → **Nouveau projet**. Nom : `Budget du foyer`.
 2. Ouvrir le projet → **Instructions** (icône ⋯ ou « Ajouter des instructions ») → coller **tout** `instructions.txt`.
-3. **Fichiers du projet** → ajouter les 6 fichiers : `budget.py`, `tableau_modele.html`, `categories.json`, `regles_commercants.json`, `methode.md`, `contexte-foyer.md`.
+3. **Fichiers du projet** → ajouter les 7 fichiers : `budget.py`, `releves.py`, `tableau_modele.html`, `categories.json`, `regles_commercants.json`, `methode.md`, `contexte-foyer.md`.
 4. Si l'option existe : mémoire du projet **limitée au projet**.
 
-> Alternative si les fichiers du projet ne sont pas accessibles à l'interpréteur de code : créer un **GPT** (Explorer les GPT → Créer → Configurer), coller les instructions, déposer les 6 fichiers dans **Connaissances** et cocher **Interpréteur de code**. Garder le GPT en « Seulement moi ».
+> Alternative si les fichiers du projet ne sont pas accessibles à l'interpréteur de code : créer un **GPT** (Explorer les GPT → Créer → Configurer), coller les instructions, déposer les 7 fichiers dans **Connaissances** et cocher **Interpréteur de code**. Garder le GPT en « Seulement moi ».
 
 ## 2. Confidentialité
 
@@ -40,6 +41,10 @@ Durée : 10 minutes, une seule fois, depuis un ordinateur (chatgpt.com). Il faut
 4. **Télécharger le nouveau `tableau-budget.html`** et remplacer l'ancien. C'est le seul fichier à conserver. Astuce : le garder dans un dossier iCloud ou Google Drive « Budget », pour l'ouvrir aussi sur le téléphone.
 
 Fiche de salaire : la joindre le jour du salaire avec les captures. L'assistant isole les remboursements, les rappels et les indemnités pour ne pas gonfler le salaire de référence.
+
+## 3 bis. Chaque mois : les relevés PDF
+
+Quand l'extrait du compte privé et la facture de carte de crédit du mois arrivent (application ou e-finance PostFinance → Documents), joignez-les avec le dernier tableau et écrivez `relevés`. Ils sont plus exacts que les captures : ils remplacent les lignes déjà saisies par captures, sans doublon. Ne les mettez pas dans les fichiers du projet.
 
 ## 4. Lire le tableau de bord
 

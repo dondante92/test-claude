@@ -77,7 +77,8 @@ def contient_mot(libelle_norm, mot):
     return re.search(r"(?<![a-z0-9])" + re.escape(mot) + r"(?![a-z0-9])", libelle_norm) is not None
 
 
-MOTS_VIDES = {"achat", "paiement", "carte", "debit", "card", "twint", "e-commerce", "ecommerce", "pos",
+MOTS_VIDES = {"achat", "paiement", "carte", "debit", "card", "twint", "e-commerce", "ecommerce", "pos", "samsung", "pay",
+              "service", "shopping", "ligne", "prestation", "fil", "wfs", "sumup", "zettle",
               "cr", "dr", "ch", "sa", "ag", "gmbh", "sarl", "the", "de", "du", "la", "le", "www", "com"}
 
 
@@ -196,7 +197,7 @@ def classe(tx, etat, cats, regles_defaut):
     """Applique : correction manuelle > règle du foyer > règle par défaut > à vérifier."""
     if tx.get("manuel"):
         return tx
-    lib = " " + normalise(tx.get("libelle", "")) + " "
+    lib = " " + normalise(" ".join(str(tx.get(k) or "") for k in ("libelle", "type_commerce", "type_operation"))) + " "
     choix = None
     for source, regles in (("foyer", etat.get("regles", [])), ("defaut", regles_defaut)):
         for r in sorted(regles, key=lambda r: -r.get("priorite", 50)):
@@ -297,15 +298,32 @@ def importe(etat, lot, cats, regles_defaut):
         if vus_lot[cle] <= stock[cle]:
             rapport["doublons"].append(tx)
             continue
+        tx["origine"] = lot.get("origine", tx.get("origine", "capture"))
+        jumeau = next((t for t in existantes if t["statut"] == "comptabilise" and tx["statut"] == "comptabilise"
+                       and t.get("origine", "capture") != tx["origine"] and not t.get("_apparie")
+                       and proches(t, tx, 3, 0.0)), None)
+        if jumeau is not None:
+            # même opération vue sur une capture et sur un relevé : le relevé (officiel) complète la capture
+            jumeau["_apparie"] = True
+            if tx["origine"] == "releve":
+                jumeau.setdefault("historique", []).append({"libelle": jumeau["libelle"], "date": jumeau["date"],
+                                                           "origine": jumeau.get("origine", "capture")})
+                jumeau.update({k: tx[k] for k in ("libelle", "date", "type_commerce", "type_operation", "date_comptable")
+                               if tx.get(k)} | {"origine": "releve"})
+            rapport["doublons"].append(tx)
+            continue
         # 2. réservation/estimation devenue définitive (ou reprise d'une ancienne capture)
         cible = None
         if tx["statut"] == "comptabilise":
-            for t in existantes:
-                if t["statut"] in ("reservation", "estimation", "ordre") and proches(t, tx, 7, 0.15 if t["statut"] != "estimation" else 0.10):
-                    cible = t
-                    break
+            cands = [t for t in existantes if t["statut"] in ("reservation", "estimation", "ordre") and t.get("lot") != id(lot)
+                     and proches(t, tx, 7, 0.15 if t["statut"] != "estimation" else 0.10)]
+            if cands:  # la plus proche en montant, puis en date
+                cible = min(cands, key=lambda t: (abs(abs(t["montant"]) - abs(tx["montant"])), abs((d(t["date"]) - d(tx["date"])).days)))
         elif tx["statut"] in ("reservation", "estimation"):
-            deja = [t for t in existantes if t["statut"] == "comptabilise" and proches(t, tx, 7, 0.15)]
+            # réservation renvoyée sur une ancienne capture alors qu'elle a déjà été finalisée
+            deja = [t for t in existantes if t["statut"] == "comptabilise" and proches(t, tx, 10, 0.15)
+                    and any(h.get("statut") == tx["statut"] and abs(abs(h.get("montant", 0)) - abs(tx["montant"])) < 0.01
+                            for h in t.get("historique", []))]
             if deja:
                 rapport["doublons"].append(tx)
                 continue
@@ -323,6 +341,7 @@ def importe(etat, lot, cats, regles_defaut):
         while any(t["id"] == tx["id"] for t in etat["transactions"]):
             tx["id"] = ident(tx, vus_lot[cle] + 100 + len(etat["transactions"]))
         tx["source"] = lot.get("source", tx.get("source"))
+        tx["lot"] = id(lot)
         classe(tx, etat, cats, regles_defaut)
         # un remboursement marchand hérite de la catégorie de l'achat d'origine
         if tx["montant"] > 0 and tx["categorie"] in ("a_verifier", "revenu") and tx.get("sous_categorie") != "salaire":
@@ -337,12 +356,20 @@ def importe(etat, lot, cats, regles_defaut):
         rapport["ajoutees"].append(tx)
         if tx["confiance"] == "basse" or tx["enveloppe"] == "a_verifier":
             rapport["a_verifier"].append(tx)
+    for t in existantes:
+        t.pop("_apparie", None)
+        t.pop("lot", None)
+    relie_paiements_carte(etat)
     soldes = lot.get("soldes")
     if soldes:
         for s in (soldes if isinstance(soldes, list) else [soldes]):
             s = dict(s)
             s["date"] = str(s["date"])[:10]
-            etat["soldes"] = [x for x in etat["soldes"] if x["date"] != s["date"]] + [s]
+            meme = next((x for x in etat["soldes"] if x["date"] == s["date"]), None)
+            if meme is not None:
+                meme.update(s)
+            else:
+                etat["soldes"].append(s)
             rapport["soldes"] += 1
         etat["soldes"].sort(key=lambda s: s["date"])
     # salaire reçu sans fiche : événement de salaire estimé
@@ -358,7 +385,32 @@ def importe(etat, lot, cats, regles_defaut):
     return rapport
 
 
+def relie_paiements_carte(etat):
+    """Débit du compte vers la carte ↔ crédit sur la carte, même montant à ±7 jours : deux flux liés."""
+    tx = [t for t in etat["transactions"] if t["statut"] == "comptabilise"]
+    debits = [t for t in tx if t["compte"] != "carte" and t["montant"] < 0 and t.get("sous_categorie") == "paiement carte"]
+    credits = [t for t in tx if t["compte"] == "carte" and t["montant"] > 0 and t["categorie"] == "flux"]
+    for db in debits:
+        for cr in credits:
+            if abs(cr["montant"] + db["montant"]) < 0.01 and abs((d(cr["date"]) - d(db["date"])).days) <= 7:
+                db["lien"], cr["lien"] = cr["id"], db["id"]
+
+
 # ---------------------------------------------------------------- corrections, ajustements, prévus
+
+def corrige(t, c, cats):
+    champs = {k: v for k, v in c.items() if k not in ("id", "cherche", "motif", "tous")}
+    if "categorie" in champs and champs["categorie"] not in cats["categories"]:
+        raise ValueError(f"Catégorie inconnue : {champs['categorie']}")
+    if "categorie" in champs and "enveloppe" not in champs:
+        champs["enveloppe"] = cats["categories"][champs["categorie"]]["enveloppe"]
+    t.setdefault("historique", []).append({k: t.get(k) for k in champs} | {"corrige_le": dt.date.today().isoformat(),
+                                                                            "motif": c.get("motif")})
+    t.update(champs)
+    if any(k in champs for k in ("categorie", "enveloppe", "beneficiaire", "sous_categorie")):
+        t["manuel"] = True
+        t["confiance"] = "haute"
+
 
 def applique(etat, modifs, cats, regles_defaut):
     r = Counter()
@@ -378,21 +430,12 @@ def applique(etat, modifs, cats, regles_defaut):
                       if (not q.get("date") or t["date"] == q["date"])
                       and (not q.get("montant") or abs(abs(t["montant"]) - abs(q["montant"])) < 0.01)
                       and (not q.get("libelle") or normalise(q["libelle"]) in normalise(t["libelle"]))]
-        if len(cibles) != 1:
-            raise ValueError(f"Correction ambiguë ou introuvable ({len(cibles)} transactions) : {c}")
-        t = cibles[0]
-        champs = {k: v for k, v in c.items() if k not in ("id", "cherche", "motif")}
-        if "categorie" in champs and champs["categorie"] not in cats["categories"]:
-            raise ValueError(f"Catégorie inconnue : {champs['categorie']}")
-        if "categorie" in champs and "enveloppe" not in champs:
-            champs["enveloppe"] = cats["categories"][champs["categorie"]]["enveloppe"]
-        t.setdefault("historique", []).append({k: t.get(k) for k in champs} | {"corrige_le": dt.date.today().isoformat(),
-                                                                                "motif": c.get("motif")})
-        t.update(champs)
-        if any(k in champs for k in ("categorie", "enveloppe", "beneficiaire", "sous_categorie")):
-            t["manuel"] = True
-            t["confiance"] = "haute"
-        r["corrections"] += 1
+        if not cibles or (len(cibles) > 1 and not c.get("tous")):
+            raise ValueError(f"Correction ambiguë ou introuvable ({len(cibles)} transactions ; ajouter \"tous\": true "
+                             f"pour toutes les corriger) : {c}")
+        for t in cibles:
+            corrige(t, c, cats)
+        r["corrections"] += len(cibles)
     for tx in modifs.get("ajouts", []):  # saisie manuelle (ex. cash, achat oublié)
         lot = importe(etat, {"transactions": [tx], "source": "saisie manuelle"}, cats, regles_defaut)
         r["ajouts"] += len(lot["ajoutees"])
@@ -612,7 +655,8 @@ def calcule(etat, aujourd_hui=None, cats=None):
     res["normalise"] = normalise_budget(etat)
     res["apprentissage"] = apprentissage(res["cycles"], cats, noms)
     res["alertes"] = alertes(etat, res, auj)
-    res["a_verifier"] = [t["id"] for t in tx if t["enveloppe"] == "a_verifier" or t.get("confiance") == "basse"]
+    # seules comptent les transactions d'un cycle suivi (les plus anciennes ne changent plus rien au budget)
+    res["a_verifier"] = [t["id"] for t in tx if t.get("_cycle") and (t["enveloppe"] == "a_verifier" or t.get("confiance") == "basse")]
     for t in tx:
         t.pop("_cycle", None)
     return res
@@ -622,8 +666,19 @@ def position(etat, auj):
     p = etat["parametres"]
     if not etat["soldes"]:
         return None
-    s = [x for x in etat["soldes"] if x["date"] <= auj] or etat["soldes"][:1]
-    s = s[-1]
+    dispo = [x for x in etat["soldes"] if x["date"] <= auj] or etat["soldes"][:1]
+    s = {}
+    cote_compte = [x for x in dispo if "courant" in x or "comptes" in x]
+    cote_carte = [x for x in dispo if "carte_comptabilise" in x]
+    if cote_compte:
+        sc = cote_compte[-1]
+        s.update({k: sc[k] for k in ("courant", "comptes", "epargne", "ordres", "autres_dettes") if k in sc})
+        s["date_compte"] = sc["date"]
+    if cote_carte:
+        sk = cote_carte[-1]  # réservations et paiements en transit vont avec le solde de carte du même instant
+        s.update({k: sk.get(k, 0) for k in ("carte_comptabilise", "carte_reservations", "paiements_en_transit")})
+        s["date_carte"] = sk["date"]
+    s["date"] = max(x for x in (s.get("date_compte"), s.get("date_carte")) if x)
     cash = sum(float(v) for k, v in s.get("comptes", {}).items() if k in p["comptes_liquides"]) if "comptes" in s else float(s.get("courant", 0))
     epargne = sum(float(v) for k, v in s.get("comptes", {}).items() if k in p["comptes_epargne"]) if "comptes" in s else float(s.get("epargne", 0))
     comptab = float(s.get("carte_comptabilise", 0))
@@ -634,7 +689,7 @@ def position(etat, auj):
     ordres = s.get("ordres", [])
     ordres_carte = sum(float(o["montant"]) for o in ordres if o.get("type") == "paiement_carte")
     ordres_autres = [o for o in ordres if o.get("type") != "paiement_carte"]
-    return {"date": s["date"], "cash": arrondi(cash), "epargne": arrondi(epargne), "carte_comptabilise": arrondi(comptab),
+    return {"date": s["date"], "date_compte": s.get("date_compte"), "date_carte": s.get("date_carte"), "cash": arrondi(cash), "epargne": arrondi(epargne), "carte_comptabilise": arrondi(comptab),
             "carte_reservations": arrondi(reserv), "paiements_en_transit": arrondi(transit), "dette_carte": arrondi(dette),
             "autres_dettes": arrondi(autres), "nette": arrondi(cash + epargne - dette - autres),
             "ordres_paiement_carte": arrondi(ordres_carte), "ordres_autres": ordres_autres,
@@ -652,7 +707,9 @@ def projection(etat, cyc, pos, auj, cats):
     fin = cyc["fin"]
     jours_restants = max(0, (d(fin) - d(ref)).days)
     # fixes encore à payer dans ce cycle (pas déjà débités ni déjà en ordre)
-    libs_ordres = " ".join(normalise(o.get("libelle", "")) for o in pos["ordres_autres"])
+    ordres_cycle = [o for o in pos["ordres_autres"] if not o.get("date") or o["date"] <= fin]
+    ordres_suivants = [o for o in pos["ordres_autres"] if o.get("date") and o["date"] > fin]
+    libs_ordres = " ".join(normalise(o.get("libelle", "")) for o in ordres_cycle)
     fixes_restants = []
     for f in cyc["fixes"]:
         if f["paye"] + 0.5 < f["montant"] and not any(contient_mot(" " + libs_ordres + " ", m) for m in
@@ -670,18 +727,31 @@ def projection(etat, cyc, pos, auj, cats):
     base_jour = sum(p["cibles_semaine"].values()) / 7
     variable_realiste = arrondi(min(reste_var, jours_budget) if reste_var > 0 else 0)
     variable_prudent = arrondi(base_jour * jours_restants)
-    base = pos["nette"] - pos["ordres_autres_total"] - sum(f["montant"] for f in fixes_restants) - dep_prevues + rev_prevus
+    base = pos["nette"] - sum(float(o["montant"]) for o in ordres_cycle) - sum(f["montant"] for f in fixes_restants) - dep_prevues + rev_prevus
     scen = {}
     # enveloppes flexibles : consommation attendue au prorata des jours restants (pas tout d'un coup)
     jours_cycle = (d(fin) - d(cyc["debut"])).days + 1
     part = jours_restants / jours_cycle if jours_cycle else 0
-    flex_attendu = (max(0.0, env["enfant"]["reste"]) + max(0.0, env["coussin"]["reste"])) * part
+    # le coussin reporté des cycles précédents est une réserve : on ne projette pas de le dépenser
+    coussin_du_cycle = max(0.0, min(env["coussin"]["reste"], p["coussin_mensuel"] - env["coussin"]["depense"]))
+    flex_attendu = (max(0.0, env["enfant"]["reste"]) + coussin_du_cycle) * part
     # cycle suivant : budget semaine réel de ses segments, fixes, enveloppes, prévus qui y tombent
     deb_s = (d(fin) + dt.timedelta(days=1)).isoformat()
     fin_s = _fin_suivant(fin, p)
     var_s = sum(s["normal"] for s in segments(deb_s, fin_s, p))
     n = normalise_budget(etat)
-    sorties_suivant = n["fixes"] + n["fixes_temporaires"] + var_s + n["enfant"] + n["coussin"] + n["perso_conjoint"] + sum(
+    # ordres déjà programmés pour le cycle suivant : seule la part qui dépasse les fixes prévus s'ajoute
+    par_fixe, hors_fixes = defaultdict(float), []
+    for o in ordres_suivants:
+        lib_o = " " + normalise(o.get("libelle", "")) + " "
+        f = next((f for f in p["fixes"] if f.get("actif", True) and any(contient_mot(lib_o, m) for m in f.get("mots", []))), None)
+        if f:
+            par_fixe[f["nom"]] += float(o["montant"])
+        else:
+            hors_fixes.append(o)
+    supplement = sum(max(0.0, v - next(f["montant"] for f in p["fixes"] if f["nom"] == k)) for k, v in par_fixe.items()) + \
+        sum(float(o["montant"]) for o in hors_fixes)
+    sorties_suivant = supplement + n["fixes"] + n["fixes_temporaires"] + var_s + n["enfant"] + n["coussin"] + n["perso_conjoint"] + sum(
         pv["montant"] for pv in etat["prevus"] if pv.get("statut", "prevu") == "prevu" and pv.get("type", "depense") == "depense"
         and deb_s <= pv["echeance"] <= fin_s)
     for nom, var, flex in (("prudent", variable_prudent, 0.0), ("realiste", variable_realiste, flex_attendu)):
@@ -691,7 +761,8 @@ def projection(etat, cyc, pos, auj, cats):
         scen[nom] = {"aujourdhui": pos["nette"], "veille_salaire": veille, "apres_salaire": apres, "fin_cycle_suivant": fin_suivant,
                      "variable": var, "flexible": arrondi(flex)}
     return {"date_ref": ref, "fin_cycle": fin, "jours_restants": jours_restants, "fixes_restants": fixes_restants,
-            "ordres": pos["ordres_autres"], "prevus": prevus_restants, "depenses_prevues": dep_prevues,
+            "ordres": ordres_cycle, "ordres_cycle_suivant": ordres_suivants, "supplement_ordres_suivant": arrondi(supplement),
+            "prevus": prevus_restants, "depenses_prevues": dep_prevues,
             "revenus_prevus": rev_prevus, "scenarios": scen, "cycle_suivant": {"debut": deb_s, "fin": fin_s,
             "sorties_prevues": arrondi(sorties_suivant), "budget_semaine": arrondi(var_s)},
             "deficit": arrondi(min(0.0, scen["realiste"]["veille_salaire"]))}
@@ -769,7 +840,8 @@ def alertes(etat, res, auj):
     p = etat["parametres"]
     out = []
     tx = actives(etat)
-    n_av = sum(1 for t in tx if t["enveloppe"] == "a_verifier" or t.get("confiance") == "basse")
+    n_av = sum(1 for t in tx if (t.get("_cycle") or cycle_de(t["date"], cycles(etat, auj)))
+               and (t["enveloppe"] == "a_verifier" or t.get("confiance") == "basse"))
     if n_av:
         out.append(("info", f"{n_av} transaction(s) à vérifier avant d'être définitivement affectées."))
     for t in tx:
@@ -850,7 +922,7 @@ def rapport_texte(etat, res, cats):
     pos = res.get("position")
     L.append("\n3. SITUATION GLOBALE")
     if pos:
-        L.append(f"Soldes du {pos['date']} : cash {chf(pos['cash'])} · épargne {chf(pos['epargne'])} · carte comptabilisée {chf(pos['carte_comptabilise'])} "
+        L.append(f"Soldes (compte au {pos['date_compte']}, carte au {pos['date_carte']}) : cash {chf(pos['cash'])} · épargne {chf(pos['epargne'])} · carte comptabilisée {chf(pos['carte_comptabilise'])} "
                  f"+ réservations {chf(pos['carte_reservations'])} − paiements en transit {chf(pos['paiements_en_transit'])} = dette carte {chf(pos['dette_carte'])}")
         L.append(f"POSITION NETTE ACTUELLE : {chf(pos['nette'])}")
         if pos["ordres_paiement_carte"]:
@@ -873,7 +945,8 @@ def rapport_texte(etat, res, cats):
         L.append("Prudent = plus aucune dépense flexible, seulement les bases. Réaliste = budget semaine normal restant + enveloppes "
                  f"{label('{enfant}', noms)} et coussin au prorata des jours restants.")
         L.append(f"Cycle suivant ({cs['debut']} → {cs['fin']}) : salaire de planification {chf(etat['parametres']['salaire_normalise'])} − sorties prévues "
-                 f"{chf(cs['sorties_prevues'])} (dont budget semaine {chf(cs['budget_semaine'])}).")
+                 f"{chf(cs['sorties_prevues'])} (dont budget semaine {chf(cs['budget_semaine'])} ; ordres déjà programmés au-delà des fixes : "
+                 f"{chf(proj['supplement_ordres_suivant'])}).")
     n = res["normalise"]
     L.append(f"\nVUE NORMALISÉE (mois sans exceptionnel) : salaire {chf(n['salaire'])} − fixes {chf(n['fixes'])} − crédits temporaires "
              f"{chf(n['fixes_temporaires'])} − variable {chf(n['variable'])} − {label('{enfant}', noms)} {chf(n['enfant'])} − coussin "
@@ -1024,6 +1097,14 @@ def tests():
     verifie("début du suivi au 12.10 : semaine en cours sans report fictif", e["parametres"]["debut_suivi"] == "2026-10-12"
             and sem["report_entrant"] == 0 and c["enveloppes"]["enfant"]["depense"] == 0)
 
+    # 12. même achat vu sur une capture puis sur le relevé PDF : une seule transaction, libellé du relevé
+    e = base()
+    importe(e, {"transactions": [{"date": "2026-10-14", "compte": "courant", "libelle": "Samsung Pay - Migros M St-Paul Lausanne", "montant": -4.20}]}, cats, regles)
+    importe(e, {"origine": "releve", "transactions": [{"date": "2026-10-14", "compte": "courant", "libelle": "Migros M St-Paul Lausanne (Ch)", "montant": -4.20},
+                                                      {"date": "2026-10-14", "compte": "courant", "libelle": "Migros M St-Paul Lausanne (Ch)", "montant": -4.20}]}, cats, regles)
+    verifie("capture puis relevé : la capture est complétée, le 2e achat identique est gardé",
+            len(actives(e)) == 2 and all(t.get("origine") == "releve" for t in actives(e)))
+
     for nom, v in ok:
         print(("OK   " if v else "ÉCHEC ") + nom)
     n_ko = sum(not v for _, v in ok)
@@ -1036,11 +1117,13 @@ def tests():
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for nom in ("init", "importer", "appliquer", "rapport", "tableau", "exporter"):
+    for nom in ("init", "importer", "importer-releve", "appliquer", "rapport", "tableau", "exporter"):
         s = sp.add_parser(nom)
         s.add_argument("etat")
         if nom in ("importer", "appliquer"):
             s.add_argument("fichier")
+        if nom == "importer-releve":
+            s.add_argument("pdf", nargs="+")
         s.add_argument("-o", "--sortie")
         s.add_argument("--date", help="date de référence (défaut : aujourd'hui)")
     sp.add_parser("test")
@@ -1057,8 +1140,14 @@ def main():
         print(rapport_texte(etat, calcule(etat, a.date, cats), cats))
         return
     etat = charge_etat(a.etat)
-    if a.cmd == "importer":
-        lot = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
+    if a.cmd in ("importer", "importer-releve"):
+        if a.cmd == "importer-releve":
+            sys.path.insert(0, str(ICI))
+            import releves
+            lot = releves.lot_depuis(a.pdf)
+            print("\n".join(lot["resume"]))
+        else:
+            lot = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
         r = importe(etat, lot, cats, regles)
         if r["debut_suivi"]:
             print(f"Premier import : suivi semaine par semaine à partir du {r['debut_suivi']} (les semaines précédentes ne sont pas évaluées).")
@@ -1070,13 +1159,13 @@ def main():
             print(f"  finalisée : {t['date']} {t['libelle']} → {chf(t['montant'])}")
     elif a.cmd == "appliquer":
         print("Appliqué :", applique(etat, json.loads(Path(a.fichier).read_text(encoding="utf-8")), cats, regles))
-    if a.cmd in ("importer", "appliquer", "tableau", "exporter"):
+    if a.cmd in ("importer", "importer-releve", "appliquer", "tableau", "exporter"):
         sortie = a.sortie or (a.etat if a.cmd != "exporter" else "etat.json")
         if a.cmd == "tableau" and not sortie.endswith((".html", ".htm")):
             sortie = "tableau-budget.html"
         ecrit(etat, sortie, cats, a.date)
         print(f"Écrit : {sortie}")
-    if a.cmd in ("importer", "appliquer", "rapport"):
+    if a.cmd in ("importer", "importer-releve", "appliquer", "rapport"):
         print()
         print(rapport_texte(etat, calcule(etat, a.date, cats), cats))
 
