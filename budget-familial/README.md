@@ -5,6 +5,7 @@ Assistant ChatGPT qui lit les captures PostFinance (compte et carte de crédit),
 - Installation et utilisation : [GUIDE.md](GUIDE.md)
 - Instructions à coller dans le projet : [instructions.txt](instructions.txt)
 - Fichiers à déposer dans le projet : [fichiers/](fichiers/)
+- Version Claude (skill + projet) : [claude/GUIDE-claude.md](claude/GUIDE-claude.md), skill assemblée par `python3 claude/build.py`
 - Tests : `python3 fichiers/budget.py test`
 
 Les données personnelles (contexte du foyer, état initial, fiches de salaire) vivent dans `prive/`, exclu du dépôt.
