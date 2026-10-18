@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budget du foyer</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2; --surface: #fcfcfb; --surface-2: #f0efec; --line: #e2e0da;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #7a7974;
+  --s1: #2a78d6; --s2: #eb6834; --s1-soft: #cde2fb;
+  --good: #0ca30c; --good-text: #006300; --warn: #fab219; --serious: #ec835a; --crit: #d03b3b; --crit-text: #b02a2a;
+  --neutral: #c9c7c0;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --line: #33332f;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f;
+    --s1: #3987e5; --s2: #d95926; --s1-soft: #184f95;
+    --good-text: #4cc94c; --crit-text: #e66767; --neutral: #4a4a45;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --line: #33332f;
+  --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f;
+  --s1: #3987e5; --s2: #d95926; --s1-soft: #184f95;
+  --good-text: #4cc94c; --crit-text: #e66767; --neutral: #4a4a45;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 64px; }
+header { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 15px; margin: 0 0 10px; color: var(--text-2); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.sub { color: var(--muted); font-size: 13px; }
+.ctrl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button, select, input[type=search] { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
+button { cursor: pointer; }
+button[aria-pressed="true"] { background: var(--text); color: var(--surface); border-color: var(--text); }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(12, 1fr); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; grid-column: span 12; min-width: 0; }
+@media (min-width: 820px) { .w6 { grid-column: span 6; } .w4 { grid-column: span 4; } .w8 { grid-column: span 8; } }
+.tiles { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 820px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+.tile { background: var(--surface-2); border-radius: 12px; padding: 12px; cursor: default; }
+.tile .k { font-size: 12px; color: var(--text-2); }
+.tile .v { font-size: 24px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile .n { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.neg { color: var(--crit-text); } .pos { color: var(--good-text); }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { color: var(--text-2); font-weight: 600; font-size: 12px; }
+tr.click { cursor: pointer; } tr.click:hover td { background: var(--surface-2); }
+tr.now td { font-weight: 600; }
+.scroll { overflow-x: auto; }
+.bar { position: relative; height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; }
+.row { display: grid; grid-template-columns: minmax(110px, 1.2fr) 2fr auto; gap: 10px; align-items: center; padding: 6px 0; cursor: pointer; }
+.row:hover .lbl { text-decoration: underline; }
+.lbl { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; padding: 1px 8px; border-radius: 99px; background: var(--surface-2); color: var(--text-2); white-space: nowrap; }
+.b-good::before { content: "✓"; color: var(--good); } .b-warn::before { content: "!"; color: var(--warn); font-weight: 700; } .b-crit::before { content: "▲"; color: var(--crit); font-size: 10px; }
+.verdict { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 14px; }
+.alert { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.alert:last-child { border: 0; }
+svg text { fill: var(--text-2); font-size: 11px; }
+svg .strong { fill: var(--text); font-weight: 600; }
+.tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); padding: 6px 9px; border-radius: 8px; font-size: 12px; max-width: 260px; opacity: 0; transition: opacity .08s; z-index: 9; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.frise { position: relative; margin: 6px 0 30px; }
+.frise .seg { position: absolute; top: 18px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text); border: 2px solid var(--surface); cursor: pointer; }
+.frise .today { position: absolute; top: 8px; bottom: -6px; width: 2px; background: var(--text); }
+.frise .today span { position: absolute; top: -8px; left: 4px; font-size: 11px; white-space: nowrap; color: var(--text); font-weight: 600; }
+.frise .mk { position: absolute; top: 50px; transform: translateX(-50%); font-size: 10px; color: var(--muted); white-space: nowrap; }
+.frise .mk::before { content: ""; display: block; width: 2px; height: 6px; background: var(--muted); margin: 0 auto 2px; }
+.hide-foyer .perso-detail { display: none; }
+details summary { cursor: pointer; color: var(--text-2); font-size: 14px; }
+.empty { color: var(--muted); font-size: 14px; }
+footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+@media (max-width: 600px) { #tx th:nth-child(4), #tx td:nth-child(4) { display: none; } .row { grid-template-columns: minmax(90px, 1fr) 1.3fr auto; } }
+@media print { .ctrl, #tx-ctrl { display: none; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header>
+    <div>
+      <h1>Budget du foyer</h1>
+      <div class="sub" id="maj"></div>
+    </div>
+    <div class="ctrl">
+      <button id="prev" aria-label="Cycle précédent">‹</button>
+      <select id="cycle" aria-label="Cycle de salaire"></select>
+      <button id="next" aria-label="Cycle suivant">›</button>
+      <button id="foyer" aria-pressed="false" title="Masque le détail des dépenses personnelles">Vue foyer</button>
+      <button id="theme" title="Thème">◐</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card" id="c-auj"><h2>Aujourd'hui</h2><div class="tiles" id="tiles"></div></section>
+    <section class="card" id="c-frise"><h2>Frise du cycle</h2><div class="frise" id="frise"></div><div class="legend" id="frise-leg"></div></section>
+    <section class="card w6" id="c-semaines"><h2>Semaine par semaine</h2><div id="semaines-svg"></div><div class="scroll"><table id="semaines"></table></div></section>
+    <section class="card w6" id="c-semaine"><h2 id="t-semaine">Semaine en cours</h2><div id="semaine"></div></section>
+    <section class="card w6" id="c-env"><h2>Enveloppes du cycle</h2><div id="env"></div></section>
+    <section class="card w6" id="c-proj"><h2>Projection</h2><div id="proj"></div></section>
+    <section class="card w6" id="c-water"><h2>Où part le salaire</h2><div id="water"></div></section>
+    <section class="card w6" id="c-cat"><h2>Où va l'argent</h2><div id="cats"></div></section>
+    <section class="card w6" id="c-norm"><h2>Mois normal</h2><div id="norm"></div></section>
+    <section class="card w6" id="c-alertes"><h2>Alertes et à vérifier</h2><div id="alertes"></div></section>
+    <section class="card" id="c-appr"><h2>Ce que le foyer dépense vraiment</h2><div id="appr"></div></section>
+    <section class="card" id="c-tx">
+      <h2>Transactions</h2>
+      <div class="ctrl" id="tx-ctrl" style="margin-bottom:8px">
+        <input type="search" id="q" placeholder="Rechercher…" aria-label="Rechercher">
+        <select id="f-env" aria-label="Enveloppe"></select>
+        <select id="f-cat" aria-label="Catégorie"></select>
+        <button id="f-reset">Tout afficher</button>
+        <span class="sub" id="tx-total"></span>
+      </div>
+      <div class="scroll"><table id="tx"></table></div>
+    </section>
+  </div>
+  <footer id="foot"></footer>
+</div>
+<div class="tip" id="tip"></div>
+<!--ETAT-->
+<script>
+(() => {
+const el = document.getElementById("etat-budget");
+const D = JSON.parse(el.textContent);
+const E = D.etat, C = D.calcul, K = D.categories, N = C.noms;
+const $ = id => document.getElementById(id);
+const lab = s => String(s || "").replaceAll("{moi}", N.moi).replaceAll("{conjoint}", N.conjoint).replaceAll("{enfant}", N.enfant);
+const catLabel = k => lab((K.categories[k] || {}).label || k);
+const envLabel = k => lab(K.enveloppes[k] || k);
+const fmt = (x, dec = 0) => (x < 0 ? "−" : "") + Math.abs(x).toLocaleString("fr-CH", { minimumFractionDigits: dec, maximumFractionDigits: dec }).replace(/ |\s/g, "'");
+const fmt2 = x => fmt(x, 2);
+const dfr = s => { const [y, m, d] = s.split("-"); return `${+d}.${m}`; };
+const dlong = s => new Date(s + "T12:00").toLocaleDateString("fr-CH", { weekday: "short", day: "numeric", month: "short" });
+const days = (a, b) => Math.round((new Date(b + "T12:00") - new Date(a + "T12:00")) / 864e5);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const PERSO = new Set(["perso_moi", "perso_conjoint"]);
+let foyer = false;
+try { foyer = localStorage.getItem("budget-foyer") === "1"; } catch (e) {}
+let idx = Math.max(0, C.cycles.findIndex(c => c.debut === C.cycle_courant));
+const filtre = { q: "", env: "", cat: "", ids: null, titre: "" };
+
+// tooltip
+const tip = $("tip");
+document.addEventListener("pointermove", e => { tip.style.left = Math.min(e.clientX + 12, innerWidth - 270) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+const bindTip = (node, html) => { node.addEventListener("pointerenter", () => { tip.innerHTML = html; tip.style.opacity = 1; }); node.addEventListener("pointerleave", () => tip.style.opacity = 0); };
+
+function statut(dep, bud) {
+  if (bud <= 0) return dep > 0 ? ["b-warn", "hors budget"] : ["b-good", "—"];
+  const r = dep / bud;
+  return r > 1 ? ["b-crit", "dépassé"] : r > .85 ? ["b-warn", "attention"] : ["b-good", "ok"];
+}
+const colStat = (dep, bud) => bud > 0 && dep > bud ? "var(--crit)" : bud > 0 && dep > .85 * bud ? "var(--warn)" : "var(--s1)";
+
+function montre(ids, titre) { filtre.ids = ids; filtre.titre = titre; filtre.env = ""; filtre.cat = ""; $("f-env").value = ""; $("f-cat").value = ""; rendTx(); $("c-tx").scrollIntoView({ behavior: "smooth" }); }
+
+function rend() {
+  const cy = C.cycles[idx];
+  document.body.classList.toggle("hide-foyer", foyer);
+  $("foyer").setAttribute("aria-pressed", foyer);
+  $("maj").textContent = `Mis à jour le ${new Date(E.mis_a_jour || D.genere_le).toLocaleString("fr-CH", { dateStyle: "long", timeStyle: "short" })} · cycle du ${dlong(cy.debut)} au ${dlong(cy.fin)}${cy.estime_fin ? " (fin estimée)" : ""}`;
+  $("prev").disabled = idx === 0; $("next").disabled = idx === C.cycles.length - 1;
+  rendTiles(cy); rendFrise(cy); rendSemaines(cy); rendSemaine(cy); rendEnv(cy); rendProj(cy); rendWater(cy); rendCats(cy); rendNorm(); rendAlertes(); rendAppr(); rendTx();
+}
+
+function rendTiles(cy) {
+  const P = C.position, cur = cy.debut === C.cycle_courant;
+  const next = cy.fin;
+  const jSal = days(C.aujourd_hui, next) + 1;
+  const sem = cy.semaines.find(s => s.en_cours) || cy.semaines.filter(s => !s.futur).slice(-1)[0];
+  const t = [];
+  if (P && cur) {
+    t.push(["Cash disponible", fmt(P.cash), `soldes du ${dfr(P.date)}${P.epargne ? ` · épargne ${fmt(P.epargne)}` : ""}`]);
+    t.push(["Dette carte", fmt(-P.dette_carte), `${fmt(P.carte_comptabilise)} comptabilisé + ${fmt(P.carte_reservations)} réservé`]);
+    t.push(["Position nette", fmt(P.nette), "cash − dette carte, sans dépenses futures", P.nette < 0 ? "neg" : "pos"]);
+  } else {
+    t.push(["Consommation du cycle", fmt(cy.consommation), "hors flux neutres"]);
+    t.push(["Revenus du cycle", fmt(cy.revenus), ""]);
+    t.push(["Résultat du cycle", fmt(cy.resultat), "salaire − sorties", cy.resultat < 0 ? "neg" : "pos"]);
+  }
+  if (cur && sem) t.push([`Reste cette semaine`, fmt(sem.disponible - sem.depense), `prochain salaire dans ${jSal} j (${dfr(addDay(next))})`, sem.disponible - sem.depense < 0 ? "neg" : ""]);
+  else t.push(["Semaines du cycle", cy.semaines.length, `${fmt(cy.enveloppes.semaine.depense)} / ${fmt(cy.enveloppes.semaine.budget)} budget semaine`]);
+  $("tiles").innerHTML = t.map(([k, v, n, c]) => `<div class="tile"><div class="k">${k}</div><div class="v ${c || ""}">${v}</div><div class="n">${n}</div></div>`).join("");
+}
+function addDay(s) { const d = new Date(s + "T12:00"); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); }
+
+function rendFrise(cy) {
+  const f = $("frise"), tot = days(cy.debut, cy.fin) + 1;
+  const x = s => (days(cy.debut, s) / tot * 100);
+  let h = "";
+  cy.semaines.forEach((s, i) => {
+    const w = s.jours / tot * 100;
+    let bg = "var(--surface-2)", txt = "à venir";
+    if (!s.futur) { const r = s.depense / Math.max(1, s.disponible); bg = s.depense > s.disponible ? "color-mix(in srgb, var(--crit) 35%, var(--surface))" : r > .85 ? "color-mix(in srgb, var(--warn) 40%, var(--surface))" : "color-mix(in srgb, var(--good) 30%, var(--surface))"; txt = fmt(s.disponible - s.depense); }
+    h += `<div class="seg" data-i="${i}" style="left:${x(s.debut)}%;width:calc(${w}% - 2px);background:${bg}">${txt}</div>`;
+  });
+  if (C.aujourd_hui >= cy.debut && C.aujourd_hui <= cy.fin) h += `<div class="today" style="left:${x(C.aujourd_hui) + 0.5 / tot * 100}%"><span>aujourd'hui</span></div>`;
+  const marks = [];
+  (E.prevus || []).filter(p => p.echeance >= cy.debut && p.echeance <= cy.fin).forEach(p => marks.push([p.echeance, `${p.libelle} ${fmt(p.montant)}`]));
+  cy.fixes.filter(fx => fx.jour).forEach(fx => { const dd = dateJour(cy, fx.jour); if (fx.montant >= 200) marks.push([dd, fx.nom]); });
+  marks.push([cy.fin, "veille salaire"]);
+  marks.sort((a, b) => a[0] < b[0] ? -1 : 1);
+  let last = -99, row = 0;
+  marks.forEach(([dd, t]) => { const p = x(dd) + 0.5 / tot * 100; row = p - last < 9 ? row + 1 : 0; last = p; h += `<div class="mk" style="left:${p}%;top:${50 + row * 13}px" title="${esc(t)}">${esc(t.length > 18 ? t.slice(0, 17) + "…" : t)}</div>`; });
+  f.style.height = (62 + 13 * Math.min(3, row + 1)) + "px";
+  f.innerHTML = h;
+  f.querySelectorAll(".seg").forEach(n => { const s = cy.semaines[+n.dataset.i]; bindTip(n, `<b>${dfr(s.debut)}–${dfr(s.fin)}</b><br>normal ${fmt(s.normal)} · report ${s.futur ? "—" : fmt(s.report_entrant)}<br>${s.futur ? "à venir" : `dépensé ${fmt(s.depense)} sur ${fmt(s.disponible)}`}`); n.onclick = () => montre(s.ids, `semaine du ${dfr(s.debut)}`); });
+  $("frise-leg").innerHTML = `<span><i style="background:color-mix(in srgb, var(--good) 30%, var(--surface))"></i>dans le budget</span><span><i style="background:color-mix(in srgb, var(--warn) 40%, var(--surface))"></i>proche</span><span><i style="background:color-mix(in srgb, var(--crit) 35%, var(--surface))"></i>dépassé (reporté)</span><span>chiffre = reste après report</span>`;
+}
+function dateJour(cy, j) { const d0 = new Date(cy.debut + "T12:00"); let d = new Date(d0); d.setDate(Math.min(j, 28)); if (d < d0) d.setMonth(d.getMonth() + 1); return d.toISOString().slice(0, 10); }
+
+function rendSemaines(cy) {
+  const S = cy.semaines, W = 520, H = 170, pad = { l: 36, r: 8, t: 12, b: 26 };
+  const max = Math.max(...S.map(s => Math.max(s.normal, s.disponible || 0, s.depense || 0)), 1) * 1.1;
+  const bw = (W - pad.l - pad.r) / S.length, y = v => pad.t + (H - pad.t - pad.b) * (1 - v / max);
+  let g = "";
+  [0, .5, 1].forEach(f => { const v = Math.round(max * f / 1.1 / 50) * 50; g += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pad.l - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`; });
+  S.forEach((s, i) => {
+    const x0 = pad.l + i * bw + bw * .18, w = bw * .64;
+    const dispo = s.futur ? s.normal : Math.max(0, s.disponible);
+    g += `<rect x="${x0}" y="${y(dispo)}" width="${w}" height="${y(0) - y(dispo)}" rx="4" fill="none" stroke="var(--neutral)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    if (!s.futur) {
+      const dep = Math.max(0, s.depense), within = Math.min(dep, dispo), over = dep - within;
+      g += `<rect x="${x0}" y="${y(within)}" width="${w}" height="${Math.max(0, y(0) - y(within))}" rx="4" fill="var(--s1)"/>`;
+      if (over > 0) g += `<rect x="${x0}" y="${y(dep)}" width="${w}" height="${y(within) - y(dep) - 2}" rx="4" fill="var(--crit)"/>`;
+      g += `<text x="${x0 + w / 2}" y="${y(Math.max(dep, dispo)) - 4}" text-anchor="middle" class="strong">${fmt(dep)}</text>`;
+    }
+    g += `<text x="${x0 + w / 2}" y="${H - 8}" text-anchor="middle">${dfr(s.debut)}</text>`;
+    g += `<rect class="hit" data-i="${i}" x="${pad.l + i * bw}" y="0" width="${bw}" height="${H}" fill="transparent" style="cursor:pointer"/>`;
+  });
+  $("semaines-svg").innerHTML = `<div class="legend"><span><i style="background:var(--s1)"></i>dépensé</span><span><i style="background:var(--crit)"></i>au-delà du disponible</span><span><i style="border:1.5px dashed var(--neutral)"></i>disponible (normal + report)</span></div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Dépenses par semaine">${g}</svg>`;
+  $("semaines-svg").querySelectorAll(".hit").forEach(n => { const s = S[+n.dataset.i]; bindTip(n, `<b>${dfr(s.debut)}–${dfr(s.fin)}</b> (${s.jours} j${s.weekend ? ", week-end" : ""})<br>normal ${fmt(s.normal)}${s.futur ? "" : `<br>report entrant ${fmt(s.report_entrant)}<br>dépensé ${fmt(s.depense)} → solde ${fmt(s.report_sortant)}`}`); n.onclick = () => montre(s.ids, `semaine du ${dfr(s.debut)}`); });
+  $("semaines").innerHTML = `<tr><th>Semaine</th><th class="num">Normal</th><th class="num">Report</th><th class="num">Dispo</th><th class="num">Dépensé</th><th class="num">Solde</th></tr>` +
+    S.map((s, i) => `<tr class="click ${s.en_cours ? "now" : ""}" data-i="${i}"><td>${dfr(s.debut)}–${dfr(s.fin)}${s.en_cours ? " ●" : ""}</td><td class="num">${fmt(s.normal)}</td><td class="num">${s.futur ? "" : fmt(s.report_entrant)}</td><td class="num">${s.futur ? "" : fmt(s.disponible)}</td><td class="num">${s.futur ? "" : fmt(s.depense)}</td><td class="num ${s.report_sortant < 0 ? "neg" : ""}">${s.futur ? "" : fmt(s.report_sortant)}</td></tr>`).join("") +
+    (cy.ajustements.length ? `<tr><td colspan="6" class="sub">${cy.ajustements.map(a => `Ajustement ${fmt2(a.montant)} : ${envLabel(a.de)} → ${envLabel(a.vers)}${a.motif ? " (" + esc(a.motif) + ")" : ""}`).join("<br>")}</td></tr>` : "");
+  $("semaines").querySelectorAll("tr.click").forEach(n => n.onclick = () => { const s = S[+n.dataset.i]; montre(s.ids, `semaine du ${dfr(s.debut)}`); });
+}
+
+function rendSemaine(cy) {
+  const cur = cy.debut === C.cycle_courant && C.semaine_courante;
+  const s = cur ? C.semaine_courante.semaine : cy.semaines.filter(x => !x.futur).slice(-1)[0];
+  if (!s) { $("semaine").innerHTML = `<p class="empty">Pas encore de dépenses.</p>`; return; }
+  $("t-semaine").textContent = `Semaine du ${dfr(s.debut)} au ${dfr(s.fin)}`;
+  const lignes = cur ? C.semaine_courante.lignes : Object.entries(s.par_categorie).map(([k, v]) => ({ categorie: k, label: catLabel(k), montant: v, cible: s.cibles[k] ?? null, base: !!(K.categories[k] || {}).base }));
+  const max = Math.max(...lignes.map(l => Math.max(l.montant, l.cible || 0)), 1);
+  let h = `<div class="sub" style="margin-bottom:6px">${fmt2(s.depense)} dépensés sur ${fmt2(s.disponible)} disponibles · bases ${fmt(s.base)} · flexibles ${fmt(s.flexible)} · dont week-end ${fmt(s.dont_weekend)}</div>`;
+  lignes.sort((a, b) => (b.base - a.base) || (b.montant - a.montant)).forEach(l => {
+    const perso = PERSO.has(l.categorie);
+    const c = l.cible != null ? colStat(l.montant, l.cible) : "var(--s1)";
+    const [cls, txt] = l.cible != null ? statut(l.montant, l.cible) : ["", ""];
+    h += `<div class="row" data-c="${l.categorie}"><div class="lbl">${esc(l.label)}${l.base ? ' <span class="badge">base</span>' : ""}</div>
+      <div class="bar" title="${l.cible != null ? "cible " + fmt(l.cible) : ""}"><i style="width:${l.montant / max * 100}%;background:${c}"></i>${l.cible != null ? `<b style="position:absolute;left:${l.cible / max * 100}%;top:-3px;bottom:-3px;width:2px;background:var(--text)"></b>` : ""}</div>
+      <div class="num">${fmt(l.montant)}${l.cible != null ? ` <span class="sub">/ ${fmt(l.cible)}</span> <span class="badge ${cls}">${txt}</span>` : ""}</div></div>`;
+  });
+  if (cur) h += `<div class="verdict"><b>${esc(C.semaine_courante.verdict)}</b>${C.semaine_courante.depassement > 0 ? `<br>Dépassement ${fmt2(C.semaine_courante.depassement)} : ${fmt2(Math.max(0, C.semaine_courante.ecart_base))} vient des bases, le reste des postes flexibles.` : ""}</div>`;
+  h += `<div class="sub" style="margin-top:6px">Le trait noir marque la cible (au prorata des jours).</div>`;
+  $("semaine").innerHTML = h;
+  $("semaine").querySelectorAll(".row").forEach(n => n.onclick = () => { const k = n.dataset.c; montre(s.ids.filter(id => (txById[id] || {}).categorie === k), `${catLabel(k)}, semaine du ${dfr(s.debut)}`); });
+}
+
+function rendEnv(cy) {
+  const ordre = ["semaine", "enfant", "coussin", "perso_conjoint", "fixes", "ponctuel"];
+  let h = "";
+  ordre.filter(k => cy.enveloppes[k]).forEach(k => {
+    const v = cy.enveloppes[k], [cls, txt] = statut(v.depense, v.budget);
+    const pct = v.budget > 0 ? Math.min(100, v.depense / v.budget * 100) : (v.depense > 0 ? 100 : 0);
+    h += `<div class="row" data-e="${k}"><div class="lbl">${esc(envLabel(k))}</div><div class="bar"><i style="width:${pct}%;background:${colStat(v.depense, v.budget)}"></i></div>
+      <div class="num">${fmt(v.depense)} <span class="sub">/ ${fmt(v.budget)}</span> <span class="badge ${cls}">${txt}</span></div></div>
+      <div class="sub" style="margin:-4px 0 6px">reste ${fmt(v.reste)}${v.dont_report ? ` · dont ${fmt(v.dont_report)} reportés du cycle précédent` : ""}</div>`;
+  });
+  if (cy.fixes.length) {
+    h += `<details style="margin-top:8px"><summary>Charges fixes : payées / attendues</summary><table>` + cy.fixes.map(f => `<tr><td>${esc(f.nom)}</td><td class="num">${fmt2(f.montant)}</td><td>${f.paye + .5 >= f.montant ? '<span class="badge b-good">payé</span>' : `<span class="badge">à venir${f.jour ? " le " + f.jour : ""}</span>`}</td></tr>`).join("") + `</table></details>`;
+  }
+  $("env").innerHTML = h;
+  $("env").querySelectorAll(".row").forEach(n => n.onclick = () => { filtre.ids = null; filtre.titre = ""; filtre.cat = ""; filtre.env = n.dataset.e; filtre.cycle = cy.debut; $("f-env").value = n.dataset.e; rendTx(); $("c-tx").scrollIntoView({ behavior: "smooth" }); });
+}
+
+function rendProj(cy) {
+  const P = C.projection;
+  if (!P || cy.debut !== C.cycle_courant) { $("proj").innerHTML = `<p class="empty">${P ? "La projection porte sur le cycle en cours." : "Envoyer une capture des soldes (compte, carte, réservations) pour calculer la position et la projection."}</p>`; return; }
+  const pts = ["aujourdhui", "veille_salaire", "apres_salaire", "fin_cycle_suivant"], noms = ["Aujourd'hui", "Veille du salaire", "Après salaire", "Fin cycle suivant"];
+  const S = [["realiste", "Réaliste", "var(--s1)"], ["prudent", "Prudent", "var(--s2)"]];
+  const vals = S.flatMap(([k]) => pts.map(p => P.scenarios[k][p]));
+  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals), W = 560, H = 200, pad = { l: 50, r: 120, t: 16, b: 28 };
+  const x = i => pad.l + i * (W - pad.l - pad.r) / (pts.length - 1), y = v => pad.t + (H - pad.t - pad.b) * (hi - v) / Math.max(1, hi - lo);
+  let g = `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--text-2)" stroke-width="1"/><text x="${pad.l - 6}" y="${y(0) + 4}" text-anchor="end">0</text>`;
+  [lo, hi].forEach(v => { if (Math.abs(v) > 1) g += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pad.l - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`; });
+  pts.forEach((p, i) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${noms[i]}</text>`);
+  S.forEach(([k, n, c]) => {
+    g += `<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts.map((p, i) => x(i) + "," + y(P.scenarios[k][p])).join(" ")}"/>`;
+    pts.forEach((p, i) => g += `<circle cx="${x(i)}" cy="${y(P.scenarios[k][p])}" r="4.5" fill="${c}" stroke="var(--surface)" stroke-width="2"/><circle class="hit" data-k="${k}" data-p="${i}" cx="${x(i)}" cy="${y(P.scenarios[k][p])}" r="12" fill="transparent"/>`);
+    const v = P.scenarios[k].fin_cycle_suivant, vr = P.scenarios.realiste.fin_cycle_suivant;
+    const dy = Math.abs(y(v) - y(vr)) < 14 ? (k === "prudent" ? (v >= vr ? -8 : 8) : (P.scenarios.prudent.fin_cycle_suivant > vr ? 8 : -8)) : 0;
+    g += `<text x="${x(3) + 10}" y="${y(v) + 4 + dy}" class="strong">${n} ${fmt(v)}</text>`;
+  });
+  let h = `<div class="legend">${S.map(([, n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join("")}</div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Projection">${g}</svg>`;
+  h += `<table><tr><th></th><th class="num">Réaliste</th><th class="num">Prudent</th></tr>${pts.map((p, i) => `<tr><td>${noms[i]}</td><td class="num ${P.scenarios.realiste[p] < 0 ? "neg" : ""}">${fmt(P.scenarios.realiste[p])}</td><td class="num ${P.scenarios.prudent[p] < 0 ? "neg" : ""}">${fmt(P.scenarios.prudent[p])}</td></tr>`).join("")}</table>`;
+  const rest = P.fixes_restants.map(f => `${esc(f.nom)} ${fmt(f.montant)}`).concat(P.ordres.map(o => `${esc(o.libelle)} ${fmt(+o.montant)}`)).concat(P.prevus.map(p => `${esc(p.libelle)} ${fmt(p.montant)}`));
+  h += `<div class="sub" style="margin-top:8px">Encore à sortir d'ici le ${dfr(P.fin_cycle)} : ${rest.join(" · ") || "rien de connu"}.<br>Réaliste = budget semaine restant + enveloppes ${esc(N.enfant)} et coussin au prorata des jours restants. Prudent = seulement les bases (courses, ${esc(N.moi)}).</div>`;
+  $("proj").innerHTML = h;
+  $("proj").querySelectorAll(".hit").forEach(n => { const k = n.dataset.k, sc = P.scenarios[k], p = pts[+n.dataset.p]; bindTip(n, `<b>${k === "prudent" ? "Prudent" : "Réaliste"} · ${noms[+n.dataset.p]}</b><br>${fmt2(sc[p])} CHF${p === "veille_salaire" ? `<br>variable prévu ${fmt(sc.variable)} · flexibles ${fmt(sc.flexible)}` : ""}`); });
+}
+
+function rendWater(cy) {
+  const W = 520, rows = cy.waterfall.filter(([, v]) => Math.abs(v) > .5).concat([["Résultat du cycle", cy.resultat, true]]);
+  const H = 26 * rows.length + 10, pad = { l: 140, r: 70 };
+  let acc = 0; const segs = rows.map(([n, v, tot]) => { const a = tot ? 0 : acc, b = tot ? v : acc + v; if (!tot) acc += v; return [n, v, a, b, tot]; });
+  const lo = Math.min(0, ...segs.flatMap(s => [s[2], s[3]])), hi = Math.max(0, ...segs.flatMap(s => [s[2], s[3]]));
+  const x = v => pad.l + (W - pad.l - pad.r) * (v - lo) / Math.max(1, hi - lo);
+  let g = `<line x1="${x(0)}" x2="${x(0)}" y1="0" y2="${H}" stroke="var(--line)"/>`;
+  segs.forEach(([n, v, a, b, tot], i) => {
+    const yy = 6 + i * 26, c = tot ? (v < 0 ? "var(--crit)" : "var(--text)") : v >= 0 ? "var(--s1)" : "var(--s2)";
+    g += `<text x="${pad.l - 8}" y="${yy + 13}" text-anchor="end" ${tot ? 'class="strong"' : ""}>${esc(n)}</text><rect x="${Math.min(x(a), x(b))}" y="${yy}" width="${Math.max(2, Math.abs(x(b) - x(a)))}" height="18" rx="4" fill="${c}"/><text x="${Math.max(x(a), x(b)) + 6}" y="${yy + 13}" class="strong">${fmt(v)}</text>`;
+  });
+  $("water").innerHTML = `<div class="legend"><span><i style="background:var(--s1)"></i>entrées</span><span><i style="background:var(--s2)"></i>sorties</span></div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Du salaire au reste">${g}</svg><div class="sub">Flux neutres (paiement de carte, transferts) exclus : ils ne sont pas une consommation.</div>`;
+}
+
+function rendCats(cy) {
+  const ent = Object.entries(cy.par_categorie).filter(([, v]) => Math.abs(v) > .5);
+  if (!ent.length) { $("cats").innerHTML = `<p class="empty">Aucune dépense dans ce cycle.</p>`; return; }
+  const max = Math.max(...ent.map(([, v]) => v), 1), EXC = new Set(["ponctuel", "famille", "vetements", "periodique"]);
+  const bloc = (titre, list) => list.length ? `<div class="sub" style="margin:8px 0 2px">${titre}</div>` + list.map(([k, v]) => `<div class="row" data-c="${k}"><div class="lbl">${esc(catLabel(k))}</div><div class="bar"><i style="width:${Math.max(0, v) / max * 100}%;background:var(--s1)"></i></div><div class="num">${fmt(v)}</div></div>`).join("") : "";
+  $("cats").innerHTML = bloc("Vie courante et fixes", ent.filter(([k]) => !EXC.has(k))) + bloc("Exceptionnel, à part pour ne pas fausser le mois normal", ent.filter(([k]) => EXC.has(k))) + `<div class="sub" style="margin-top:6px">Total consommé : ${fmt2(cy.consommation)} CHF</div>`;
+  $("cats").querySelectorAll(".row").forEach(n => n.onclick = () => { filtre.ids = null; filtre.titre = ""; filtre.env = ""; filtre.cat = n.dataset.c; filtre.cycle = cy.debut; $("f-cat").value = n.dataset.c; rendTx(); $("c-tx").scrollIntoView({ behavior: "smooth" }); });
+}
+
+function rendNorm() {
+  const n = C.normalise;
+  const l = [["Salaire de planification", n.salaire], ["Charges fixes", -n.fixes], ["Crédits temporaires", -n.fixes_temporaires], ["Budget semaine (30/j + week-ends)", -n.variable], [`Enveloppe ${N.enfant}`, -n.enfant], ["Coussin", -n.coussin]];
+  if (n.perso_conjoint) l.push([`Argent personnel ${N.conjoint}`, -n.perso_conjoint]);
+  if (n.periodiques_mensualises) l.push(["Périodiques (provision)", -n.periodiques_mensualises]);
+  $("norm").innerHTML = `<table>${l.filter(r => Math.abs(r[1]) > .5).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fmt(v)}</td></tr>`).join("")}<tr><td><b>Capacité d'épargne / remboursement</b></td><td class="num ${n.capacite < 0 ? "neg" : "pos"}"><b>${fmt(n.capacite)}</b></td></tr></table>
+  <div class="sub" style="margin-top:6px">${fmt(n.capacite_sans_temporaires)} par mois une fois les crédits temporaires terminés · ${fmt(n.capacite_si_coussin_epargne)} si le coussin n'est pas utilisé et part en réserve.</div>`;
+}
+
+function rendAlertes() {
+  const ic = { attention: '<span class="badge b-crit">attention</span>', info: '<span class="badge b-warn">info</span>' };
+  const av = C.a_verifier.map(id => txById[id]).filter(Boolean);
+  let h = C.alertes.length ? C.alertes.map(a => `<div class="alert">${ic[a.niveau] || ""}<div>${esc(a.texte)}</div></div>`).join("") : `<p class="empty">Rien à signaler.</p>`;
+  if (av.length) h += `<div class="sub" style="margin-top:8px">À confirmer (${av.length}) : ${av.slice(0, 8).map(t => `${dfr(t.date)} ${esc(foyer && PERSO.has(t.categorie) ? "dépense personnelle" : t.libelle)} ${fmt2(t.montant)}`).join(" · ")}</div>`;
+  $("alertes").innerHTML = h;
+}
+
+function rendAppr() {
+  const A = C.apprentissage;
+  const st = Object.entries(A.stats).filter(([k]) => !["flux", "revenu"].includes(k));
+  if (!A.actif) { $("appr").innerHTML = `<p class="empty">${A.cycles_termines} cycle(s) terminé(s). Dès 3 cycles complets, les provisions se basent sur vos dépenses réelles (médiane, moyenne, mois haut) plutôt que sur des estimations.</p>` + (st.length ? tabAppr(st) : ""); return; }
+  $("appr").innerHTML = tabAppr(st);
+}
+const tabAppr = st => `<div class="scroll"><table><tr><th>Catégorie</th><th class="num">Médiane / cycle</th><th class="num">Moyenne</th><th class="num">Cycle le plus haut</th><th class="num">Cycles</th></tr>${st.map(([k, s]) => `<tr><td>${esc(s.label)}</td><td class="num">${fmt(s.mediane)}</td><td class="num">${fmt(s.moyenne)}</td><td class="num">${fmt(s.max)}</td><td class="num">${s.n}</td></tr>`).join("")}</table></div>`;
+
+const txs = E.transactions.filter(t => !["remplace"].includes(t.statut)).sort((a, b) => a.date < b.date ? 1 : -1);
+const txById = Object.fromEntries(E.transactions.map(t => [t.id, t]));
+function rendTx() {
+  const cy = C.cycles[idx];
+  const q = filtre.q.toLowerCase();
+  let list = txs;
+  if (filtre.ids) list = list.filter(t => filtre.ids.includes(t.id));
+  else list = list.filter(t => (t.cycle_force || t.date) >= cy.debut && (t.cycle_force || t.date) <= cy.fin);
+  if (filtre.env) list = list.filter(t => t.enveloppe === filtre.env);
+  if (filtre.cat) list = list.filter(t => t.categorie === filtre.cat);
+  if (q) list = list.filter(t => (t.libelle + " " + catLabel(t.categorie) + " " + (t.note || "")).toLowerCase().includes(q));
+  const tot = list.filter(t => t.enveloppe !== "flux" && t.enveloppe !== "revenu").reduce((s, t) => s - t.montant, 0);
+  $("tx-total").textContent = `${list.length} opération(s)${filtre.titre ? " · " + filtre.titre : ""} · consommation ${fmt2(tot)}`;
+  $("tx").innerHTML = `<tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th>Enveloppe</th><th class="num">CHF</th></tr>` + list.slice(0, 400).map(t => {
+    const cache = foyer && PERSO.has(t.categorie);
+    const st = t.statut !== "comptabilise" ? ` <span class="badge">${t.statut === "reservation" ? "réservé" : t.statut}</span>` : "";
+    const av = t.enveloppe === "a_verifier" || t.confiance === "basse" ? ' <span class="badge b-warn">à vérifier</span>' : "";
+    return `<tr><td>${dfr(t.date)}</td><td>${cache ? '<span class="sub">dépense personnelle</span>' : esc(t.libelle) + (t.beneficiaire ? ` <span class="sub">· ${esc(lab(t.beneficiaire))}</span>` : "")}${st}${av}${t.note && !cache ? `<div class="sub perso-detail">${esc(t.note.replace(/^ \| /, ""))}</div>` : ""}</td><td>${esc(catLabel(t.categorie))}${t.sous_categorie && !cache ? `<div class="sub">${esc(t.sous_categorie)}</div>` : ""}</td><td class="sub">${esc(envLabel(t.enveloppe))}</td><td class="num ${t.montant > 0 ? "pos" : ""}">${fmt2(t.montant)}</td></tr>`;
+  }).join("");
+}
+
+// contrôles
+$("cycle").innerHTML = C.cycles.map((c, i) => `<option value="${i}">${dfr(c.debut)} → ${dfr(c.fin)}${c.en_cours ? " (en cours)" : ""}</option>`).join("");
+$("cycle").value = idx;
+$("cycle").onchange = e => { idx = +e.target.value; filtre.ids = null; filtre.titre = ""; rend(); };
+$("prev").onclick = () => { if (idx > 0) { idx--; $("cycle").value = idx; filtre.ids = null; rend(); } };
+$("next").onclick = () => { if (idx < C.cycles.length - 1) { idx++; $("cycle").value = idx; filtre.ids = null; rend(); } };
+$("foyer").onclick = () => { foyer = !foyer; try { localStorage.setItem("budget-foyer", foyer ? "1" : "0"); } catch (e) {} rend(); };
+$("theme").onclick = () => { const r = document.documentElement, cur = r.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); r.dataset.theme = cur === "dark" ? "light" : "dark"; };
+$("f-env").innerHTML = `<option value="">Toutes enveloppes</option>` + Object.keys(K.enveloppes).map(k => `<option value="${k}">${esc(envLabel(k))}</option>`).join("");
+$("f-cat").innerHTML = `<option value="">Toutes catégories</option>` + Object.keys(K.categories).map(k => `<option value="${k}">${esc(catLabel(k))}</option>`).join("");
+$("q").oninput = e => { filtre.q = e.target.value; rendTx(); };
+$("f-env").onchange = e => { filtre.env = e.target.value; filtre.ids = null; filtre.titre = ""; rendTx(); };
+$("f-cat").onchange = e => { filtre.cat = e.target.value; filtre.ids = null; filtre.titre = ""; rendTx(); };
+$("f-reset").onclick = () => { Object.assign(filtre, { q: "", env: "", cat: "", ids: null, titre: "" }); $("q").value = ""; $("f-env").value = ""; $("f-cat").value = ""; rendTx(); };
+$("foot").innerHTML = `Ce fichier contient tout l'historique du budget : le garder et le redonner à l'assistant avec les nouvelles captures. ${E.transactions.length} transactions · ${E.salaires.length} salaires · généré le ${new Date(D.genere_le).toLocaleString("fr-CH")}.`;
+rend();
+})();
+</script>
+</body>
+</html>

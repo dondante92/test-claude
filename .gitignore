@@ -7,3 +7,6 @@ __pycache__/
 livrables/
 chatgpt/note-clinique-gpt.zip
 note-clinique-epfl.zip
+
+# Budget familial : données personnelles (fiches de salaire, état, contexte) : jamais publiées
+budget-familial/prive/

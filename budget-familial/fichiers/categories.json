@@ -1,0 +1,34 @@
+{
+  "_info": "Catégories canoniques. 'enveloppe' = qui finance la dépense par défaut. 'base' = poste strict du budget semaine (sert à détecter les dérives). {moi}, {conjoint}, {enfant} sont remplacés par les prénoms des paramètres.",
+  "categories": {
+    "courses":        {"label": "Courses alimentaires",      "enveloppe": "semaine",  "base": true,  "sous": ["courses principales", "boucherie", "appoints"]},
+    "perso_moi":      {"label": "{moi} perso",               "enveloppe": "semaine",  "base": true,  "sous": ["tabac", "travail", "loisir"]},
+    "perso_conjoint": {"label": "{conjoint} perso",          "enveloppe": "semaine",  "base": false},
+    "maison":         {"label": "Maison & consommables",     "enveloppe": "semaine",  "base": false, "sous": ["consommables", "hygiène", "aménagement"]},
+    "voiture":        {"label": "Voiture & transport",       "enveloppe": "semaine",  "base": false, "sous": ["essence", "parking", "transport public", "entretien"]},
+    "sante":          {"label": "Santé & pharmacie",         "enveloppe": "semaine",  "base": false},
+    "sorties":        {"label": "Sorties & social",          "enveloppe": "semaine",  "base": false},
+    "enfant":         {"label": "{enfant}",                  "enveloppe": "enfant",   "base": false},
+    "vetements":      {"label": "Vêtements",                 "enveloppe": "coussin",  "base": false},
+    "famille":        {"label": "Famille, visites & imprévus","enveloppe": "coussin", "base": false},
+    "obligations":    {"label": "Obligations variables",     "enveloppe": "coussin",  "base": false, "sous": ["assurance (supplément)", "électricité", "administratif", "amende", "taxe"]},
+    "fixes":          {"label": "Charges fixes",             "enveloppe": "fixes",    "base": false, "sous": ["loyer", "assurance", "crédit", "télécom", "abonnement", "banque"]},
+    "periodique":     {"label": "Fixes périodiques",         "enveloppe": "ponctuel", "base": false},
+    "ponctuel":       {"label": "Ponctuel / exceptionnel",   "enveloppe": "ponctuel", "base": false},
+    "flux":           {"label": "Flux neutre (transfert)",   "enveloppe": "flux",     "base": false},
+    "revenu":         {"label": "Revenu / remboursement",    "enveloppe": "revenu",   "base": false, "sous": ["salaire", "remboursement employeur", "remboursement marchand", "remboursement tiers", "allocation", "subside"]},
+    "especes":        {"label": "Espèces (à affecter)",      "enveloppe": "a_verifier","base": false},
+    "a_verifier":     {"label": "À vérifier",                "enveloppe": "a_verifier","base": false}
+  },
+  "enveloppes": {
+    "semaine":        "Budget semaine",
+    "enfant":         "Enveloppe {enfant}",
+    "coussin":        "Coussin mensuel",
+    "perso_conjoint": "Argent personnel {conjoint}",
+    "fixes":          "Charges fixes",
+    "ponctuel":       "Ponctuel / prévu",
+    "flux":           "Flux neutres",
+    "revenu":         "Revenus",
+    "a_verifier":     "À vérifier"
+  }
+}
