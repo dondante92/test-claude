@@ -266,7 +266,7 @@ function rendSemaine(cy) {
       <div class="bar" title="${l.cible != null ? "cible " + fmt(l.cible) : ""}"><i style="width:${l.montant / max * 100}%;background:${c}"></i>${l.cible != null ? `<b style="position:absolute;left:${l.cible / max * 100}%;top:-3px;bottom:-3px;width:2px;background:var(--text)"></b>` : ""}</div>
       <div class="num">${fmt(l.montant)}${l.cible != null ? ` <span class="sub">/ ${fmt(l.cible)}</span> <span class="badge ${cls}">${txt}</span>` : ""}</div></div>`;
   });
-  if (cur) h += `<div class="verdict"><b>${esc(C.semaine_courante.verdict)}</b>${C.semaine_courante.depassement > 0 ? `<br>Dépassement ${fmt2(C.semaine_courante.depassement)} : ${fmt2(Math.max(0, C.semaine_courante.ecart_base))} vient des bases, le reste des postes flexibles.` : ""}</div>`;
+  if (cur) h += `<div class="verdict"><b>${esc(C.semaine_courante.verdict)}</b>${s.depense > s.normal ? `<br>${fmt2(s.depense - s.normal)} de plus qu'une semaine type (${fmt(s.normal)}) : ${fmt2(Math.max(0, C.semaine_courante.ecart_base))} viennent des bases, le reste des postes flexibles.` : ""}</div>`;
   h += `<div class="sub" style="margin-top:6px">Le trait noir marque la cible (au prorata des jours).</div>`;
   $("semaine").innerHTML = h;
   $("semaine").querySelectorAll(".row").forEach(n => n.onclick = () => { const k = n.dataset.c; montre(s.ids.filter(id => (txById[id] || {}).categorie === k), `${catLabel(k)}, semaine du ${dfr(s.debut)}`); });

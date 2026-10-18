@@ -816,12 +816,18 @@ def explique_semaine(s, cats, noms):
                            "ecart": -c, "base": True})
     ecart_base = sum(l["ecart"] for l in lignes if l["base"] and l["ecart"] is not None)
     depassement = arrondi(s["depense"] - s["disponible"])
-    if depassement <= 0:
+    au_dela_normal = s["depense"] - s["normal"]  # ce que la semaine coûte de plus qu'une semaine type
+    cibles_base = sum(s["cibles"].values()) or 1
+    if depassement <= 0 and au_dela_normal <= 0:
         verdict = "Dans le budget."
-    elif ecart_base > 0.5 * max(depassement, 1):
-        verdict = "Dérive des postes de base : à surveiller."
+    elif ecart_base > 0.5 * max(au_dela_normal, 1) and ecart_base > 0.1 * cibles_base:
+        verdict = f"Dérive des postes de base (+{ecart_base:.0f} sur les cibles) : c'est le fonctionnement normal qui coûte plus, à surveiller."
+    elif ecart_base > 0:
+        verdict = (f"Semaine chargée par les postes flexibles ; les bases sont proches de leur cible (+{ecart_base:.0f}). "
+                   + ("Le dépassement est absorbé par le report." if depassement <= 0 else "Le dépassement est reporté sur la suite."))
     else:
-        verdict = "Semaine chargée par des postes flexibles ; les bases tiennent leur cible."
+        verdict = ("Semaine chargée par les postes flexibles ; les bases tiennent leur cible. "
+                   + ("Le report l'absorbe." if depassement <= 0 else "Le dépassement est reporté sur la suite."))
     return {"semaine": s, "lignes": lignes, "ecart_base": arrondi(ecart_base), "depassement": depassement, "verdict": verdict}
 
 
