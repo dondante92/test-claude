@@ -67,7 +67,8 @@ Bouton **Créer** (ou « Mettre à jour ») en haut à droite → partage : **Se
 
 - **Un patient = une nouvelle conversation** avec le GPT.
 - Coller les notes en précisant l'entretien (E1, E2…).
-- Le GPT s'arrête après la compréhension, après la fiche s'il a des questions, et après la décision. Écrire **« enchaîne »** pour qu'il aille jusqu'au bout.
+- La fiche de faits est remplie **en arrière-plan** : aucun tableau de faits n'est affiché. Avant de rédiger, le GPT vous pose seulement ses questions, en un bloc numéroté : d'abord celles auxquelles il faut répondre (âge, cursus, mode d'arrivée, idées suicidaires…), puis celles qui sont facultatives (sans réponse, le texte portera `[À COMPLÉTER : …]`).
+- Le GPT s'arrête après la compréhension, après ses questions s'il y en a de bloquantes, et après la décision. Écrire **« enchaîne »** pour qu'il aille jusqu'au bout (une question bloquante l'arrête toujours).
 - **Analyse IPB (Document 2)** : dans la conversation du patient, coller les notes de la séance. Pour les séances 2 et suivantes, **c'est le livrable par défaut** (règle du document maître). Il est privé, pour vous : jamais une note de dossier. G1/G2, Document 3 et courriers : à demander explicitement.
 - **Notes de suite** : dans la **même conversation** que le patient, écrire **« Note de suite : »** suivi des notes de l'entretien (elles ne sont plus produites sans demande). Note courte par défaut. Pour un patient que vous transmettez, écrire une fois **« transmission »** : toutes ses notes de suite seront alors détaillées pour le collègue.
 - **Relevé de données** : dans la conversation du patient, écrire **« Relevé de données »**. Il remplit le PDF original, vous le donne à télécharger, et liste ce qu'il a déduit, ce qui manque et ce qui attend des documents (identité : étiquette).

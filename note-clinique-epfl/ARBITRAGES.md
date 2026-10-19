@@ -114,3 +114,9 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 | A34 | Idéalisation / dévalorisation | Ne signent pas à elles seules une organisation limite. |
 | A35 | Livrable par défaut, séances 2 à 4 | Document 2 ; note de suite sur demande (« Note de suite : »). |
 | A36 | Orientation sexuelle | Interdite dans notes, synthèses, G2, Document 3, courriers ; permise dans le Document 2 seulement si cliniquement centrale (avertissement du script). |
+
+## GPT — décision du 19.10.2026
+
+| N° | Point | Décision |
+|---|---|---|
+| A37 | Fiche de faits dans le GPT | Remplie et contrôlée **en arrière-plan**, jamais affichée. Seules les questions sont montrées, avant la rédaction, en un bloc : bloquantes d'abord, puis champs en attente (facultatifs). La version Claude (skill, projet) n'est pas modifiée. |
