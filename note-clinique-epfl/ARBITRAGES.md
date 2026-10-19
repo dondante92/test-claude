@@ -120,3 +120,4 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 | N° | Point | Décision |
 |---|---|---|
 | A37 | Fiche de faits dans le GPT | Remplie et contrôlée **en arrière-plan**, jamais affichée. Seules les questions sont montrées, avant la rédaction, en un bloc : bloquantes d'abord, puis champs en attente (facultatifs). La version Claude (skill, projet) n'est pas modifiée. |
+| A38 | Symptômes aigus oubliés (erreur récurrente) | Balayage ligne par ligne des notes avant la fiche ; chaque mention a une place (aigu, chronique, status) ou est écartée avec sa raison (`aigu.ecartes`). Le script (`fiche --notes notes.txt`) refuse la fiche si un domaine nommé dans les notes n'y figure pas. Le GPT affiche une ligne « Symptômes retenus / écartés » avant ses questions, en remplacement du tableau. |

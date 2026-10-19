@@ -24,6 +24,9 @@
   "aigu.mesures":             {"etat": "NON_EXPLORE", "valeur": "arrêt de travail du ... au ...", "source": ""},
   "aigu.idees_suicidaires":   {"etat": "NON_EXPLORE", "valeur": "si PRESENT : actives/passives, scénario, intention, plan, temporalité, facteurs protecteurs", "source": ""},
   "aigu.premiere_fois":       {"etat": "NON_EXPLORE", "valeur": "", "source": ""},
+  "aigu.ecartes": [
+    {"mot": "mot des notes signalé par le balayage", "raison": "pourquoi ce n'est pas un symptôme (ex. « stress » = vocabulaire du patient pour le facteur de crise)"}
+  ],
 
   "chronique.elements": [
     {"libelle": "", "anciennete": "depuis l'adolescence | depuis l'enfance | de longue date", "spheres": "", "retentissement": "", "etat_final": "persistant | attenue | non_documente", "source": ""}

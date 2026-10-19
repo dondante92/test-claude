@@ -242,5 +242,28 @@
   "_lisezmoi": "Décision du 14.10.2026 : caractères ISO/CEI 8859-1 (accents permis) obligatoires dans la rubrique « Évaluation du risque suicidaire » (entière) et dans l'attitude de fin du premier entretien (dernier paragraphe de « Hypothèses diagnostiques et suite proposée »). Correction : controle.py nettoie.",
   "rubriques_entieres": ["Évaluation du risque suicidaire"],
   "fin_de_rubrique": ["Hypothèses diagnostiques et suite proposée"]
- }
+ },
+
+  "lexique_symptomes": {
+    "_lisezmoi": "Balayage des notes brutes (controle.py fiche --notes). Un domaine dont une racine apparaît dans les notes, hors négation, doit se retrouver dans la fiche (champ PRESENT, aigu.symptomes, chronique.elements) ou être écarté dans aigu.ecartes avec sa raison. Racines en minuscules, sans accents, comparées en début de mot. Ajouter ici un mot manqué : il sera cherché dans toutes les notes suivantes.",
+    "humeur dépressive": ["triste", "deprim", "moral", "pleur", "desespoir", "desespere", "vide interieur", "culpabil", "devalori"],
+    "perte d'intérêt ou de plaisir": ["anhedon", "plus de plaisir", "perte d'interet", "perte de plaisir", "plus envie", "demotiv", "aboulie"],
+    "anxiété": ["anxi", "angoiss", "stress", "inquiet", "panique", "rumin", "tendu", "tension interne", "peur", "apprehension", "nervos"],
+    "sommeil": ["sommeil", "endorm", "insomn", "reveil", "cauchemar", "dort mal", "dort peu", "hypersomn", "dort beaucoup"],
+    "appétit et poids": ["appetit", "mange", "poids", "kilos", "kg", "grignot"],
+    "énergie et fatigue": ["fatigu", "energie", "epuis", "asthen", "ralenti"],
+    "concentration": ["concentr", "memoire", "attention", "oubli", "distrait"],
+    "irritabilité": ["irrit", "colere", "agressiv", "enerve", "impulsiv"],
+    "idées de mort ou suicidaires": ["idees noires", "idee noire", "suicid", "mourir", "disparaitre", "en finir", "envie de vivre", "tentative"],
+    "auto-agressivité": ["scarif", "automutil", "se coupe", "se blesse", "se frappe"],
+    "consommations": ["alcool", "cannabis", "joint", "drogue", "cocaine", "mdma", "ivre", "benzo"],
+    "plaintes somatiques": ["cephal", "mal de tete", "maux de tete", "maux de ventre", "palpit", "oppression", "nausee", "tremble", "douleur", "vertige"],
+    "symptômes psychotiques": ["voix", "hallucin", "persecu", "mefian", "parano", "delir"],
+    "symptômes (hypo)maniaques": ["euphor", "exalt", "accelere", "moins besoin de dormir", "grandios"],
+    "retrait social": ["isol", "retrait", "ne sort plus", "s'enferme"],
+    "comportements alimentaires": ["vomi", "boulimi", "anorex", "restrict", "purg", "hyperphag", "crise alimentaire"],
+    "symptômes obsessionnels": ["obsession", "compulsi", "rituel", "toc"],
+    "symptômes post-traumatiques": ["flashback", "reviviscen", "sursaut", "hypervigil", "trauma"],
+    "dissociation": ["deperson", "dereal", "dissoci"]
+  }
 }

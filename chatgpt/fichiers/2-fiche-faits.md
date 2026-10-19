@@ -14,12 +14,20 @@
    | Âge | PRÉSENT | 22 ans | E1 |
    | Idées suicidaires | NON EXPLORÉ | — | — |
 
-2. **Pour le contrôle** : le fichier `fiche.json` (même contenu), puis lancer :
-   `python3 scripts/controle.py fiche fiche.json --sans-decision` (les décisions viennent à l'étape 3)
+2. **Pour le contrôle** : le fichier `fiche.json` (même contenu). Enregistrer aussi les notes brutes du clinicien, telles quelles, dans `notes.txt`, puis lancer :
+   `python3 scripts/controle.py fiche fiche.json --sans-decision --notes notes.txt` (les décisions viennent à l'étape 3)
 
 3. **Les questions** que le script renvoie, en un seul bloc :
    - **questions bloquantes** : à poser **avant** toute rédaction ;
    - **champs en attente** : le texte sera produit avec `[À COMPLÉTER : …]` visible, et la question sera posée en fin de réponse.
+
+## Balayage des symptômes (avant de remplir, puis par le script)
+
+Erreur récurrente : un symptôme aigu écrit dans les notes n'arrive pas dans la fiche, donc ni dans le plan aigu, ni dans le status, ni dans le diagnostic.
+
+1. **Avant de remplir** : relire les notes **ligne par ligne** et relever chaque mention de symptôme, même isolée, même en abrégé, même au milieu d'une phrase sur autre chose (« mange moins », « fume des joints pour se calmer », « n'arrive plus à suivre en cours »). Domaines à passer en revue : humeur, intérêt et plaisir, anxiété, sommeil, appétit et poids, énergie, concentration, irritabilité, idées de mort, auto-agressivité, consommations, plaintes somatiques, symptômes psychotiques, (hypo)manie, retrait social, alimentation, obsessions, trauma, dissociation.
+2. **Chaque mention reçoit une place** : `aigu.symptomes` (avec datation), `chronique.elements`, un champ du status, ou **`aigu.ecartes`** avec la raison (« stress » = mot du patient pour le facteur de crise). Une mention niée (« pas d'idées noires ») est un ABSENT, pas un oubli.
+3. **Le script vérifie** (`--notes`) : tout domaine nommé dans les notes, hors négation, et absent de la fiche est une **erreur**. Corriger la fiche, jamais le lexique pour faire taire l'erreur. Un mot manqué par le script peut être ajouté à `lexique_symptomes` dans `regles.json`.
 
 ## Les trois états
 

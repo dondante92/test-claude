@@ -2,7 +2,7 @@
 """Contrôles mécaniques de la note du premier entretien, de la synthèse, des notes de suite et du Document 2.
 
 Trois commandes :
-  fiche   FICHE.json                               vérifie la fiche de faits et les décisions (étapes 2-3)
+  fiche   FICHE.json [--notes NOTES.txt]           vérifie la fiche de faits et les décisions (étapes 2-3)
   texte   FICHIER --type note|synthese|suite-courte|suite-transmission|document2 [--fiche F]
                                                    vérifie un texte produit (étape 6, note de suite, ou Document 2)
   nettoie FICHIER [-o SORTIE] [--sans-accents]      rend le texte compatible Latin-1 (étape 6)
@@ -65,6 +65,40 @@ class Rapport:
 def etat(fiche, cle):
     v = fiche.get(cle)
     return v.get("etat") if isinstance(v, dict) else None
+
+
+NEGATION = re.compile(r"\b(pas|nie|nient|sans|aucune?|absence|ni|jamais|exclut|denie)\b[^.;,:!?]{0,25}$")
+
+
+def couverture_fiche(fiche):
+    """Texte de la fiche qui atteste un fait : champs PRESENT, symptômes aigus, éléments chroniques, écartés."""
+    morceaux = []
+    for cle, v in fiche.items():
+        if cle == "decision":
+            continue
+        if isinstance(v, dict) and v.get("etat") == "PRESENT":
+            morceaux.append(str(v.get("valeur", "")))
+        elif isinstance(v, list):
+            morceaux += [" ".join(str(x) for x in e.values()) for e in v if isinstance(e, dict)]
+    return plat(" ".join(morceaux))
+
+
+def balayer_notes(notes, fiche, regles, r):
+    """Symptômes nommés dans les notes brutes et absents de la fiche : le balayage qui empêche l'oubli."""
+    couvert = couverture_fiche(fiche)
+    for domaine, racines in regles["lexique_symptomes"].items():
+        if domaine.startswith("_"):
+            continue
+        motifs = [re.compile(r"\b" + re.escape(plat(x))) for x in racines]
+        if any(m.search(couvert) for m in motifs):
+            continue
+        for n, ligne in enumerate(notes.splitlines(), 1):
+            l = plat(ligne)
+            trouve = next((m for m in motifs for t in m.finditer(l) if not NEGATION.search(l[:t.start()])), None)
+            if trouve:
+                r.erreur(f"notes l. {n} : « {ligne.strip()[:90]} » ({domaine}) absent de la fiche : "
+                         "l'ajouter (aigu.symptomes avec datation, chronique.elements ou status) ou l'écarter dans aigu.ecartes avec la raison")
+                break
 
 
 def controler_fiche(fiche, regles, r, sans_decision=False, note_seule=False):
@@ -441,6 +475,7 @@ def main():
     f.add_argument("fiche")
     f.add_argument("--sans-decision", action="store_true", help="étape 2 : contrôler les faits seulement, avant les décisions")
     f.add_argument("--note-seule", action="store_true", help="note du premier entretien seule : pas de contrôle évolution / issue")
+    f.add_argument("--notes", help="notes brutes du clinicien : tout symptôme nommé doit se retrouver dans la fiche")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
     t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission", "document2"], required=True)
@@ -456,6 +491,8 @@ def main():
     if a.cmd == "fiche":
         fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8"))
         controler_fiche(fiche, regles, r, a.sans_decision, a.note_seule)
+        if a.notes:
+            balayer_notes(pathlib.Path(a.notes).read_text(encoding="utf-8"), fiche, regles, r)
         sys.exit(r.afficher("CONTRÔLE DE LA FICHE ET DES DÉCISIONS"))
 
     texte = pathlib.Path(a.fichier).read_text(encoding="utf-8")
