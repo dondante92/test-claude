@@ -8,40 +8,43 @@
    Desktop (>=960px) = left sidebar + wider content; Today splits into two columns.
    Big type is the baseline, not a setting. Colour is used sparingly: area dots, deadlines, done. */
 :root{
-  --bg:#F2F6F5; --surface:#FFFFFF; --surface-2:#E6EEEC; --ink:#14302D; --ink-2:#4A615E; --line:#D2DDDA;
-  --accent:#1D6E65; --accent-ink:#FFFFFF; --accent-soft:#D8ECE7;
-  --done:#3A7C4E; --done-soft:#E0EFE3; --warm:#A24C1C; --warm-soft:#F7E5D8;
-  --r-maison:#3A6AA3; --r-maison-s:#E0E8F4; --r-etudes:#6852A3; --r-etudes-s:#EAE5F5;
-  --r-joud:#A94A73; --r-joud-s:#F5E2EA; --r-demarches:#3C7780; --r-demarches-s:#DEECEE;
-  --r-moi:#806A27; --r-moi-s:#F1ECD8; --r-inbox:#646D6B; --r-inbox-s:#E7EBEA;
-  --shadow:0 1px 2px rgba(20,48,45,.06),0 8px 22px rgba(20,48,45,.07);
-  --overlay:rgba(9,26,24,.45);
+  --bg:#FBF6EF; --surface:#FFFFFF; --surface-2:#F6EEE4; --ink:#2A2438; --ink-2:#6A6176; --line:#ECE2D6;
+  --accent:#6A5AC8; --accent-ink:#FFFFFF; --accent-soft:#EEEAFC;
+  --done:#3B8A5A; --done-soft:#E2F2E8; --warm:#B85A26; --warm-soft:#FDE9DC;
+  --hero:#FFF7EE; --sun:#F2A93B;
+  --r-maison:#C0661C; --r-maison-s:#FDEEDD; --r-etudes:#5755C9; --r-etudes-s:#E9E9FB;
+  --r-joud:#C14779; --r-joud-s:#FCE6EF; --r-demarches:#23808A; --r-demarches-s:#DDF1F2;
+  --r-moi:#C23D5C; --r-moi-s:#FCE3E8; --r-inbox:#6E6878; --r-inbox-s:#EFECF1;
+  --shadow:0 1px 2px rgba(80,50,20,.05),0 8px 24px rgba(80,50,20,.07);
+  --overlay:rgba(30,20,40,.45);
   --font:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --radius:16px;
+  --radius:18px;
   font-size:19px;
 }
 :root[data-size="large"]{font-size:21px}
 :root[data-size="xlarge"]{font-size:23px}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0E1716; --surface:#16211F; --surface-2:#1F2C2A; --ink:#E6F0EE; --ink-2:#A6BAB6; --line:#2B3C39;
-    --accent:#62C3B4; --accent-ink:#0A1A18; --accent-soft:#183531;
-    --done:#7CC490; --done-soft:#1B3223; --warm:#F2A374; --warm-soft:#3A2417;
-    --r-maison:#93B8E8; --r-maison-s:#1B2A3D; --r-etudes:#B9A8EE; --r-etudes-s:#29223F;
-    --r-joud:#EFA0C1; --r-joud-s:#3A1F2B; --r-demarches:#91C8CF; --r-demarches-s:#193135;
-    --r-moi:#DCC57E; --r-moi-s:#322B16; --r-inbox:#ACB6B4; --r-inbox-s:#252D2C;
+    --bg:#17141F; --surface:#221E2C; --surface-2:#2C2738; --ink:#F1ECF7; --ink-2:#B5ACC2; --line:#383146;
+    --accent:#ADA1F5; --accent-ink:#1A1530; --accent-soft:#302A4A;
+    --done:#7DCB98; --done-soft:#1E3326; --warm:#F4A878; --warm-soft:#3D271A;
+    --hero:#241F30; --sun:#F2B656;
+    --r-maison:#F2B27A; --r-maison-s:#3B2A1A; --r-etudes:#AFAEF5; --r-etudes-s:#27264A;
+    --r-joud:#F2A2C3; --r-joud-s:#3D2030; --r-demarches:#8FD0D6; --r-demarches-s:#183437;
+    --r-moi:#F2A0B2; --r-moi-s:#3D1E27; --r-inbox:#BDB6C8; --r-inbox-s:#2B2733;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25);
     --overlay:rgba(0,0,0,.6);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0E1716; --surface:#16211F; --surface-2:#1F2C2A; --ink:#E6F0EE; --ink-2:#A6BAB6; --line:#2B3C39;
-  --accent:#62C3B4; --accent-ink:#0A1A18; --accent-soft:#183531;
-  --done:#7CC490; --done-soft:#1B3223; --warm:#F2A374; --warm-soft:#3A2417;
-  --r-maison:#93B8E8; --r-maison-s:#1B2A3D; --r-etudes:#B9A8EE; --r-etudes-s:#29223F;
-  --r-joud:#EFA0C1; --r-joud-s:#3A1F2B; --r-demarches:#91C8CF; --r-demarches-s:#193135;
-  --r-moi:#DCC57E; --r-moi-s:#322B16; --r-inbox:#ACB6B4; --r-inbox-s:#252D2C;
+  --bg:#17141F; --surface:#221E2C; --surface-2:#2C2738; --ink:#F1ECF7; --ink-2:#B5ACC2; --line:#383146;
+  --accent:#ADA1F5; --accent-ink:#1A1530; --accent-soft:#302A4A;
+  --done:#7DCB98; --done-soft:#1E3326; --warm:#F4A878; --warm-soft:#3D271A;
+  --hero:#241F30; --sun:#F2B656;
+  --r-maison:#F2B27A; --r-maison-s:#3B2A1A; --r-etudes:#AFAEF5; --r-etudes-s:#27264A;
+  --r-joud:#F2A2C3; --r-joud-s:#3D2030; --r-demarches:#8FD0D6; --r-demarches-s:#183437;
+  --r-moi:#F2A0B2; --r-moi-s:#3D1E27; --r-inbox:#BDB6C8; --r-inbox-s:#2B2733;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25);
   --overlay:rgba(0,0,0,.6);
   color-scheme:dark;
@@ -281,6 +284,30 @@ textarea.field{resize:vertical;line-height:1.45}
   padding:12px 18px;border-radius:999px;font-weight:600;font-size:.92rem;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 
+/* Warm layer: greeting, hero card, tiles, week strip, aisles */
+.greet{display:flex;align-items:center;gap:10px}
+.greet .sun{width:34px;height:34px;color:var(--sun);flex:none}
+.greet .sun svg{width:100%;height:100%}
+.upnext{background:linear-gradient(160deg,var(--hero),var(--surface) 70%);border-color:var(--accent)}
+.calmhead{background:var(--warm-soft)}
+.today-grid .linkrow,.rubrow{box-shadow:var(--shadow);border-color:transparent}
+.list{box-shadow:var(--shadow);border-color:transparent}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{display:grid;gap:6px;justify-items:start;padding:14px;border-radius:var(--radius);background:var(--surface);border:0;box-shadow:var(--shadow);text-align:left;min-height:118px}
+.tile .rubicon{width:44px;height:44px}
+.tile .rubname{font-size:1rem}
+.wstrip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;background:var(--surface);border-radius:var(--radius);padding:10px 6px;box-shadow:var(--shadow)}
+.wday{display:grid;justify-items:center;gap:2px;padding:6px 0 8px;border:0;background:none;border-radius:14px;color:var(--ink-2);font-size:.78rem;font-weight:600;min-height:64px}
+.wday b{font-size:1.05rem;color:var(--ink)}
+.wday i{width:6px;height:6px;border-radius:50%;background:transparent}
+.wday.has i{background:var(--accent)}
+.wday.now{background:var(--accent);color:var(--accent-ink)}
+.wday.now b{color:var(--accent-ink)}
+.wday.now.has i{background:var(--accent-ink)}
+.aisle{font-size:1.15rem;margin-right:2px}
+.micbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--accent);flex:none}
+.micbtn svg{width:22px;height:22px}
+
 /* Desktop: sidebar navigation, wider content, Today in two columns */
 @media (min-width:960px){
   body{padding-left:0;padding-right:0}
@@ -312,7 +339,7 @@ textarea.field{resize:vertical;line-height:1.45}
       <button class="donechip" id="doneChip" data-act="go" data-view="done" hidden></button>
       <button class="iconbtn" data-act="settings" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
-    <h1 id="viewTitle">Today</h1>
+    <h1 id="viewTitle" class="greet">Today</h1>
     <p class="sub" id="viewSub" hidden></p>
   </header>
   <div id="banner" class="banner" role="status" hidden></div>
@@ -404,6 +431,8 @@ const ICON = {
   right: sv('<path d="M9 5l7 7-7 7"/>', 2.2),
   up: sv('<path d="M6 15l6-6 6 6"/>', 2.2),
   down: sv('<path d="M6 9l6 6 6-6"/>', 2.2),
+  sun: sv('<circle cx="12" cy="12" r="4.5" fill="currentColor" stroke="none"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>'),
+  moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="currentColor" stroke="none"/>'),
   mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>')
 };
 
@@ -454,6 +483,30 @@ const rubIcon = k => ICON[k] || ICON.autre;
 const rubChip = k => `<span class="chip rub" style="${rubStyle(k)}"><i class="dot"></i>${esc(rubLabel(k))}</span>`;
 const protectedAreas = () => (S.settings && Array.isArray(S.settings.proteger)) ? S.settings.proteger : ['etudes','moi'];
 
+/* Shop aisles: purchases are grouped this way in the store. Guessed from the name, editable. */
+const AISLES = [
+  ['fruitveg','🥦','Fruit & veg',/\b(apple|banana|orange|lemon|tomato|potato|onion|carrot|salad|lettuce|fruit|veg|avocado|cucumber|pepper|berr|grape|pear|spinach|garlic|herb)/i],
+  ['dairy','🥛','Dairy & eggs',/\b(milk|yog|cheese|butter|cream|egg|kefir)/i],
+  ['bakery','🥖','Bread & bakery',/\b(bread|baguette|croissant|toast|bun|cake|biscuit|cookie)/i],
+  ['meatfish','🍗','Meat & fish',/\b(chicken|beef|meat|fish|salmon|tuna|ham|turkey|lamb|mince)/i],
+  ['pantry','🥫','Pantry',/\b(rice|pasta|flour|sugar|salt|oil|sauce|tin|can|cereal|oat|coffee|tea|honey|jam|spice|lentil|bean)/i],
+  ['frozen','🧊','Frozen',/\b(frozen|ice cream)/i],
+  ['drinks','🧃','Drinks',/\b(water|juice|soda|drink)/i],
+  ['baby','🍼','Baby & child',/\b(nappies|nappy|diaper|wipes|formula|baby|bottle|teat|puree)/i],
+  ['household','🧽','Household & cleaning',/\b(detergent|soap|clean|sponge|bin bag|toilet paper|kitchen roll|bleach|dish|laundry|softener|foil|batter)/i],
+  ['care','🧴','Personal care',/\b(shampoo|toothpaste|toothbrush|deodorant|razor|cream|lotion|tampon|pad|cotton|makeup)/i],
+  ['pharmacy','💊','Pharmacy',/\b(paracetamol|ibuprofen|medicine|plaster|vitamin|syrup|thermometer|pharmacy)/i],
+  ['stationery','✏️','Stationery',/\b(notebook|pen|pencil|paper|folder|stationery|highlighter|stapler|printer)/i],
+  ['other','🛍️','Other',null]
+];
+const aisleOf = t => AISLES.find(a => a[0] === t.rayon) || AISLES.find(a => a[0] === guessAisle(t.titre));
+function guessAisle(title){ const a = AISLES.find(x => x[3] && x[3].test(String(title || ''))); return a ? a[0] : 'other'; }
+function greeting(){
+  const h = new Date().getHours();
+  const name = S.settings && typeof S.settings.prenom === 'string' ? S.settings.prenom.trim() : 'Samah';
+  return { text:(h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') + (name ? ', ' + name : ''), icon:h < 18 ? ICON.sun : ICON.moon };
+}
+
 /* ---------------- State ---------------- */
 const S = {
   today: todayISO(),
@@ -463,7 +516,7 @@ const S = {
   idees: new Map(), projets: new Map(), frictions: new Map(), day: null,
   loaded: { taches:false, routines:false },
   view: 'today', rub: null, projet: null, rubTab: 'todo', sousFilter: null,
-  weekOffset: 0, doneFilter: 7, doneRub: 'all', shopGroup: 'area', store: false,
+  weekOffset: 0, doneFilter: 7, doneRub: 'all', shopGroup: 'aisle', store: false,
   laterOpen: null, sheet: null, busy: null, followup: null, confirm: null,
   prefs: Object.assign({ size:'normal', showDone:true, open:{} }, LS.get('ms.prefs', {}))
 };
@@ -659,7 +712,7 @@ function taskRow(t, ctx){
   const meta = [];
   if (ctx.showRub !== false) meta.push(rubChip(t.rubrique));
   if (t.sous) meta.push(`<span class="m">${esc(t.sous)}</span>`);
-  if (t.type === 'achat'){ meta.push(`<span class="m">${ICON.basket}to buy</span>`); if (t.qte) meta.push(`<span class="m qty">${esc(t.qte)}</span>`); }
+  if (t.type === 'achat'){ if (ctx.showAisle) meta.push(`<span class="m">${aisleOf(t)[1]} ${esc(aisleOf(t)[2])}</span>`); else if (!ctx.inShop) meta.push(`<span class="m">${ICON.basket}to buy</span>`); if (t.qte) meta.push(`<span class="m qty">${esc(t.qte)}</span>`); }
   if (t.type === 'rdv') meta.push(`<span class="m strong">${ICON.clock}${t.heure ? esc(t.heure) : 'appointment'}</span>`);
   if (!done){
     const dl = deadlineMeta(t); if (dl) meta.push(dl);
@@ -733,10 +786,10 @@ function captureBox(scope, label, placeholder){
   const key = scope === 'area' ? 'area.' + S.rub : scope;
   const st = (S.capStatus || {})[scope] || '';
   return `<div class="capture" id="cap-${scope}">
-    <label class="cap-label" for="capText-${scope}">${esc(label)}</label>
+    <div class="inline" style="justify-content:space-between"><label class="cap-label" for="capText-${scope}">${esc(label)}</label><button class="micbtn" data-act="dictate" data-target="capText-${scope}" aria-label="Dictate">${ICON.mic}</button></div>
     <textarea id="capText-${scope}" class="cap-text" data-draft="${esc(key)}" rows="3" placeholder="${esc(placeholder)}">${esc(LS.get('ms.draft.' + key, ''))}</textarea>
     <div class="cap-foot">
-      <span class="cap-hint">${ICON.mic}To dictate, use your keyboard’s microphone.</span>
+      <span class="cap-hint">Write freely. Several things at once is fine.</span>
       <span class="acts">${scope === 'area' ? `<button class="linkbtn" data-act="new-task-area">Add it myself</button>` : ''}<button class="btn primary" data-act="organize" data-scope="${scope}"${S.busy ? ' disabled' : ''}>Sort it</button></span>
     </div>
     <div class="cap-status" id="capStatus-${scope}" role="status"${st ? '' : ' hidden'}>${st}</div>
@@ -886,17 +939,23 @@ function renderShopping(){
   }
   if (!open.length) h += `<div class="empty" style="margin-top:16px">Nothing to buy. Items you add here, or through Quick add, appear in one list.</div>`;
   else {
-    if (!store) h += `<div class="filters" role="group" aria-label="Group by">${[['area','By area'],['store','By shop']].map(x => `<button class="choice" data-act="shop-group" data-v="${x[0]}" aria-pressed="${S.shopGroup === x[0]}">${x[1]}</button>`).join('')}</div>`;
+    if (!store) h += `<div class="filters" role="group" aria-label="Group by">${[['aisle','By aisle'],['area','By area'],['store','By shop']].map(x => `<button class="choice" data-act="shop-group" data-v="${x[0]}" aria-pressed="${S.shopGroup === x[0]}">${x[1]}</button>`).join('')}</div>`;
     const groups = new Map();
-    const keyOf = t => store || S.shopGroup === 'store' ? (t.magasin || 'Anywhere') : rubLabel(t.rubrique);
-    open.slice().sort((a, b) => keyOf(a).localeCompare(keyOf(b)) || String(a.creeLe || '').localeCompare(String(b.creeLe || ''))).forEach(t => { const k = keyOf(t); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); });
+    const g = store ? 'aisle' : S.shopGroup;
+    const keyOf = t => g === 'store' ? (t.magasin || 'Anywhere') : g === 'area' ? rubLabel(t.rubrique) : aisleOf(t)[0];
+    const rank = t => g === 'aisle' ? String(AISLES.indexOf(aisleOf(t))).padStart(2, '0') : keyOf(t);
+    open.slice().sort((a, b) => rank(a).localeCompare(rank(b)) || String(a.creeLe || '').localeCompare(String(b.creeLe || ''))).forEach(t => { const k = keyOf(t); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); });
     h += `<div class="${store ? 'store' : ''}">`;
-    groups.forEach((arr, k) => { h += `<section class="sec" style="margin-top:18px"><h2 class="sec-h">${esc(k)} <span class="count">${arr.length}</span></h2><ul class="list">${arr.map(t => taskRow(t, { showRub:!store && S.shopGroup === 'store', showLevel:false })).join('')}</ul></section>`; });
+    groups.forEach((arr, k) => {
+      const a = g === 'aisle' ? AISLES.find(x => x[0] === k) : null;
+      const title = a ? `<span class="aisle" aria-hidden="true">${a[1]}</span>${esc(a[2])}` : esc(k);
+      h += `<section class="sec" style="margin-top:18px"><h2 class="sec-h">${title} <span class="count">${arr.length}</span></h2><ul class="list">${arr.map(t => taskRow(t, { showRub:!store && g !== 'area', showLevel:false, inShop:true })).join('')}</ul></section>`;
+    });
     h += `</div>`;
   }
   if (recent.length){
     const o = isFold('shop-bought', !store);
-    h += `<section class="sec">${foldHead('shop-bought', 'Bought this week', recent.length, !store)}${o ? `<ul class="list">${recent.map(t => taskRow(t, { showDoneDay:true, showLevel:false })).join('')}</ul>` : ''}</section>`;
+    h += `<section class="sec">${foldHead('shop-bought', 'Bought this week', recent.length, !store)}${o ? `<ul class="list">${recent.map(t => taskRow(t, { showDoneDay:true, showLevel:false, inShop:true })).join('')}</ul>` : ''}</section>`;
   }
   const usualAvail = usual.filter(t => !recent.includes(t) || true);
   if (usualAvail.length && !S.readOnly){
@@ -916,8 +975,13 @@ function renderPlans(){
   const wk0 = mondayOf(S.today), wk1 = addDays(wk0, 6);
   const wkN = tasks.filter(t => isOpen(t) && t.type !== 'achat' && dateOf(t) && dateOf(t) >= S.today && dateOf(t) <= wk1).length;
   const rdvN = tasks.filter(t => t.type === 'rdv' && isOpen(t) && dateOf(t) && dateOf(t) >= S.today && dateOf(t) <= wk1).length;
-  let h = `<div class="rublist">${linkRow('go', 'data-view="week"', ICON.cal, 'This week', [wkN ? wkN + ' planned' : 'nothing planned yet', rdvN ? rdvN + ' appointment' + (rdvN > 1 ? 's' : '') : ''].filter(Boolean).join(' · '))}</div>`;
-  h += `<section class="sec"><h2 class="sec-h">Life areas</h2><div class="rublist">`;
+  let h = `<section><div class="inline" style="justify-content:space-between;margin-bottom:8px"><h2 class="sec-h" style="margin:0">This week</h2><button class="linkbtn" data-act="go" data-view="week">See the week</button></div><div class="wstrip">`;
+  for (let i = 0; i < 7; i++){
+    const d = addDays(wk0, i), has = tasks.some(t => t.type !== 'achat' && isOpen(t) && dateOf(t) === d);
+    h += `<button class="wday${d === S.today ? ' now' : ''}${has ? ' has' : ''}" data-act="go-day" data-d="${d}" aria-label="${esc(fmtLong(d))}${has ? ', something planned' : ''}">${DS[parseISO(d).getDay()]}<b>${parseISO(d).getDate()}</b><i></i></button>`;
+  }
+  h += `</div><p class="small" style="margin:8px 0 0">${[wkN ? wkN + ' planned' : 'Nothing planned yet', rdvN ? rdvN + ' appointment' + (rdvN > 1 ? 's' : '') : ''].filter(Boolean).join(' · ')}</p></section>`;
+  h += `<section class="sec"><h2 class="sec-h">Life areas</h2><div class="tiles">`;
   for (const r of visibleRubs()){
     const open = tasks.filter(t => t.rubrique === r.key && isOpen(t) && t.statut !== 'en_attente' && t.type !== 'achat');
     const week = open.filter(t => dateOf(t) && dateOf(t) <= addDays(S.today, 6)).length;
@@ -925,7 +989,7 @@ function renderPlans(){
     const parts = [open.length ? open.length + ' to do' : 'nothing to do'];
     if (week) parts.push(week + ' this week');
     if (rts.length) parts.push(rts.length + ' routine' + (rts.length > 1 ? 's' : ''));
-    h += linkRow('go-area', `data-rub="${esc(r.key)}"`, rubIcon(r.key), r.label, parts.join(' · '), rubStyle(r.key));
+    h += `<button class="tile" data-act="go-area" data-rub="${esc(r.key)}" style="${rubStyle(r.key)}"><span class="rubicon">${rubIcon(r.key)}</span><span class="rubname">${esc(r.label)}</span><span class="rubcounts">${esc(parts.join(' · '))}</span></button>`;
   }
   h += `</div></section>`;
   const projA = Array.from(S.projets.values()).filter(p => p.statut !== 'fait' && p.statut !== 'pause').length;
@@ -961,7 +1025,7 @@ function renderWeek(){
     const nRout = d >= S.today ? activeRoutines().filter(r => { const f = freqOf(r); return f.type === 'quotidien' || (f.type === 'jours' && (f.jours || []).includes(wd(d))); }).length : 0;
     const list = rdv.concat(open, S.prefs.showDone ? done : []);
     const cls = d === S.today ? ' today' : (d < S.today ? ' past' : '');
-    h += `<section class="day${cls}"><div class="day-h"><strong>${fmtLong(d)}</strong>${d === S.today ? '<span class="chip acc">today</span>' : ''}${d >= S.today && load ? `<span class="small">about ${fmtMin(load)}</span>` : ''}${d >= S.today && load > 240 ? '<span class="chip warm">full day</span>' : ''}
+    h += `<section class="day${cls}" id="day-${d}"><div class="day-h"><strong>${fmtLong(d)}</strong>${d === S.today ? '<span class="chip acc">today</span>' : ''}${d >= S.today && load ? `<span class="small">about ${fmtMin(load)}</span>` : ''}${d >= S.today && load > 240 ? '<span class="chip warm">full day</span>' : ''}
       ${!S.readOnly ? `<button class="btn ghost small addday" data-act="new-task" data-prevue="${d}" aria-label="Add on ${fmtLong(d)}">${ICON.plus}<span>Add</span></button>` : ''}</div>
       ${list.length ? `<ul class="list">${list.map(t => taskRow(t, { showDate:false, later:d >= S.today })).join('')}</ul>` : `<div class="day-empty">${d < S.today ? 'Nothing noted.' : 'Nothing planned.'}</div>`}
       ${nRout ? `<div class="day-empty">${ICON.repeat.replace('<svg', '<svg style="width:16px;height:16px;vertical-align:-3px"')} ${nRout} routine${nRout > 1 ? 's' : ''}</div>` : ''}
@@ -1182,7 +1246,8 @@ function doRender(force){
 }
 function renderChrome(){
   const v = VIEWS[S.view] || VIEWS.today;
-  $('#viewTitle').textContent = v.title();
+  if (S.view === 'today'){ const g = greeting(); $('#viewTitle').innerHTML = `<span class="sun">${g.icon}</span><span>${esc(g.text)}</span>`; }
+  else $('#viewTitle').textContent = v.title();
   const sub = v.sub ? v.sub() : '';
   $('#viewSub').textContent = sub; $('#viewSub').hidden = !sub;
   const back = v.back;
@@ -1332,6 +1397,8 @@ function sheetTask(s){
     <div class="choices">${[['tache','Task'],['achat','To buy'],['rdv','Appointment']].map(x => choice('set', 'type', x[0], x[1], d.type === x[0])).join('')}</div>`;
   if (isBuy){
     h += `<label class="fl" for="f-qte">Quantity or details <span class="hint">optional</span></label><input class="field" id="f-qte" data-f="qte" value="${esc(d.qte || '')}" placeholder="e.g. 2 packs, size 4">
+      <span class="fl">Aisle</span>
+      <div class="choices">${AISLES.map(a => choice('set', 'rayon', a[0], a[1] + ' ' + esc(a[2]), (d.rayon || guessAisle(d.titre)) === a[0])).join('')}</div>
       <label class="fl" for="f-mag">Shop <span class="hint">optional</span></label><input class="field" id="f-mag" data-f="magasin" value="${esc(d.magasin || '')}" list="dl-shops" placeholder="e.g. Migros, pharmacy"><datalist id="dl-shops">${shops.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
       <span class="fl">Usual item</span>
       <div class="choices">${choice('set', 'recurrent', '1', 'Yes, I buy it regularly', !!d.recurrent)}${choice('set', 'recurrent', '0', 'No', !d.recurrent)}</div>
@@ -1396,7 +1463,7 @@ async function saveTask(){
     attendDe:d.statut === 'en_attente' ? (clean(d.attendDe, 120) || null) : null,
     etapes:steps, action:(steps.find(x => !x.fait) || {}).t || null,
     sous:clean(d.sous, 60) || null, note:typeof d.note === 'string' ? d.note.slice(0, 4000) : null,
-    qte:type === 'achat' ? (clean(d.qte, 60) || null) : null, magasin:type === 'achat' ? (clean(d.magasin, 60) || null) : null, recurrent:type === 'achat' ? !!d.recurrent : false,
+    qte:type === 'achat' ? (clean(d.qte, 60) || null) : null, rayon:type === 'achat' ? (d.rayon || guessAisle(titre)) : null, magasin:type === 'achat' ? (clean(d.magasin, 60) || null) : null, recurrent:type === 'achat' ? !!d.recurrent : false,
     projetId:d.projetId && S.projets.has(d.projetId) ? d.projetId : null,
     suggere:d.suggere || {}, modifieLe:now
   };
@@ -1470,6 +1537,8 @@ function sheetSettings(s){
     <span class="fl">Things already done</span>
     <div class="choices"><button class="choice" data-act="pref" data-k="showDone" data-v="1" aria-pressed="${S.prefs.showDone}">Show them, crossed out</button><button class="choice" data-act="pref" data-k="showDone" data-v="0" aria-pressed="${!S.prefs.showDone}">Hide them in lists</button></div>
     <p class="small">These two settings apply on this device only. Everything stays in Done.</p>
+    <label class="fl" for="f-prenom">Your first name <span class="hint">for the greeting, optional</span></label>
+    <input class="field" id="f-prenom" data-f="prenom" value="${esc(d.prenom)}"${ro ? ' readonly' : ''}>
     <label class="fl" for="f-contexte">What the assistant should know about me</label>
     <p class="small" style="margin:0">It uses this to sort and prioritise. Write only what you want it to know.</p>
     <textarea class="field" id="f-contexte" data-f="contexte" rows="5"${ro ? ' readonly' : ''} placeholder="e.g. I study at UNIL on Tuesdays and Thursdays. Mornings are busy with Joud. I work best in the early afternoon.">${esc(d.contexte)}</textarea>
@@ -1496,12 +1565,12 @@ function sheetSettings(s){
   return h;
 }
 function openSettings(){
-  openSheet({ kind:'settings', draft:{ contexte:(S.settings && S.settings.contexte) || '', proteger:protectedAreas().slice(), prefsIA:((S.settings && S.settings.prefsIA) || []).slice(), rubriques:rubriques().map(r => ({ key:r.key, label:r.label, desc:r.desc, cache:r.cache })), newrub:'' } });
+  openSheet({ kind:'settings', draft:{ prenom:S.settings && typeof S.settings.prenom === 'string' ? S.settings.prenom : 'Samah', contexte:(S.settings && S.settings.contexte) || '', proteger:protectedAreas().slice(), prefsIA:((S.settings && S.settings.prefsIA) || []).slice(), rubriques:rubriques().map(r => ({ key:r.key, label:r.label, desc:r.desc, cache:r.cache })), newrub:'' } });
 }
 async function saveSettings(){
   const d = S.sheet.draft;
   const rubs = d.rubriques.map(r => ({ key:r.key, label:clean(r.label, 40) || rubLabel(r.key), desc:r.desc || '', cache:r.key === 'inbox' ? false : !!r.cache }));
-  if (await saveSettingsPatch({ contexte:String(d.contexte || '').slice(0, 3000), rubriques:rubs, proteger:d.proteger, prefsIA:d.prefsIA }, 'Settings saved')) closeSheet();
+  if (await saveSettingsPatch({ prenom:clean(d.prenom, 40), contexte:String(d.contexte || '').slice(0, 3000), rubriques:rubs, proteger:d.proteger, prefsIA:d.prefsIA }, 'Settings saved')) closeSheet();
 }
 
 async function exportData(){
@@ -1791,7 +1860,7 @@ FORMAT: reply with only one JSON object, no other text:
 {"summary":"one short sentence","questions":[],"items":[{"kind":"task","title":"Tidy the kitchen","area":"maison","sub":null,"planned_date":null,"deadline":null,"time":null,"level":"worth","importance":1,"duration":30,"next_step":null,"already_done":false,"suggested":["duration"],"reason":""}]}
 kind is one of: task, purchase, appointment, complete, complete_routine, update, routine, keep, friction, project.
 - complete / complete_routine / update: add "id" (exact id from above); for update give only the fields that change ("title","area","planned_date","deadline","time","level","duration","kind_of_task").
-- purchase: "title", "area", optional "quantity".
+- purchase: "title", "area", optional "quantity", "aisle": one of ${AISLES.map(x => x[0]).join(' | ')}.
 - routine: "title", "area", "frequency": {"type":"daily"} | {"type":"days","days":[1,4]} (1 = Monday … 7 = Sunday) | {"type":"weekly"} | {"type":"interval","every":14}.
 - keep: "text", "area" (optional).
 - friction: "problem", "area" (optional), "id" if it matches an existing one.
@@ -1824,6 +1893,7 @@ function normalize(raw){
     it.dejaFait = e.already_done === true;
     it.raison = clean(e.reason, 140);
     it.qte = clean(e.quantity, 60) || null;
+    it.rayon = AISLES.some(x => x[0] === e.aisle) ? e.aisle : null;
     if (kind === 'done'){ const id = String(e.id || ''); if (S.tasks.has(id)) kind = 'complete'; else { kind = 'task'; it.dejaFait = true; } }
     if (kind === 'task' || kind === 'purchase' || kind === 'appointment'){
       it.action = 'creer';
@@ -2005,7 +2075,7 @@ async function applyReview(){
       const done = it.dejaFait;
       const doc = { titre:it.titre, rubrique:it.rubrique || 'inbox', sous:it.sous, type:it.type || 'tache', prevue:done ? null : it.prevue, echeance:it.echeance, heure:it.type === 'rdv' ? it.heure : null,
         importance:it.importance || 1, niveau:it.niveau, duree:it.type === 'achat' ? null : it.duree, urgence:null, raison:it.raison || null, action:it.action_suivante, etapes:it.action_suivante ? [{ t:it.action_suivante, fait:false }] : [],
-        qte:it.type === 'achat' ? it.qte : null, magasin:null, recurrent:false, note:null, suggere:Object.assign({}, it.suggere), source:rev.source,
+        qte:it.type === 'achat' ? it.qte : null, rayon:it.type === 'achat' ? (it.rayon || guessAisle(it.titre)) : null, magasin:null, recurrent:false, note:null, suggere:Object.assign({}, it.suggere), source:rev.source,
         statut:done ? 'fait' : 'a_faire', creeLe:now, modifieLe:now, faitLe:done ? now : null, faitJour:done ? S.today : null, reports:0 };
       const ref = tasksCol().doc();
       res = await write('t:' + ref.id, () => ref.set(doc));
@@ -2117,7 +2187,7 @@ function addShopping(){
       if (ex && isOpenAct(ex)){ dup.push(titre); continue; }
       if (ex && ex.statut === 'fait'){ await write('t:' + ex.id, () => tasksCol().doc(ex.id).update({ statut:'a_faire', faitLe:null, faitJour:null, qte:qte || ex.qte || null, modifieLe:now })); continue; }
       const ref = tasksCol().doc();
-      await write('t:' + ref.id, () => ref.set({ titre, qte, rubrique:area, type:'achat', prevue:null, echeance:null, heure:null, importance:1, niveau:null, duree:null, statut:'a_faire', magasin:null, recurrent:false, etapes:[], action:null, suggere:{}, source:'manual', creeLe:now, modifieLe:now, reports:0, faitLe:null, faitJour:null }));
+      await write('t:' + ref.id, () => ref.set({ titre, qte, rayon:guessAisle(titre), rubrique:area, type:'achat', prevue:null, echeance:null, heure:null, importance:1, niveau:null, duree:null, statut:'a_faire', magasin:null, recurrent:false, etapes:[], action:null, suggere:{}, source:'manual', creeLe:now, modifieLe:now, reports:0, faitLe:null, faitJour:null }));
     }
     inp.value = ''; LS.del('ms.draft.shop');
     toast(dup.length ? 'Already on the list: ' + dup.join(', ') : 'Added');
@@ -2247,6 +2317,8 @@ document.addEventListener('click', e => {
     case 'ng-save': saveNudge(); break;
     case 'store': S.store = el.dataset.v === '1'; window.scrollTo(0, 0); doRender(true); break;
     case 'shop-add': addShopping(); break;
+    case 'dictate': { const ta = document.getElementById(el.dataset.target); if (ta) ta.focus(); toast('Tap the microphone on your keyboard to dictate.'); break; }
+    case 'go-day': go('week', {}); S.weekOffset = 0; doRender(true); setTimeout(() => { const d = document.getElementById('day-' + el.dataset.d); if (d) d.scrollIntoView({ block:'start' }); }, 30); break;
     case 'shop-area': S.shopArea = el.dataset.v; render(); break;
     case 'shop-group': S.shopGroup = el.dataset.v; render(); break;
     case 'need': { const id = el.dataset.id; write('t:' + id, () => tasksCol().doc(id).update({ statut:'a_faire', faitLe:null, faitJour:null, modifieLe:nowIso() }), 'Back on the list'); break; }
