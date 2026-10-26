@@ -306,6 +306,35 @@ textarea.field{resize:vertical;line-height:1.45}
 .wday.now.has i{background:var(--accent-ink)}
 .aisle{font-size:1.15rem;margin-right:2px}
 .tip{background:var(--hero);border-color:transparent;box-shadow:var(--shadow)}
+/* Lively layer: time-of-day header, emoji, routine pills, ring, check pop */
+:root{--part-morning:linear-gradient(135deg,#FFE3CC 0%,#FFF3E6 60%,#FFF8F1 100%);--part-afternoon:linear-gradient(135deg,#FFE9B3 0%,#FFF4DA 60%,#FFF9EE 100%);--part-evening:linear-gradient(135deg,#E3DCFA 0%,#F1ECFD 60%,#F9F6FF 100%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--part-morning:linear-gradient(135deg,#3A2A22,#241F30);--part-afternoon:linear-gradient(135deg,#3A321D,#241F30);--part-evening:linear-gradient(135deg,#2E2650,#1F1B2B)}}
+:root[data-theme="dark"]{--part-morning:linear-gradient(135deg,#3A2A22,#241F30);--part-afternoon:linear-gradient(135deg,#3A321D,#241F30);--part-evening:linear-gradient(135deg,#2E2650,#1F1B2B)}
+body[data-view="today"] .top{background:var(--part-morning);border-radius:26px;padding:14px 18px 18px;margin-top:10px}
+body[data-view="today"][data-part="afternoon"] .top{background:var(--part-afternoon)}
+body[data-view="today"][data-part="evening"] .top{background:var(--part-evening)}
+body[data-view="today"] .greet .sun{width:46px;height:46px}
+.emo{font-style:normal;font-size:1.05em;line-height:1}
+.chip.rub .emo{font-size:.95em}
+.sec-h .emo{font-size:1.1em}
+.tile .bigemo{font-size:1.9rem;line-height:1;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--cs)}
+.today-week{margin-top:14px}
+.rhead{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+.ring{width:38px;height:38px;flex:none}
+.ring circle{fill:none;stroke-width:4}
+.ring .bg{stroke:var(--surface-2)}
+.ring .fg{stroke:var(--done);stroke-linecap:round;transition:stroke-dashoffset .4s}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:6px 14px 6px 8px;border-radius:999px;border:1.5px solid var(--cs,var(--line));background:var(--surface);color:var(--ink);font-weight:600;font-size:.95rem;box-shadow:var(--shadow);text-align:left}
+.pill .dotc{width:26px;height:26px;border-radius:50%;border:2px solid var(--c,var(--ink-2));display:grid;place-items:center;flex:none}
+.pill .dotc svg{width:16px;height:16px;stroke:var(--surface);stroke-width:3.2;fill:none;opacity:0}
+.pill.on{background:var(--done-soft);border-color:transparent;color:var(--ink-2)}
+.pill.on .dotc{background:var(--done);border-color:var(--done)}
+.pill.on .dotc svg{opacity:1}
+.pill.on .ptxt{text-decoration:line-through}
+.chk.pop .box,.pill.pop .dotc{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.empty .emo,.quiet .emo{font-size:1.2em}
 .micbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--accent);flex:none}
 .micbtn svg{width:22px;height:22px}
 
@@ -481,7 +510,10 @@ const rubById = k => rubriques().find(r => r.key === k);
 const rubLabel = k => (rubById(k) || {}).label || 'Inbox';
 const rubStyle = k => COLKEYS.includes(k) ? `--c:var(--r-${k});--cs:var(--r-${k}-s)` : '--c:var(--accent);--cs:var(--accent-soft)';
 const rubIcon = k => ICON[k] || ICON.autre;
-const rubChip = k => `<span class="chip rub" style="${rubStyle(k)}"><i class="dot"></i>${esc(rubLabel(k))}</span>`;
+const AREA_EMOJI = { maison:'🏠', etudes:'📚', joud:'🧸', demarches:'📄', moi:'🌿', inbox:'📥' };
+const rubEmoji = k => AREA_EMOJI[k] || '✨';
+const rubChip = k => `<span class="chip rub" style="${rubStyle(k)}"><i class="emo" aria-hidden="true">${rubEmoji(k)}</i>${esc(rubLabel(k))}</span>`;
+const CHEERS = ['Nice.', 'One less thing.', 'Done ✓', 'That counts.', 'Good.'];
 const protectedAreas = () => (S.settings && Array.isArray(S.settings.proteger)) ? S.settings.proteger : ['etudes','moi'];
 
 /* Shop aisles: purchases are grouped this way in the store. Guessed from the name, editable. */
@@ -695,8 +727,9 @@ function doneTodayCount(){
 }
 
 /* ---------------- Rendering helpers ---------------- */
+function justDone(id){ return S.justDone === id && Date.now() - (S.justDoneAt || 0) < 1500; }
 function chk(act, id, on, label, extra, round){
-  return `<button class="chk${on ? ' on' : ''}${round ? ' round' : ''}" data-act="${act}" data-id="${esc(id)}" ${extra || ''} aria-pressed="${on}" aria-label="${esc((on ? 'Untick: ' : 'Mark as done: ') + label)}"${S.readOnly ? ' disabled' : ''}><span class="box">${ICON.check}</span></button>`;
+  return `<button class="chk${on ? ' on' : ''}${round ? ' round' : ''}${on && justDone(id) ? ' pop' : ''}" data-act="${act}" data-id="${esc(id)}" ${extra || ''} aria-pressed="${on}" aria-label="${esc((on ? 'Untick: ' : 'Mark as done: ') + label)}"${S.readOnly ? ' disabled' : ''}><span class="box">${ICON.check}</span></button>`;
 }
 const suggTag = () => ` <span class="sugg">(suggested)</span>`;
 function deadlineMeta(t){
@@ -847,7 +880,7 @@ function renderToday(){
       ${S.readOnly ? '' : `<div class="acts"><button class="btn ghost small" data-act="why" data-id="${esc(t.id)}">Why this?</button><button class="btn ghost small" data-act="later" data-id="${esc(t.id)}" aria-expanded="${S.laterOpen === t.id}">Not now</button>${(!Array.isArray(t.etapes) || !t.etapes.length) && durOf(t) >= 30 ? `<button class="btn ghost small" data-act="steps" data-id="${esc(t.id)}">Break into steps</button>` : ''}</div>`}
       ${S.laterOpen === t.id ? `<div style="display:grid">${laterRow(t)}</div>` : ''}`;
   } else {
-    up += `<p style="margin:0;font-size:1.1rem;font-weight:600">Nothing pressing right now.</p><p class="quiet">You can look at <button class="linkbtn" data-act="go" data-view="week">your week</button> or simply leave the day as it is.</p>`;
+    up += `<p style="margin:0;font-size:1.1rem;font-weight:600">Nothing pressing right now <i class="emo">☕</i></p><p class="quiet">You can look at <button class="linkbtn" data-act="go" data-view="week">your week</button> or simply leave the day as it is.</p>`;
   }
   if (M.enough && !LS.get('ms.enough.' + td, false)) up += `<div class="enough"><span>That’s enough for today. Anything else is a bonus.</span><button class="linkbtn" data-act="enough-ok">OK</button></div>`;
   up += `</section>`;
@@ -857,8 +890,8 @@ function renderToday(){
   M.rdvToday.forEach(t => dm.push(taskRow(t, { later:false })));
   M.deadlines.forEach(t => dm.push(taskRow(t, { later:true })));
   M.mustBuy.forEach(t => dm.push(taskRow(t, { later:false })));
-  let dmH = `<section class="sec" style="order:2"><h2 class="sec-h">Don’t miss</h2>`;
-  dmH += dm.length ? `<ul class="list">${dm.join('')}</ul>` : `<p class="quiet">No appointments or deadlines in the next three days.</p>`;
+  let dmH = `<section class="sec" style="order:2"><h2 class="sec-h"><i class="emo" aria-hidden="true">📌</i>Don’t miss</h2>`;
+  dmH += dm.length ? `<ul class="list">${dm.join('')}</ul>` : `<p class="quiet">Nothing fixed in the next three days <i class="emo">🌤️</i></p>`;
   if (M.rdvTomorrow.length) dmH += `<p class="small" style="margin:10px 0 0">Tomorrow: ${M.rdvTomorrow.map(t => esc(t.titre) + (t.heure ? ' at ' + esc(t.heure) : '')).join(' · ')}</p>`;
   dmH += `</section>`;
 
@@ -876,7 +909,7 @@ function renderToday(){
   const rest = alsoAll.filter(t => !firstOpen.includes(t));
   let also = '';
   if (alsoAll.length){
-    also = `<section class="sec" style="order:3"><h2 class="sec-h">Also on your list</h2>${firstOpen.length ? `<ul class="list">${firstOpen.map(t => taskRow(t, { later:true })).join('')}</ul>` : ''}`;
+    also = `<section class="sec" style="order:3"><h2 class="sec-h"><i class="emo" aria-hidden="true">🗒️</i>Also on your list</h2>${firstOpen.length ? `<ul class="list">${firstOpen.map(t => taskRow(t, { later:true })).join('')}</ul>` : ''}`;
     if (rest.length){ const open = isFold('today-rest', false); also += `<div style="margin-top:8px">${foldHead('today-rest', 'The rest of today', rest.length, false, true)}</div>${open ? `<ul class="list">${rest.map(t => taskRow(t, { later:true })).join('')}</ul>` : ''}`; }
     also += `</section>`;
   }
@@ -902,14 +935,16 @@ function renderToday(){
   if (M.routs.length){
     const rDone = M.routs.filter(r => doneOn(r.id, td)).length;
     const open = isFold('today-routines', true);
-    rt = `<section class="sec" style="order:5">${foldHead('today-routines', 'Routines', rDone + NB + 'of' + NB + M.routs.length, true)}
-      <div class="prog" aria-hidden="true"><i style="width:${Math.round(100 * rDone / M.routs.length)}%"></i></div>
-      ${open ? `<ul class="list">${M.routs.filter(r => S.prefs.showDone || !doneOn(r.id, td)).map(r => routineRow(r, td, { showRub:true })).join('')}</ul>` : ''}</section>`;
+    const C = 2 * Math.PI * 15, frac = rDone / M.routs.length;
+    rt = `<section class="sec" style="order:5"><div class="rhead"><svg class="ring" viewBox="0 0 38 38" aria-hidden="true"><circle class="bg" cx="19" cy="19" r="15"/><circle class="fg" cx="19" cy="19" r="15" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - frac)).toFixed(1)}" transform="rotate(-90 19 19)"/></svg>
+      <h2 class="sec-h" style="margin:0"><i class="emo" aria-hidden="true">✅</i>Routines <span class="count">${rDone}${NB}of${NB}${M.routs.length}</span></h2></div>
+      <div class="pills">${M.routs.filter(r => S.prefs.showDone || !doneOn(r.id, td)).map(r => { const on = doneOn(r.id, td); return `<button class="pill${on ? ' on' : ''}${on && justDone(r.id) ? ' pop' : ''}" data-act="toggle-routine" data-id="${esc(r.id)}" data-d="${td}" aria-pressed="${on}" style="${rubStyle(r.rubrique)}"${S.readOnly ? ' disabled' : ''}><span class="dotc">${ICON.check}</span><span class="ptxt">${esc(r.titre)}</span></button>`; }).join('')}</div>
+      ${rDone === M.routs.length ? '<p class="quiet" style="margin-top:8px">All routines done for today <i class="emo">🌟</i></p>' : ''}</section>`;
   }
 
   // Shopping shortcut
   const toBuy = allTasks().filter(t => t.type === 'achat' && isOpenAct(t)).length;
-  const shop = `<section class="sec" style="order:6">${linkRow('go', 'data-view="shopping"', ICON.basket, 'Shopping', toBuy ? toBuy + ' to buy' : 'Nothing to buy', '--c:var(--accent);--cs:var(--accent-soft)')}</section>`;
+  const shop = `<section class="sec" style="order:6">${linkRow('go', 'data-view="shopping"', '<span style="font-size:1.5rem">🛒</span>', 'Shopping', toBuy ? toBuy + ' to buy' : 'Nothing to buy 🎉', '--c:var(--accent);--cs:var(--accent-soft)')}</section>`;
 
   // How's today (optional) + gentle overload note
   const ds = dayState();
@@ -923,7 +958,7 @@ function renderToday(){
   if (M.overloaded && !S.readOnly) state = state.replace('style="order:8"', 'style="order:2"');
 
   const qa = `<section class="sec" style="order:7">${captureBox('today', 'Quick add', 'Anything on your mind: tasks, shopping, plans, things already done…')}</section>`;
-  const calmBtn = S.readOnly ? '' : `<div style="order:0;margin-top:4px"><button class="calmlink" data-act="calm" data-v="1">Too much right now?</button></div>`;
+  const calmBtn = `<div class="today-week" style="order:0">${weekStrip()}</div>` + (S.readOnly ? '' : `<div style="order:0;margin-top:4px"><button class="calmlink" data-act="calm" data-v="1">Too much right now?</button></div>`);
   return notes + `<div class="today-grid"><div class="col">${calmBtn}${up}${also}${nudge}${tip}${qa}</div><div class="col">${dmH}${state}${rt}${shop}</div></div>`;
 }
 
@@ -942,7 +977,7 @@ function renderShopping(){
       <div class="inline"><input class="field" id="shopAdd" data-draft="shop" value="${esc(LS.get('ms.draft.shop', ''))}" placeholder="milk, nappies, 2 notebooks…" autocomplete="off"><button class="btn primary" data-act="shop-add">Add</button></div>
       <div class="chips" role="group" aria-label="For">${visibleRubs().filter(r => r.key !== 'inbox').map(r => `<button class="choice" data-act="shop-area" data-v="${esc(r.key)}" aria-pressed="${area === r.key}" style="${rubStyle(r.key)}"><i class="dot"></i>${esc(r.label)}</button>`).join('')}</div></div>`;
   }
-  if (!open.length) h += `<div class="empty" style="margin-top:16px">Nothing to buy. Items you add here, or through Quick add, appear in one list.</div>`;
+  if (!open.length) h += `<div class="empty" style="margin-top:16px"><span class="emo">🎉</span> Nothing to buy. Items you add here, or through Quick add, appear in one list.</div>`;
   else {
     if (!store) h += `<div class="filters" role="group" aria-label="Group by">${[['aisle','By aisle'],['area','By area'],['store','By shop']].map(x => `<button class="choice" data-act="shop-group" data-v="${x[0]}" aria-pressed="${S.shopGroup === x[0]}">${x[1]}</button>`).join('')}</div>`;
     const groups = new Map();
@@ -975,18 +1010,23 @@ function renderShopping(){
 }
 
 /* ---------------- Plans ---------------- */
+function weekStrip(){
+  const wk0 = mondayOf(S.today), tasks = allTasks();
+  let h = `<div class="wstrip">`;
+  for (let i = 0; i < 7; i++){
+    const d = addDays(wk0, i), has = tasks.some(t => t.type !== 'achat' && isOpen(t) && dateOf(t) === d);
+    h += `<button class="wday${d === S.today ? ' now' : ''}${has ? ' has' : ''}" data-act="go-day" data-d="${d}" aria-label="${esc(fmtLong(d))}${has ? ', something planned' : ''}">${DS[parseISO(d).getDay()]}<b>${parseISO(d).getDate()}</b><i></i></button>`;
+  }
+  return h + `</div>`;
+}
 function renderPlans(){
   const tasks = allTasks();
   const wk0 = mondayOf(S.today), wk1 = addDays(wk0, 6);
   const wkN = tasks.filter(t => isOpen(t) && t.type !== 'achat' && dateOf(t) && dateOf(t) >= S.today && dateOf(t) <= wk1).length;
   const rdvN = tasks.filter(t => t.type === 'rdv' && isOpen(t) && dateOf(t) && dateOf(t) >= S.today && dateOf(t) <= wk1).length;
-  let h = `<section><div class="inline" style="justify-content:space-between;margin-bottom:8px"><h2 class="sec-h" style="margin:0">This week</h2><button class="linkbtn" data-act="go" data-view="week">See the week</button></div><div class="wstrip">`;
-  for (let i = 0; i < 7; i++){
-    const d = addDays(wk0, i), has = tasks.some(t => t.type !== 'achat' && isOpen(t) && dateOf(t) === d);
-    h += `<button class="wday${d === S.today ? ' now' : ''}${has ? ' has' : ''}" data-act="go-day" data-d="${d}" aria-label="${esc(fmtLong(d))}${has ? ', something planned' : ''}">${DS[parseISO(d).getDay()]}<b>${parseISO(d).getDate()}</b><i></i></button>`;
-  }
-  h += `</div><p class="small" style="margin:8px 0 0">${[wkN ? wkN + ' planned' : 'Nothing planned yet', rdvN ? rdvN + ' appointment' + (rdvN > 1 ? 's' : '') : ''].filter(Boolean).join(' · ')}</p></section>`;
-  h += `<section class="sec"><h2 class="sec-h">Life areas</h2><div class="tiles">`;
+  let h = `<section><div class="inline" style="justify-content:space-between;margin-bottom:8px"><h2 class="sec-h" style="margin:0"><i class="emo" aria-hidden="true">🗓️</i>This week</h2><button class="linkbtn" data-act="go" data-view="week">See the week</button></div>${weekStrip()}`;
+  h += `<p class="small" style="margin:8px 0 0">${[wkN ? wkN + ' planned' : 'Nothing planned yet', rdvN ? rdvN + ' appointment' + (rdvN > 1 ? 's' : '') : ''].filter(Boolean).join(' · ')}</p></section>`;
+  h += `<section class="sec"><h2 class="sec-h"><i class="emo" aria-hidden="true">🧭</i>Life areas</h2><div class="tiles">`;
   for (const r of visibleRubs()){
     const open = tasks.filter(t => t.rubrique === r.key && isOpen(t) && t.statut !== 'en_attente' && t.type !== 'achat');
     const week = open.filter(t => dateOf(t) && dateOf(t) <= addDays(S.today, 6)).length;
@@ -994,7 +1034,7 @@ function renderPlans(){
     const parts = [open.length ? open.length + ' to do' : 'nothing to do'];
     if (week) parts.push(week + ' this week');
     if (rts.length) parts.push(rts.length + ' routine' + (rts.length > 1 ? 's' : ''));
-    h += `<button class="tile" data-act="go-area" data-rub="${esc(r.key)}" style="${rubStyle(r.key)}"><span class="rubicon">${rubIcon(r.key)}</span><span class="rubname">${esc(r.label)}</span><span class="rubcounts">${esc(parts.join(' · '))}</span></button>`;
+    h += `<button class="tile" data-act="go-area" data-rub="${esc(r.key)}" style="${rubStyle(r.key)}"><span class="bigemo" aria-hidden="true">${rubEmoji(r.key)}</span><span class="rubname">${esc(r.label)}</span><span class="rubcounts">${esc(parts.join(' · '))}</span></button>`;
   }
   h += `</div></section>`;
   const projA = Array.from(S.projets.values()).filter(p => p.statut !== 'fait' && p.statut !== 'pause').length;
@@ -1190,7 +1230,7 @@ function doneItems(rub, from){
 function doneList(o){
   const from = o.period ? addDays(S.today, -(o.period - 1)) : '0000-00-00';
   const items = doneItems(o.rub, from);
-  if (!items.length) return `<div class="empty" style="margin-top:14px">Nothing yet for this period. Everything you tick lands here.</div>`;
+  if (!items.length) return `<div class="empty" style="margin-top:14px"><span class="emo">🌱</span> Nothing yet for this period. Everything you tick lands here.</div>`;
   let h = '', cur = null;
   for (const it of items){
     if (it.day !== cur){
@@ -1230,7 +1270,7 @@ const VIEWS = {
   plans:    { title:() => 'Plans', sub:() => 'The whole picture, when you have a moment.', nav:'plans', render:renderPlans },
   done:     { title:() => 'Done', nav:'done', render:renderDone },
   week:     { title:() => 'Week', nav:'plans', back:'plans', render:renderWeek },
-  area:     { title:() => rubLabel(S.rub), nav:'plans', back:'plans', render:renderArea },
+  area:     { title:() => rubEmoji(S.rub) + ' ' + rubLabel(S.rub), nav:'plans', back:'plans', render:renderArea },
   projects: { title:() => 'Projects', nav:'plans', back:'plans', render:renderProjects },
   project:  { title:() => (S.projets.get(S.projet) || {}).titre || 'Project', nav:'plans', back:'projects', render:renderProject },
   keep:     { title:() => 'Keep in mind', nav:'plans', back:'plans', render:renderKeep },
@@ -1253,6 +1293,9 @@ function doRender(force){
 }
 function renderChrome(){
   const v = VIEWS[S.view] || VIEWS.today;
+  const hr = new Date().getHours();
+  document.body.dataset.view = S.view;
+  document.body.dataset.part = hr < 12 ? 'morning' : hr < 18 ? 'afternoon' : 'evening';
   if (S.view === 'today'){ const g = greeting(); $('#viewTitle').innerHTML = `<span class="sun">${g.icon}</span><span>${esc(g.text)}</span>`; }
   else $('#viewTitle').textContent = v.title();
   const sub = v.sub ? v.sub() : '';
@@ -1325,13 +1368,20 @@ function toggleTask(id){
   const patch = done ? { statut:'a_faire', faitLe:null, faitJour:null, modifieLe:now } : { statut:'fait', faitLe:now, faitJour:S.today, modifieLe:now };
   if (!done && t.type === 'achat') patch.fois = (t.fois || 0) + 1;
   if (S.laterOpen === id) S.laterOpen = null;
+  if (!done) cheer(id);
   write('t:' + id, () => tasksCol().doc(id).update(patch));
 }
 function toggleRoutine(rid, iso){
   const r = S.routines.get(rid); if (!r) return;
   const oid = rid + '_' + iso;
   if (S.occ.has(oid)) write('o:' + oid, () => occCol().doc(oid).delete());
-  else write('o:' + oid, () => occCol().doc(oid).set({ routineId:rid, date:iso, titre:r.titre, rubrique:r.rubrique, faitLe:nowIso() }));
+  else { cheer(rid); write('o:' + oid, () => occCol().doc(oid).set({ routineId:rid, date:iso, titre:r.titre, rubrique:r.rubrique, faitLe:nowIso() })); }
+}
+/* A small, varied acknowledgement, not every time. */
+function cheer(id){
+  S.justDone = id; S.justDoneAt = Date.now();
+  S.cheerN = (S.cheerN || 0) + 1;
+  if (S.cheerN % 3 === 1) toast(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
 }
 /* Moving a task changes only the day she plans to do it. A hard deadline is never moved;
    a new day is kept before it. */
