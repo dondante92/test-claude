@@ -305,6 +305,7 @@ textarea.field{resize:vertical;line-height:1.45}
 .wday.now b{color:var(--accent-ink)}
 .wday.now.has i{background:var(--accent-ink)}
 .aisle{font-size:1.15rem;margin-right:2px}
+.tip{background:var(--hero);border-color:transparent;box-shadow:var(--shadow)}
 .micbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--accent);flex:none}
 .micbtn svg{width:22px;height:22px}
 
@@ -513,7 +514,7 @@ const S = {
   db: null, sample: undefined, sampleP: null, downloads: null,
   dbState: 'loading', readOnly: false, revoked: false,
   tasks: new Map(), routines: new Map(), occ: new Map(), occBy: new Map(), settings: null, saisies: new Map(),
-  idees: new Map(), projets: new Map(), frictions: new Map(), day: null,
+  idees: new Map(), projets: new Map(), frictions: new Map(), astuces: new Map(), day: null,
   loaded: { taches:false, routines:false },
   view: 'today', rub: null, projet: null, rubTab: 'todo', sousFilter: null,
   weekOffset: 0, doneFilter: 7, doneRub: 'all', shopGroup: 'aisle', store: false,
@@ -892,6 +893,10 @@ function renderToday(){
     }
   }
 
+  // One tip a day, only when nothing else is asking for attention
+  let tip = '';
+  if (!nudge && !M.overloaded && !S.readOnly){ const tp = tipOfDay(); if (tp) tip = `<section class="sec" style="order:4">${tipCard(tp)}</section>`; }
+
   // Routines
   let rt = '';
   if (M.routs.length){
@@ -919,7 +924,7 @@ function renderToday(){
 
   const qa = `<section class="sec" style="order:7">${captureBox('today', 'Quick add', 'Anything on your mind: tasks, shopping, plans, things already done…')}</section>`;
   const calmBtn = S.readOnly ? '' : `<div style="order:0;margin-top:4px"><button class="calmlink" data-act="calm" data-v="1">Too much right now?</button></div>`;
-  return notes + `<div class="today-grid"><div class="col">${calmBtn}${up}${also}${nudge}${qa}</div><div class="col">${dmH}${state}${rt}${shop}</div></div>`;
+  return notes + `<div class="today-grid"><div class="col">${calmBtn}${up}${also}${nudge}${tip}${qa}</div><div class="col">${dmH}${state}${rt}${shop}</div></div>`;
 }
 
 /* ---------------- Shopping ---------------- */
@@ -1002,6 +1007,7 @@ function renderPlans(){
     ${linkRow('go', 'data-view="keep"', ICON.bulb, 'Keep in mind', keepN ? keepN + ' thought' + (keepN > 1 ? 's' : '') : 'ideas and decisions that aren’t tasks yet')}
     ${linkRow('go', 'data-view="waiting"', ICON.hourglass, 'Waiting for', waitN ? waitN + ' item' + (waitN > 1 ? 's' : '') : 'answers and replies from others')}
     ${linkRow('go', 'data-view="paused"', ICON.pause, 'Paused', pauseN ? pauseN + ' on hold' : 'nothing on hold')}
+    ${linkRow('go', 'data-view="tips"', ICON.bulb, 'Tips', 'small practical ideas, when you want them')}
     ${linkRow('go', 'data-view="easier"', ICON.wand, 'Make life easier', easyN ? easyN + ' to look at' : 'small changes for problems that keep coming back')}
   </div></section>`;
   return h;
@@ -1230,7 +1236,8 @@ const VIEWS = {
   keep:     { title:() => 'Keep in mind', nav:'plans', back:'plans', render:renderKeep },
   waiting:  { title:() => 'Waiting for', nav:'plans', back:'plans', render:renderWaiting },
   paused:   { title:() => 'Paused', nav:'plans', back:'plans', render:renderPaused },
-  easier:   { title:() => 'Make life easier', nav:'plans', back:'plans', render:renderEasier }
+  easier:   { title:() => 'Make life easier', nav:'plans', back:'plans', render:renderEasier },
+  tips:     { title:() => 'Tips', nav:'plans', back:'plans', render:() => renderTips() }
 };
 let raf = 0, pendingRender = false;
 function render(){ if (raf) return; raf = requestAnimationFrame(() => { raf = 0; doRender(); }); }
@@ -1534,6 +1541,8 @@ function sheetSettings(s){
   h += `<div class="sheet-body">
     <span class="fl" style="margin-top:0">Text size</span>
     <div class="choices">${[['normal','Normal'],['large','Large'],['xlarge','Extra large']].map(x => `<button class="choice" data-act="pref" data-k="size" data-v="${x[0]}" aria-pressed="${S.prefs.size === x[0]}">${x[1]}</button>`).join('')}</div>
+    <span class="fl">Tips on Today</span>
+    <div class="choices"><button class="choice" data-act="set" data-k="tipsOff" data-v="0" aria-pressed="${!d.tipsOff}">Show one when it fits</button><button class="choice" data-act="set" data-k="tipsOff" data-v="1" aria-pressed="${!!d.tipsOff}">Off</button></div>
     <span class="fl">Things already done</span>
     <div class="choices"><button class="choice" data-act="pref" data-k="showDone" data-v="1" aria-pressed="${S.prefs.showDone}">Show them, crossed out</button><button class="choice" data-act="pref" data-k="showDone" data-v="0" aria-pressed="${!S.prefs.showDone}">Hide them in lists</button></div>
     <p class="small">These two settings apply on this device only. Everything stays in Done.</p>
@@ -1565,12 +1574,12 @@ function sheetSettings(s){
   return h;
 }
 function openSettings(){
-  openSheet({ kind:'settings', draft:{ prenom:S.settings && typeof S.settings.prenom === 'string' ? S.settings.prenom : 'Samah', contexte:(S.settings && S.settings.contexte) || '', proteger:protectedAreas().slice(), prefsIA:((S.settings && S.settings.prefsIA) || []).slice(), rubriques:rubriques().map(r => ({ key:r.key, label:r.label, desc:r.desc, cache:r.cache })), newrub:'' } });
+  openSheet({ kind:'settings', draft:{ tipsOff:tipsOff(), prenom:S.settings && typeof S.settings.prenom === 'string' ? S.settings.prenom : 'Samah', contexte:(S.settings && S.settings.contexte) || '', proteger:protectedAreas().slice(), prefsIA:((S.settings && S.settings.prefsIA) || []).slice(), rubriques:rubriques().map(r => ({ key:r.key, label:r.label, desc:r.desc, cache:r.cache })), newrub:'' } });
 }
 async function saveSettings(){
   const d = S.sheet.draft;
   const rubs = d.rubriques.map(r => ({ key:r.key, label:clean(r.label, 40) || rubLabel(r.key), desc:r.desc || '', cache:r.key === 'inbox' ? false : !!r.cache }));
-  if (await saveSettingsPatch({ prenom:clean(d.prenom, 40), contexte:String(d.contexte || '').slice(0, 3000), rubriques:rubs, proteger:d.proteger, prefsIA:d.prefsIA }, 'Settings saved')) closeSheet();
+  if (await saveSettingsPatch({ tipsOff:!!d.tipsOff, prenom:clean(d.prenom, 40), contexte:String(d.contexte || '').slice(0, 3000), rubriques:rubs, proteger:d.proteger, prefsIA:d.prefsIA }, 'Settings saved')) closeSheet();
 }
 
 async function exportData(){
@@ -1578,7 +1587,7 @@ async function exportData(){
   let occs = Array.from(S.occ.values());
   try { const snap = await occCol().get(); occs = snap.docs.map(x => Object.assign({ id:x.id }, x.data())); } catch(e){}
   const data = JSON.stringify({ exporteLe:nowIso(), app:'my-space', version:2, reglages:S.settings, taches:allTasks(), routines:Array.from(S.routines.values()), occurrences:occs,
-    idees:Array.from(S.idees.values()), projets:Array.from(S.projets.values()), frictions:Array.from(S.frictions.values()) }, null, 2);
+    idees:Array.from(S.idees.values()), projets:Array.from(S.projets.values()), frictions:Array.from(S.frictions.values()), astuces:Array.from(S.astuces.values()) }, null, 2);
   if (S.downloads){
     try { await S.downloads.save({ filename:'my-space-' + S.today + '.json', data }); toast('Copy saved'); return; }
     catch(e){ if (e && e.code === 'declined') return; }
@@ -1587,11 +1596,11 @@ async function exportData(){
   catch(e){ toast('Download isn’t possible in this view.'); }
 }
 /* Import: adds documents that are not already here (same id); never overwrites or deletes. */
-const IMPORT_COLS = ['taches','routines','occurrences','idees','projets','frictions'];
+const IMPORT_COLS = ['taches','routines','occurrences','idees','projets','frictions','astuces'];
 function sheetImport(s){
   const c = s.counts;
   let h = head('Import a copy');
-  h += `<div class="sheet-body"><p style="margin:0">This file contains:</p><ul class="help">${IMPORT_COLS.filter(k => c[k]).map(k => `<li>${c[k]} ${({ taches:'tasks and items', routines:'routines', occurrences:'ticked routine days', idees:'things to keep in mind', projets:'projects', frictions:'problems in Make life easier' })[k]}</li>`).join('')}${s.data.reglages ? '<li>settings (only used if you have none yet)</li>' : ''}</ul>
+  h += `<div class="sheet-body"><p style="margin:0">This file contains:</p><ul class="help">${IMPORT_COLS.filter(k => c[k]).map(k => `<li>${c[k]} ${({ taches:'tasks and items', routines:'routines', occurrences:'ticked routine days', idees:'things to keep in mind', projets:'projects', frictions:'problems in Make life easier', astuces:'answers to tips' })[k]}</li>`).join('')}${s.data.reglages ? '<li>settings (only used if you have none yet)</li>' : ''}</ul>
     <p class="small">Items already in your space are left as they are. Nothing is deleted.</p>
     ${s.progress ? `<p><span class="spin"></span>${esc(s.progress)}</p>` : ''}</div>
     <div class="sheet-foot"><button class="btn ghost" data-act="close-sheet">Cancel</button><button class="btn primary" data-act="import-go"${s.progress ? ' disabled' : ''}>Import</button></div>`;
@@ -1612,7 +1621,7 @@ function readImport(file){
 }
 async function runImport(){
   const s = S.sheet, data = s.data;
-  const have = { taches:S.tasks, routines:S.routines, occurrences:S.occ, idees:S.idees, projets:S.projets, frictions:S.frictions };
+  const have = { taches:S.tasks, routines:S.routines, occurrences:S.occ, idees:S.idees, projets:S.projets, frictions:S.frictions, astuces:S.astuces };
   let n = 0, total = 0;
   IMPORT_COLS.forEach(k => { total += s.counts[k]; });
   for (const k of IMPORT_COLS){
@@ -2168,6 +2177,164 @@ Reply with only JSON: {"idea":"one or two short sentences","first_step":"a 5-min
   } finally { render(); }
 }
 
+/* ---------------- Tips ----------------
+   At most one tip a day on Today, only when it fits, never in “Too much right now” or on a full day.
+   Two sources: a small library tied to her situation, and signals in her own data (computed here,
+   on her account, never sent anywhere unless she asks for an idea). Her answers are kept in `astuces`:
+   tried / later (with a date) / no — a “no” never comes back. */
+const TIPS = [
+  { id:'bag-night', area:'joud', title:'Pack Joud’s bag the night before', text:'Mornings get lighter when the bag is ready by the door before bed.', act:{ kind:'routine', titre:'Pack Joud’s bag for tomorrow', rubrique:'joud', frequence:{ type:'quotidien' } } },
+  { id:'launch-pad', area:'maison', title:'A “launch pad” by the door', text:'One spot by the entrance for keys, wallet, phone and bag. Things stop wandering off.', act:{ kind:'task', titre:'Choose a spot by the door for keys and bag', rubrique:'maison', duree:5 } },
+  { id:'mail-weekly', area:'demarches', title:'Open the mail once a week', text:'One fixed moment for letters and bills, instead of a pile that grows quietly.', act:{ kind:'routine', titre:'Open the mail', rubrique:'demarches', frequence:{ type:'hebdo' } } },
+  { id:'study-same-time', area:'etudes', title:'Same time, same place for studies', text:'A short study block at a regular time and spot needs less willpower to start.', act:{ kind:'routine', titre:'20 minutes of studies', rubrique:'etudes', frequence:{ type:'jours', jours:[2,4] } } },
+  { id:'two-minutes', area:'maison', title:'Under two minutes? Do it now', text:'Tiny things done straight away never need to be remembered.', act:{ kind:'none' } },
+  { id:'study-company', area:'etudes', title:'Study alongside someone', text:'A friend, a library or an online study room: working next to someone makes starting easier.', act:{ kind:'task', titre:'Find a place or person to study alongside', rubrique:'etudes', duree:15 } },
+  { id:'evening-reset', area:'maison', title:'A 10-minute evening reset', text:'One room, ten minutes, timer on. Then stop, even if it isn’t perfect.', act:{ kind:'routine', titre:'10-minute reset of one room', rubrique:'maison', frequence:{ type:'quotidien' } } },
+  { id:'me-appointment', area:'moi', title:'Book time for yourself like an appointment', text:'An hour a week for you, written down like any other appointment, is easier to protect.', act:{ kind:'routine', titre:'An hour for myself', rubrique:'moi', frequence:{ type:'hebdo' } } },
+  { id:'joud-spots', area:'joud', title:'Fixed places for Joud’s everyday things', text:'The things you search for most (hat, wipes, dummy) each get one home, close to where they’re used.', act:{ kind:'task', titre:'Give Joud’s most-searched things a fixed place', rubrique:'joud', duree:15 } },
+  { id:'papers-folder', area:'demarches', title:'One folder for papers in progress', text:'Everything that still needs action goes in one folder or box. Nothing to hunt for.', act:{ kind:'task', titre:'Set up one folder for papers in progress', rubrique:'demarches', duree:15 } },
+  { id:'phone-calendar', area:'demarches', title:'Let your phone ring for appointments', text:'This app can’t send reminders. Appointments with an alarm in your phone calendar won’t slip.', act:{ kind:'task', titre:'Add this week’s appointments to my phone calendar', rubrique:'demarches', duree:5 } },
+  { id:'done-look', area:'moi', title:'Glance at Done in the evening', text:'Many small things get done and forgotten. Seeing them counts too.', act:{ kind:'none' } },
+  { id:'visual-timer', area:'etudes', gadget:true, title:'A visual timer', text:'A timer that shows time running out makes a study block or getting ready easier to pace. Inexpensive, and useful for Joud later too.', act:{ kind:'buy', titre:'Visual timer', rubrique:'etudes', rayon:'stationery' } },
+  { id:'door-board', area:'maison', gadget:true, title:'A small board by the door', text:'A whiteboard at the entrance for “don’t forget” items you see on the way out.', act:{ kind:'buy', titre:'Small whiteboard for the entrance', rubrique:'maison', rayon:'stationery' } },
+  { id:'key-tracker', area:'maison', gadget:true, needs:'keys', title:'A tracker on your keys', text:'A small tag you can ring from your phone. Worth it only if keys keep going missing.', act:{ kind:'buy', titre:'Key tracker tag', rubrique:'maison', rayon:'other' } }
+];
+const tipState = id => (S.astuces && S.astuces.get(id)) || null;
+const tipsOff = () => !!(S.settings && S.settings.tipsOff);
+function tipAvailable(id){
+  const st = tipState(id);
+  if (!st) return true;
+  if (st.statut === 'later') return !st.until || st.until <= S.today;
+  return false;
+}
+/* Signals from her own data. Each returns a tip with a plain reason, or null. */
+function signalTips(){
+  const out = [], tasks = allTasks(), td = S.today;
+  const moved = tasks.filter(t => isOpenAct(t) && (t.reports || 0) >= 3 && !(Array.isArray(t.etapes) && t.etapes.length)).sort((a, b) => (b.reports || 0) - (a.reports || 0))[0];
+  if (moved) out.push({ id:'sig-steps-' + moved.id, title:'Make it smaller', text:'When something keeps moving, the first step is often too big. Splitting it into small steps makes starting easier.', why:`“${moved.titre}” has been moved ${moved.reports} times.`, act:{ kind:'steps', id:moved.id }, tryLabel:'Break into steps' });
+  for (const r of activeRoutines()){
+    const f = freqOf(r);
+    if (f.type !== 'quotidien' || !r.debut || diffDays(r.debut, td) < 14) continue;
+    const n = (S.occBy.get(r.id) || []).filter(d => d > addDays(td, -14)).length;
+    if (n <= 4){ out.push({ id:'sig-rhythm-' + r.id, title:'A lighter rhythm can work better', text:'A routine that fits real life beats a perfect one. Two or three days a week is fine.', why:`“${r.titre}” is set for every day and was ticked ${n} time${n === 1 ? '' : 's'} in two weeks.`, act:{ kind:'routine-edit', id:r.id }, tryLabel:'Adjust the rhythm' }); break; }
+  }
+  const usual = tasks.find(t => t.type === 'achat' && !t.recurrent && (t.fois || 0) >= 2);
+  if (usual) out.push({ id:'sig-usual-' + usual.id, title:'Keep regular items one tap away', text:'Things you buy often can wait in “Usual items” and come back to the list with one tap.', why:`You’ve bought “${usual.titre}” ${usual.fois} times.`, act:{ kind:'usual', id:usual.id }, tryLabel:'Make it a usual item' });
+  const waitOld = tasks.find(t => t.statut === 'en_attente' && t.modifieLe && diffDays(isoOf(new Date(t.modifieLe)), td) >= 10);
+  if (waitOld) out.push({ id:'sig-follow-' + waitOld.id, title:'A short follow-up', text:'A two-line message is often enough to get things moving again.', why:`“${waitOld.titre}” has been waiting for over ten days.`, act:{ kind:'task', titre:'Follow up: ' + waitOld.titre, rubrique:waitOld.rubrique, duree:5 }, tryLabel:'Add a follow-up' });
+  const inboxN = tasks.filter(t => t.rubrique === 'inbox' && isOpenAct(t)).length;
+  if (inboxN >= 6) out.push({ id:'sig-inbox', title:'Sort the Inbox in one go', text:'Unsorted things weigh more than sorted ones. The assistant can file them all at once.', why:`${inboxN} things are waiting in the Inbox.`, act:{ kind:'sort-inbox' }, tryLabel:'Sort it now' });
+  const recent = tasks.filter(t => t.creeLe && t.source !== 'manual-import' && new Date(t.creeLe) > new Date(Date.now() - 14 * 864e5));
+  const late = recent.filter(t => new Date(t.creeLe).getHours() >= 19).length;
+  if (recent.length >= 8 && late / recent.length >= 0.6) out.push({ id:'sig-evening', title:'A 5-minute “tomorrow” moment', text:'You often note things in the evening. Five minutes to glance at tomorrow can make mornings calmer.', why:'Most of your notes in the last two weeks were added after 7 pm.', act:{ kind:'routine', titre:'Look at tomorrow (5 min)', rubrique:'moi', frequence:{ type:'quotidien' } } });
+  const from = addDays(td, -14);
+  const doneIn = k => tasks.filter(t => t.rubrique === k && t.statut === 'fait' && t.faitJour >= from).length;
+  if (doneIn('joud') >= 6 && doneIn('etudes') + doneIn('moi') <= 1 && quietDays('etudes') >= 7) out.push({ id:'sig-balance', area:'etudes', title:'Protect one small study slot', text:'When daily needs fill every day, a short fixed slot keeps studies from disappearing. Small is enough.', why:'Lots done for Joud in two weeks, very little for Studies or yourself.', act:{ kind:'routine', titre:'20 minutes of studies', rubrique:'etudes', frequence:{ type:'jours', jours:[2,4] } } });
+  return out.filter(x => tipAvailable(x.id));
+}
+function hasKeysProblem(){ return Array.from(S.frictions.values()).some(f => /key/i.test(f.probleme || '') && f.statut !== 'solved'); }
+function libraryTips(){
+  const lastGadget = LS.get('ms.lastGadget', '');
+  return TIPS.filter(t => tipAvailable(t.id) && (!t.needs || (t.needs === 'keys' && hasKeysProblem())) && (!t.gadget || !lastGadget || diffDays(lastGadget, S.today) >= 7))
+    .map(t => Object.assign({}, t, { why: t.needs === 'keys' ? 'You’ve mentioned losing your keys.' : `An idea for ${rubLabel(t.area)}, picked for days with a young child and studies.` }));
+}
+/* Today’s tip: stable for the whole day once chosen. Signals come first. */
+function tipOfDay(){
+  if (tipsOff()) return null;
+  const k = 'ms.tip.' + S.today, chosen = LS.get(k, null);
+  const all = signalTips().concat(libraryTips()).concat(aiTips());
+  if (chosen){ const t = all.find(x => x.id === chosen); if (t) return t; if (LS.get(k + '.answered', false)) return null; }
+  const sig = signalTips();
+  let t = sig[0];
+  if (!t){ const lib = libraryTips(); if (lib.length){ const n = Math.floor(parseISO(S.today).getTime() / 864e5); t = lib[n % lib.length]; } }
+  if (t){ LS.set(k, t.id); if (t.gadget) LS.set('ms.lastGadget', S.today); }
+  return t || null;
+}
+function aiTips(){ return Array.from((S.astuces || new Map()).values()).filter(x => x.source === 'ai' && x.statut === 'new').map(x => Object.assign({ id:x.id }, x.tip || {}, { why:(x.tip && x.tip.why) || 'Suggested by the assistant from your recent activity.' })); }
+function tipCard(t, ctx){
+  ctx = ctx || {};
+  const open = S.tipWhy === t.id;
+  const label = t.tryLabel || ({ routine:'Add this routine', task:'Add it as a task', buy:'Add to Shopping', none:'Good idea', 'routine-edit':'Adjust', usual:'Make it usual', steps:'Break into steps', 'sort-inbox':'Sort it now' })[(t.act || {}).kind] || 'Try it';
+  return `<div class="card tip"><span class="eyebrow-s">${ctx.label || 'Tip'}${t.gadget ? ' · something that could help' : ''}</span><strong>${esc(t.title)}</strong><span>${esc(t.text)}</span>
+    <button class="linkbtn" style="justify-self:start" data-act="tip-why" data-id="${esc(t.id)}" aria-expanded="${open}">Why am I seeing this?</button>
+    ${open ? `<p class="small" style="margin:0">${esc(t.why || '')}</p>` : ''}
+    ${S.readOnly ? '' : `<div class="acts"><button class="btn primary small" data-act="tip-try" data-id="${esc(t.id)}">${esc(label)}</button><button class="btn ghost small" data-act="tip-later" data-id="${esc(t.id)}">Later</button><button class="linkbtn" data-act="tip-no" data-id="${esc(t.id)}">Not for me</button></div>`}</div>`;
+}
+const findTip = id => signalTips().concat(libraryTips(), aiTips(), TIPS).find(t => t.id === id);
+async function tipAnswer(id, statut, extra){
+  LS.set('ms.tip.' + S.today + '.answered', true);
+  const t = findTip(id) || {};
+  const doc = Object.assign({}, tipState(id) || {}, { statut, date:S.today, titre:t.title || '', modifieLe:nowIso() }, extra || {});
+  return write('a:' + id, () => col('astuces').doc(id).set(doc));
+}
+function tipTry(id){
+  const t = findTip(id); if (!t) return;
+  const a = t.act || { kind:'none' };
+  tipAnswer(id, 'tried');
+  if (a.kind === 'routine') openRoutine(null, { titre:a.titre, rubrique:a.rubrique, frequence:JSON.parse(JSON.stringify(a.frequence)) });
+  else if (a.kind === 'task') openSheet({ kind:'task', isNew:true, draft:newTaskDraft({ titre:a.titre, rubrique:a.rubrique, duree:a.duree || null }) });
+  else if (a.kind === 'buy') openSheet({ kind:'task', isNew:true, draft:newTaskDraft({ titre:a.titre, rubrique:a.rubrique, type:'achat', rayon:a.rayon || null }) });
+  else if (a.kind === 'steps'){ openTask(a.id); suggestSteps(); }
+  else if (a.kind === 'routine-edit') openRoutine(a.id);
+  else if (a.kind === 'usual') write('t:' + a.id, () => tasksCol().doc(a.id).update({ recurrent:true, modifieLe:nowIso() }), 'Now a usual item');
+  else if (a.kind === 'sort-inbox') organize('ranger');
+  else toast('Noted');
+}
+
+function renderTips(){
+  let h = `<p class="quiet">Small, practical ideas. Try what fits, skip the rest: a “Not for me” never comes back.</p>`;
+  if (tipsOff()) h += `<div class="card soft" style="margin-top:12px">Tips are turned off on Today. You can still browse them here, or turn them back on in Settings.</div>`;
+  const sig = signalTips(), ai = aiTips();
+  if (!S.readOnly) h += `<div class="morelinks" style="margin-top:12px"><button class="btn primary" data-act="tip-ai"${S.tipBusy ? ' disabled' : ''}>${S.tipBusy ? '<span class="spin"></span>Thinking…' : 'Give me an idea'}</button></div>${S.tipMsg ? `<p class="small">${esc(S.tipMsg)}</p>` : ''}`;
+  if (ai.length) h += `<section class="sec"><h2 class="sec-h">From the assistant</h2><div class="notes">${ai.map(t => tipCard(t, { label:'Idea for you' })).join('')}</div></section>`;
+  if (sig.length) h += `<section class="sec"><h2 class="sec-h">Based on your days</h2><div class="notes">${sig.map(t => tipCard(t, { label:'Noticed' })).join('')}</div></section>`;
+  const lib = libraryTips();
+  const byArea = new Map();
+  lib.forEach(t => { if (!byArea.has(t.area)) byArea.set(t.area, []); byArea.get(t.area).push(t); });
+  if (lib.length){
+    h += `<section class="sec"><h2 class="sec-h">Ideas to browse</h2>`;
+    byArea.forEach((arr, k) => { const o = isFold('tips-' + k, false); h += `${foldHead('tips-' + k, rubLabel(k), arr.length, false, true)}${o ? `<div class="notes" style="margin-bottom:12px">${arr.map(t => tipCard(t)).join('')}</div>` : ''}`; });
+    h += `</section>`;
+  }
+  const tried = Array.from((S.astuces || new Map()).values()).filter(x => x.statut === 'tried');
+  if (tried.length){ const o = isFold('tips-tried', false); h += `<section class="sec">${foldHead('tips-tried', 'Ideas you’ve tried', tried.length, false)}${o ? `<ul class="list">${tried.map(x => `<li class="row fr"><span class="donebadge">${ICON.check}</span><span class="fr-text"><span class="row-title">${esc(x.titre || (x.tip && x.tip.title) || '')}</span><span class="row-meta"><span class="m">${x.date ? fmtRel(x.date) : ''}</span></span></span></li>`).join('')}</ul>` : ''}</section>`; }
+  const no = Array.from((S.astuces || new Map()).values()).filter(x => x.statut === 'no');
+  if (no.length && !S.readOnly) h += `<p class="small" style="margin-top:18px">${no.length} idea${no.length > 1 ? 's' : ''} set aside. <button class="linkbtn" data-act="tips-reset">Show them again</button></p>`;
+  return h;
+}
+
+/* “Give me an idea”: one tip from the assistant, using a short summary of her real activity. */
+async function aiTip(){
+  if (S.tipBusy) return;
+  if (S.sample === undefined && S.sampleP){ try { S.sample = await S.sampleP; } catch(e){ S.sample = null; } }
+  if (!S.sample){ S.tipMsg = 'The assistant isn’t available here.'; render(); return; }
+  S.tipBusy = true; S.tipMsg = ''; render();
+  const tasks = allTasks(), from = addDays(S.today, -14);
+  const areaLine = visibleRubs().map(r => `${r.label}: ${tasks.filter(t => t.rubrique === r.key && isOpenAct(t)).length} open, ${tasks.filter(t => t.rubrique === r.key && t.statut === 'fait' && t.faitJour >= from).length} done in 14 days`).join('; ');
+  const movedN = tasks.filter(t => isOpenAct(t) && (t.reports || 0) >= 2).length;
+  const fr = Array.from(S.frictions.values()).filter(f => f.statut !== 'dismissed').map(f => f.probleme).slice(0, 8).join('; ');
+  const answered = Array.from((S.astuces || new Map()).values());
+  const liked = answered.filter(x => x.statut === 'tried').map(x => x.titre).filter(Boolean).slice(-10).join('; ');
+  const disliked = answered.filter(x => x.statut === 'no').map(x => x.titre).filter(Boolean).slice(-15).join('; ');
+  try {
+    const res = await S.sample.json(`Suggest ONE practical organisation tip for Samah: a mother of a young child (Joud), a student at UNIL, who also handles paperwork and the household. Prefer concrete changes to her surroundings or routine (visual cues, fixed places, small regular moments, "when X, then Y") over motivation. Warm, adult tone; no coaching phrases, no clinical words, no guilt. Suggest buying something only if clearly useful and inexpensive.
+Her activity: ${areaLine}. Tasks moved twice or more: ${movedN}.
+${fr ? 'Recurring problems: ' + fr + '.\n' : ''}${(S.settings && S.settings.contexte) ? 'About her: ' + String(S.settings.contexte).slice(0, 800) + '\n' : ''}${liked ? 'Ideas she liked: ' + liked + '.\n' : ''}${disliked ? 'Ideas she did not want (avoid similar): ' + disliked + '.\n' : ''}
+Reply with only JSON: {"title":"short title","text":"one or two short sentences","why":"one sentence linking it to her activity above","action":{"kind":"routine|task|buy|none","title":"short, starts with a verb (or the item to buy)","area":"maison|etudes|joud|demarches|moi","frequency":{"type":"daily|days|weekly","days":[1,4]}}}`, { modelTier:'default', cache:false });
+    const a = res && res.action || {};
+    const keys = visibleRubs().map(r => r.key);
+    const kind = ['routine','task','buy','none'].includes(a.kind) ? a.kind : 'none';
+    const area = keys.includes(a.area) ? a.area : 'maison';
+    const tip = { title:clean(res && res.title, 80), text:clean(res && res.text, 300), why:clean(res && res.why, 200), area,
+      act:{ kind, titre:clean(a.title, 120) || clean(res && res.title, 80), rubrique:area, frequence:normFreq(a.frequency), duree:kind === 'task' ? 15 : null } };
+    if (!tip.title || !tip.text) throw { code:'empty' };
+    const id = 'ai-' + Date.now().toString(36);
+    await write('a:' + id, () => col('astuces').doc(id).set({ source:'ai', statut:'new', tip, titre:tip.title, date:S.today, creeLe:nowIso() }));
+  } catch(e){
+    S.tipMsg = e && e.code === 'rate_limited' ? 'The assistant has reached a usage limit for now.' : AI_OFF.includes(e && e.code) ? 'The assistant isn’t allowed to answer here.' : 'That didn’t work this time. Try again later.';
+  } finally { S.tipBusy = false; render(); }
+}
+
 /* ---------------- Events ---------------- */
 let toastT = 0;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2800); }
@@ -2252,7 +2419,7 @@ document.addEventListener('click', e => {
     case 'set': if (s){
       let v = el.dataset.v; const k = el.dataset.k;
       if (k === 'duree') v = v === '' ? null : Number(v);
-      else if (k === 'actif' || k === 'recurrent') v = v === '1';
+      else if (k === 'actif' || k === 'recurrent' || k === 'tipsOff') v = v === '1';
       else if (v === '') v = null;
       s.draft[k] = v;
       if (s.draft.suggere && ({ prevue:1, echeance:1, rubrique:1, duree:1, niveau:1 })[k]) delete s.draft.suggere[k];
@@ -2342,6 +2509,12 @@ document.addEventListener('click', e => {
       if (f.premierPas){ const ref = tasksCol().doc(), now = nowIso(); write('t:' + ref.id, () => ref.set({ titre:f.premierPas, rubrique:f.rubrique || 'maison', type:'tache', prevue:null, echeance:null, heure:null, importance:1, niveau:'worth', duree:5, statut:'a_faire', etapes:[], action:null, suggere:{}, source:'make-life-easier', creeLe:now, modifieLe:now, reports:0, faitLe:null, faitJour:null })); }
       break;
     }
+    case 'tip-why': S.tipWhy = S.tipWhy === el.dataset.id ? null : el.dataset.id; render(); break;
+    case 'tip-try': tipTry(el.dataset.id); break;
+    case 'tip-later': tipAnswer(el.dataset.id, 'later', { until:addDays(S.today, 7) }).then(ok => { if (ok) toast('I’ll keep it for another time'); }); break;
+    case 'tip-no': tipAnswer(el.dataset.id, 'no').then(ok => { if (ok) toast('Understood. It won’t come back.'); }); break;
+    case 'tip-ai': aiTip(); break;
+    case 'tips-reset': { const ids = Array.from(S.astuces.values()).filter(x => x.statut === 'no').map(x => x.id); (async () => { for (const id of ids) await write('a:' + id, () => col('astuces').doc(id).delete()); toast('They can come back now'); })(); break; }
     case 'easy-solved': frictionUpdate(el.dataset.id, { statut:'solved' }, 'Glad it’s better'); break;
     case 'easy-dismiss': { const f = S.frictions.get(el.dataset.id); if (!f) break; frictionUpdate(f.id, f.idee && f.statut !== 'dismissed' && !el.dataset.all ? { idee:null, premierPas:null, achat:null, statut:'dismissed' } : { statut:'dismissed' }, 'Removed. It won’t be suggested again.'); break; }
   }
@@ -2423,6 +2596,7 @@ function subscribe(){
     }, onErr('occurrences')),
     saisies: () => col('saisies').onSnapshot(snap => { S.saisies = mapOf(snap); render(); }, onErr('saisies')),
     idees: () => col('idees').onSnapshot(snap => { S.idees = mapOf(snap); render(); }, onErr('idees')),
+    astuces: () => col('astuces').onSnapshot(snap => { S.astuces = mapOf(snap); render(); }, onErr('astuces')),
     projets: () => col('projets').onSnapshot(snap => { S.projets = mapOf(snap); render(); }, onErr('projets')),
     frictions: () => col('frictions').onSnapshot(snap => { S.frictions = mapOf(snap); render(); }, onErr('frictions')),
     reglages: () => S.db.doc('reglages/principal').onSnapshot(snap => { S.settings = snap.exists ? snap.data() : null; render(); }, onErr('reglages'))

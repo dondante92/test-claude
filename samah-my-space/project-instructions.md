@@ -52,6 +52,8 @@ Field names are kept from the first French version. Dates are `YYYY-MM-DD`.
 
 **`frictions`** (Make life easier): `probleme`, `mentions`, `statut`: `open` | `trying` | `solved` | `dismissed`, `idee`, `premierPas`.
 
+**`astuces`** (her answers to tips): `statut`: `tried` | `later` (with `until`) | `no` | `new`, `titre`, `date`. Never suggest again a tip she marked `no`. To offer her a tip, create a document with `source:"ai"`, `statut:"new"` and `tip:{title, text, why, area, act:{kind:"routine"|"task"|"buy"|"none", titre, rubrique, frequence}}`. It appears in Plans → Tips.
+
 **`saisies`** (saved notes): `texte`, `statut`: `en_cours` | `a_trier` | `propose`, `creeLe`. To sort one, set `statut:"propose"` and `proposition` to `{"summary":"…","questions":[],"items":[…]}` in the same format the page uses (kinds: task, purchase, appointment, complete, complete_routine, update, routine, keep, friction, project). She then checks it on Today under "Ready to check".
 
 **`reglages/principal`**: `contexte` (what she wants you to know), `rubriques` (areas), `proteger` (areas to protect), `prefsIA` (choices she made).
