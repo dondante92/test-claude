@@ -20,7 +20,7 @@ assert len(instructions) <= LIMITE, f"instructions.txt : {len(instructions)} car
 if FICHIERS.exists():
     shutil.rmtree(FICHIERS)
 FICHIERS.mkdir()
-for source in sorted((SKILL / "references").glob("*.md")) + [SKILL / "scripts" / n for n in ("controle.py", "regles.json", "fiche_modele.json", "remplir_releve.py", "releve_modele.json", "releve_positions.json")] + [SKILL / "releve" / "releve_vierge.pdf"]:
+for source in sorted(p for p in (SKILL / "references").glob("*.md") if not p.name.startswith("13-")) + [SKILL / "scripts" / n for n in ("controle.py", "regles.json", "fiche_modele.json", "remplir_releve.py", "releve_modele.json", "releve_positions.json")] + [SKILL / "releve" / "releve_vierge.pdf"]:
     shutil.copy2(source, FICHIERS / source.name)
 
 paquet = ICI / "note-clinique-gpt.zip"

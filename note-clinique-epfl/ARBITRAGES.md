@@ -121,3 +121,15 @@ Le relevé de données **déduit** (« si rien → non »), alors que la note **
 |---|---|---|
 | A37 | Fiche de faits dans le GPT | Remplie et contrôlée **en arrière-plan**, jamais affichée. Seules les questions sont montrées, avant la rédaction, en un bloc : bloquantes d'abord, puis champs en attente (facultatifs). La version Claude (skill, projet) n'est pas modifiée. |
 | A38 | Symptômes aigus oubliés (erreur récurrente) | Balayage ligne par ligne des notes avant la fiche ; chaque mention a une place (aigu, chronique, status) ou est écartée avec sa raison (`aigu.ecartes`). Le script (`fiche --notes notes.txt`) refuse la fiche si un domaine nommé dans les notes n'y figure pas. Le GPT affiche une ligne « Symptômes retenus / écartés » avant ses questions, en remplacement du tableau. |
+
+## Lettres de sortie — appliqué provisoirement le 14.11.2026, à confirmer
+
+Écarts trouvés **entre vos propres lettres** : le module tranche dans le sens de la majorité ou de vos règles écrites, en attendant votre décision.
+
+- **A39.** Titre « Anamnèse psychiatrique » (8 lettres) plutôt que « Antécédents psychiatriques » (2 lettres). ☐ OK ☐ Antécédents
+- **A40.** Niveau d'activation : interdit au status (votre règle), alors que 2 lettres l'emploient. ☐ OK (interdit) ☐ Permis
+- **A41.** « fonctionnement académique » reste interdit (A4), alors que 6 lettres l'emploient. ☐ OK ☐ Permis dans la lettre
+- **A42.** Sous-type nommé dans la synthèse → code du sous-type dans l'en-tête et la synthèse (F43.22, Z55.3, Z73.0), au lieu du code général. ☐ OK ☐ Code général accepté
+- **A43.** Registre des traits en termes CIM-10 (« anankastique ») plutôt que « obsessionnel ». ☐ OK ☐ Les deux
+- **A44.** « TDAH » permis seulement dans le nom de la consultation spécialisée ; ailleurs en toutes lettres. ☐ OK
+- **A45.** « Nous lui avons indiqué rester à sa disposition en cas de besoin. » retiré (doublon de la phrase finale). ☐ OK

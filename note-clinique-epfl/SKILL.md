@@ -1,6 +1,6 @@
 ---
 name: note-clinique-epfl
-description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission), la synthèse-discussion, le relevé de données UNIL-EPFL et l'analyse IPB des séances (Document 2, G1/G2, Document 3) de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, la correction d'une note ou d'une synthèse existante, ou une analyse psychodynamique d'une séance.
+description: Rédige et contrôle la note du premier entretien, les notes de suite (courtes ou de transmission), la synthèse-discussion, le relevé de données UNIL-EPFL, la correction des lettres de sortie et l'analyse IPB des séances (Document 2, G1/G2, Document 3) de la Consultation psychothérapeutique pour étudiants (CHUV/EPFL), à partir de notes d'entretien dictées. Procède en 7 étapes avec points de validation par le clinicien et contrôles automatiques. À utiliser quand le clinicien transmet des notes d'entretien, demande une note de premier entretien, une synthèse, un résumé d'investigation, la correction d'une note ou d'une synthèse existante, ou une analyse psychodynamique d'une séance.
 ---
 
 # Note du premier entretien et synthèse — procédure en 7 étapes
@@ -74,6 +74,10 @@ Quand le clinicien demande le relevé : charger `references/9-releve-donnees.md`
 ## Analyse IPB — Document 2 (séances 1 à 4)
 
 Quand le clinicien demande l'analyse (« analyse », « Document 2 ») ou envoie les notes d'une séance 2 ou plus sans autre demande : pas de procédure en 7 étapes. Charger `references/10-analyse-ipb.md` en entier et suivre son algorithme ; ouvrir `references/11-reperes-ipb.md` (fichier privé, s'il est présent) seulement pour la section utile. Contrôle : `python3 scripts/controle.py texte doc2.txt --type document2`, jusqu'à zéro erreur. G1/G2, Document 3 et courriers, seulement sur demande : `references/12-redactions-analyse.md`. Le Document 2 n'est jamais une note de dossier.
+
+## Lettre de sortie à corriger (« Résumé d'investigation »)
+
+Quand le clinicien colle une lettre de sortie déjà écrite et demande de la corriger : pas de procédure en 7 étapes. Charger `references/13-lettre-sortie.md` en entier et suivre son algorithme (contrôle `python3 scripts/controle.py texte lettre.txt --type lettre`, correction ciblée, page colorée `python3 scripts/compare_lettre.py lettre.txt lettre_corrigee.txt --motifs motifs.json -o lettre_corrigee.html`).
 
 ## Mode correction (un texte existe déjà)
 

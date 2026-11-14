@@ -1,0 +1,14 @@
+[
+  {"raison": "Le sous-type nommé dans la synthèse (réaction anxieuse) a son propre code : F43.22, identique dans l'en-tête et la synthèse.", "categorie": "cohérence"},
+  {"raison": "Participe passé de grandir : « a grandi ».", "categorie": "orthographe"},
+  {"raison": "« au sein de ses parents » est fautif : « auprès de ses parents ».", "categorie": "langage"},
+  {"raison": "Titre de rubrique de la lettre : « Anamnèse psychiatrique ».", "categorie": "structure"},
+  {"raison": "Item 1 du status selon le répertoire : « Patiente de [X] ans » (et « agée » sans accent).", "categorie": "status"},
+  {"raison": "Item 2 du status (attitude) manquant : 12 items obligatoires. Formulation neutre à confirmer par le clinicien.", "categorie": "status"},
+  {"raison": "Le plan aigu rapporte des réveils nocturnes : le sommeil ne peut pas être « préservé » au status.", "categorie": "cohérence"},
+  {"raison": "Quatre dates de séance dans l'en-tête : « quatre séances ».", "categorie": "cohérence"},
+  {"raison": "Même code que l'en-tête : F43.22.", "categorie": "cohérence"},
+  {"raison": "Enchaînement de l'énumération après le retrait de « fatigue ».", "categorie": "langage"},
+  {"raison": "La fatigue apparaît pour la première fois dans la synthèse, sans source dans l'anamnèse ni le status : retirée (ou à ajouter au plan aigu si elle était présente au premier entretien).", "categorie": "cohérence"},
+  {"raison": "Préposition : « à sa disposition ».", "categorie": "orthographe"}
+]

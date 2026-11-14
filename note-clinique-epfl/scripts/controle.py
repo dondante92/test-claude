@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Contrôles mécaniques de la note du premier entretien, de la synthèse, des notes de suite et du Document 2.
+"""Contrôles mécaniques de la note du premier entretien, de la synthèse, des notes de suite, du Document 2 et de la lettre de sortie.
 
 Trois commandes :
   fiche   FICHE.json [--notes NOTES.txt]           vérifie la fiche de faits et les décisions (étapes 2-3)
-  texte   FICHIER --type note|synthese|suite-courte|suite-transmission|document2 [--fiche F]
+  texte   FICHIER --type note|synthese|suite-courte|suite-transmission|document2|lettre [--fiche F]
                                                    vérifie un texte produit (étape 6, note de suite, ou Document 2)
   nettoie FICHIER [-o SORTIE] [--sans-accents]      rend le texte compatible Latin-1 (étape 6)
 
@@ -466,6 +466,158 @@ def nettoyer(texte, regles, sans_accents=False):
     return texte, restants
 
 
+# ---------------------------------------------------------------- lettre de sortie
+
+def domaines_positifs(texte, regles):
+    """Domaines du lexique de symptômes nommés dans le texte, hors négation."""
+    trouves = set()
+    lignes = [plat(l) for l in re.split(r"(?<=[.;])\s+", re.sub(r"\s+", " ", texte))]
+    for domaine, racines in regles["lexique_symptomes"].items():
+        if domaine.startswith("_"):
+            continue
+        for m in (re.compile(r"\b" + re.escape(plat(x))) for x in racines):
+            if any(not NEGATION.search(l[:t.start()]) for l in lignes for t in m.finditer(l)):
+                trouves.add(domaine)
+                break
+    return trouves
+
+
+def controler_lettre(texte, regles, fiche, r):
+    import datetime
+    L = regles["lettre"]
+    lignes = texte.splitlines()
+    rubriques = L["rubriques"]
+    vus = detecter_rubriques(lignes, rubriques)
+    presents = [i for i, _ in vus]
+    for i, rub in enumerate(rubriques):
+        if rub["obligatoire"] and i not in presents:
+            r.erreur(f"rubrique manquante : {rub['nom']}")
+    if presents != sorted(presents):
+        r.erreur("rubriques dans le désordre : " + " → ".join(rubriques[i]["nom"] for i in presents))
+    for ligne in lignes:
+        t = plat(ligne).strip(" :#*-_")
+        if t in L["titres_interdits"]:
+            r.erreur(f"titre « {ligne.strip()} » → {L['titres_interdits'][t]}")
+
+    noms = [x["nom"] for x in rubriques]
+    def rub(nom):
+        return contenu_rubrique(lignes, vus, noms.index(nom))
+    synthese = rub("Synthèse - discussion")
+    anamnese = "\n".join(rub(n) for n in noms[2:7])
+
+    # En-tête : dates des séances
+    m = re.search(r"a consult[ée] notre service les\s*:?\s*(.+?\d{4})\s*\.", re.sub(r"\s+", " ", texte))
+    nb_dates = None
+    if m:
+        brutes = re.findall(r"(\d{1,2})\.(\d{1,2})(?:\.(\d{4}))?", m.group(1))
+        annee = next((int(a) for _, _, a in reversed(brutes) if a), None)
+        dates = []
+        for j, mo, a in brutes:
+            try:
+                dates.append(datetime.date(int(a) if a else annee, int(mo), int(j)))
+            except (ValueError, TypeError):
+                r.erreur(f"en-tête : date invalide « {j}.{mo}{'.' + a if a else ''} »")
+        if dates != sorted(dates):
+            r.erreur("en-tête : dates des séances dans le désordre")
+        nb_dates = len(brutes)
+
+    # En-tête : diagnostics
+    codes = re.findall(r"\[ICD-10\s*/\s*([A-Z]\d{2}(?:\.\d+)?)\]", rub("Diagnostics - Antécédents - Interventions"))
+    if not codes:
+        r.erreur("en-tête : aucun diagnostic au format « [ICD-10 / code] »")
+    for c in codes:
+        if re.fullmatch(r"[A-Z]\d{2}", c):
+            r.avert(f"en-tête : code {c} sans sous-catégorie : le sous-type décrit dans la synthèse a-t-il son code ?")
+    if "F43.2" in codes and re.search(r"reaction (mixte|anxieuse|depressive)|symptomatologie anxieuse et depressive", plat(synthese)):
+        r.avert("trouble de l'adaptation : sous-type nommé dans la synthèse, code F43.2 général dans l'en-tête (F43.21 à F43.25 ?)")
+
+    # Affection actuelle
+    apa = plat(rub("Affection psychiatrique actuelle"))
+    if apa and not apa.startswith("il s'agit d"):
+        r.erreur("affection actuelle : la phrase d'ouverture commence par « Il s'agit d'un étudiant / d'une étudiante de … ans »")
+    if apa and "sur le plan aigu" not in apa and "pas de majoration recente" not in apa:
+        r.erreur("affection actuelle : « Sur le plan aigu » absent (ou « ne rapporte pas de majoration récente » si aucune)")
+    if apa and "exclut toute autre symptomatologie aigue" not in apa:
+        r.avert("affection actuelle : clôture « exclut toute autre symptomatologie aiguë » absente")
+
+    # Anamnèse psychiatrique : chaîne d'items (un item non documenté est signalé, jamais inventé)
+    ap = plat(rub("Anamnèse psychiatrique"))
+    if ap:
+        chaine = {"hospitalisations": r"hospitalis", "traitements psychotropes": r"traitement|psychotrope",
+                  "anamnèse familiale": r"familial", "consommations": r"consommation|substance|alcool|cannabis"}
+        absents = [nom for nom, motif in chaine.items() if not re.search(motif, ap)]
+        if absents:
+            r.avert("anamnèse psychiatrique : items absents (documentés ? sinon à signaler, jamais inventés) : " + ", ".join(absents))
+
+    # Status
+    status = plat(rub("Status psychique"))
+    if status:
+        positions = {}
+        for item, cles in regles["items_status"].items():
+            if item.startswith("_"):
+                continue
+            pos = [status.find(plat(c)) for c in cles if plat(c) in status]
+            if pos:
+                positions[item] = min(pos)
+        manquants = [i for i in regles["items_status"] if not i.startswith("_") and i not in positions]
+        if manquants:
+            r.erreur("status : items manquants (12 attendus) : " + ", ".join(manquants))
+        ordre = sorted(positions, key=positions.get)
+        if ordre != sorted(positions, key=lambda i: int(i.split()[0])):
+            r.avert("status : items hors de l'ordre du répertoire : " + " → ".join(i.split(" ", 1)[1] for i in ordre))
+        if len(re.findall(r"ideations? suicidaires?", status)) > 1:
+            r.avert("status : idéation suicidaire mentionnée plusieurs fois")
+        if "activation" in status:
+            r.erreur("status : le niveau d'activation ne figure jamais dans le status")
+        dom_apa = domaines_positifs(rub("Affection psychiatrique actuelle"), regles)
+        if "sommeil" in dom_apa and re.search(r"sommeil est (preserve|conserve)", status):
+            r.avert("status : sommeil « préservé » alors que l'affection actuelle rapporte une perturbation du sommeil")
+        if "appétit et poids" in dom_apa and re.search(r"appetit est (globalement )?conserve", status):
+            r.avert("status : appétit « conservé » alors que l'affection actuelle rapporte une modification de l'appétit")
+        if re.search(r"idees (noires|de mort|passives)|idees suicidaires scenaris|rapporte des idees suicidaires", status) \
+                and "idées de mort ou suicidaires" not in dom_apa:
+            r.avert("idées de mort ou suicidaires au status, absentes du plan aigu")
+
+    # Synthèse
+    paras = [x.strip() for x in re.split(r"\n\s*\n", synthese) if x.strip()]
+    if paras:
+        if not re.match(r"(Le patient|La patiente) a bénéficié d", paras[0]):
+            r.erreur("synthèse, paragraphe 1 : moule « Le patient / La patiente a bénéficié d'une … réalisée en … séances »")
+        n = re.search(r"en (\w+) (?:séances|entretiens)", paras[0])
+        nombres = {"deux": 2, "trois": 3, "quatre": 4, "cinq": 5, "six": 6, "sept": 7, "huit": 8, "neuf": 9, "dix": 10,
+                   "onze": 11, "douze": 12}
+        if n and nb_dates and nombres.get(n.group(1), nb_dates) != nb_dates and "interrompu" not in plat(paras[0]):
+            r.erreur(f"synthèse : {n.group(1)} séances annoncées, {nb_dates} dates dans l'en-tête")
+        if "Nous nous tenons à sa disposition." not in texte:
+            r.erreur("phrase finale « Nous nous tenons à sa disposition. » absente")
+        ps = plat(synthese)
+        if not re.search(r"sur le plan diagnostique|les elements recueillis|nous retenons|conduisent a retenir", ps):
+            r.erreur("synthèse : paragraphe diagnostique absent")
+        if "au cours du suivi" not in ps and "le suivi ayant ete interrompu" not in ps and "au cours des premiers entretiens" not in ps:
+            r.erreur("synthèse : paragraphe d'évolution absent")
+        codes_s = re.findall(r"\(([A-Z]\d{2}(?:\.\d+)?)\)", synthese)
+        if codes and codes_s and codes_s[0] != codes[0]:
+            r.erreur(f"code du diagnostic principal : {codes[0]} dans l'en-tête, {codes_s[0]} dans la synthèse")
+        communs = [c for c in codes_s if c in codes]
+        if communs != [c for c in codes if c in communs]:
+            r.erreur("diagnostics discutés dans un autre ordre que celui de l'en-tête")
+        # Rien de nouveau dans les paragraphes diagnostiques
+        k = next((i for i, x in enumerate(paras) if re.match(r"(Au cours du suivi|Le suivi ayant|Au cours des premiers)", x)), len(paras))
+        nouveaux = domaines_positifs("\n".join(paras[1:k]), regles) - domaines_positifs(anamnese, regles)
+        for d in sorted(nouveaux):
+            r.avert(f"synthèse : « {d} » apparaît pour la première fois dans la discussion diagnostique (absent de l'anamnèse et du status)")
+
+    # Langue et orthographe, sur le corps seulement (sans en-tête administratif ni crochets CIM)
+    debut = next((n for i, n in vus if i == 0), 0)
+    fin = next((j for j, l in enumerate(lignes) if "Nous nous tenons" in l), len(lignes))
+    diag = next((n for i, n in vus if i == 2), debut)  # l'en-tête des diagnostics vient du logiciel
+    corps = "\n".join(l for l in lignes[debut:debut + 2] + lignes[diag:fin + 1])
+    for motif, conseil in L["orthographe"].items():
+        for mm in re.finditer(motif, corps):
+            extrait = corps[max(0, mm.start() - 20):mm.end() + 20].replace("\n", " ")
+            r.avert(f"orthographe : « …{extrait}… » → {conseil}")
+    controler_commun(corps.replace("TDAH adulte", "adulte"), regles, r)  # nom de la consultation spécialisée
+
 # ---------------------------------------------------------------- main
 
 def main():
@@ -478,7 +630,7 @@ def main():
     f.add_argument("--notes", help="notes brutes du clinicien : tout symptôme nommé doit se retrouver dans la fiche")
     t = sub.add_parser("texte")
     t.add_argument("fichier")
-    t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission", "document2"], required=True)
+    t.add_argument("--type", choices=["note", "synthese", "suite-courte", "suite-transmission", "document2", "lettre"], required=True)
     t.add_argument("--fiche")
     n = sub.add_parser("nettoie")
     n.add_argument("fichier")
@@ -510,7 +662,8 @@ def main():
 
     fiche = json.loads(pathlib.Path(a.fiche).read_text(encoding="utf-8")) if a.fiche else None
     {"note": controler_note, "synthese": controler_synthese, "suite-courte": controler_suite_courte,
-     "suite-transmission": controler_suite_transmission, "document2": controler_document2}[a.type](texte, regles, fiche, r)
+     "suite-transmission": controler_suite_transmission, "document2": controler_document2,
+     "lettre": controler_lettre}[a.type](texte, regles, fiche, r)
     sys.exit(r.afficher(f"CONTRÔLE DU TEXTE ({a.type})"))
 
 

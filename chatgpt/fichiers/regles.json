@@ -250,7 +250,7 @@
     "perte d'intérêt ou de plaisir": ["anhedon", "plus de plaisir", "perte d'interet", "perte de plaisir", "plus envie", "demotiv", "aboulie"],
     "anxiété": ["anxi", "angoiss", "stress", "inquiet", "panique", "rumin", "tendu", "tension interne", "peur", "apprehension", "nervos"],
     "sommeil": ["sommeil", "endorm", "insomn", "reveil", "cauchemar", "dort mal", "dort peu", "hypersomn", "dort beaucoup"],
-    "appétit et poids": ["appetit", "mange", "poids", "kilos", "kg", "grignot"],
+    "appétit et poids": ["appetit", "mange moins", "mange plus", "mange peu", "mange davantage", "ne mange", "poids", "ponderal", "kilos", "kg", "grignot"],
     "énergie et fatigue": ["fatigu", "energie", "epuis", "asthen", "ralenti"],
     "concentration": ["concentr", "memoire", "attention", "oubli", "distrait"],
     "irritabilité": ["irrit", "colere", "agressiv", "enerve", "impulsiv"],
@@ -262,8 +262,53 @@
     "symptômes (hypo)maniaques": ["euphor", "exalt", "accelere", "moins besoin de dormir", "grandios"],
     "retrait social": ["isol", "retrait", "ne sort plus", "s'enferme"],
     "comportements alimentaires": ["vomi", "boulimi", "anorex", "restrict", "purg", "hyperphag", "crise alimentaire"],
-    "symptômes obsessionnels": ["obsession", "compulsi", "rituel", "toc"],
+    "symptômes obsessionnels": ["obsession", "obsedant", "compulsi", "rituel", "toc", "verifications"],
     "symptômes post-traumatiques": ["flashback", "reviviscen", "sursaut", "hypervigil", "trauma"],
     "dissociation": ["deperson", "dereal", "dissoci"]
+  },
+
+  "lettre": {
+    "_lisezmoi": "Lettre de sortie (« Résumé d'investigation ») : controle.py texte --type lettre. Voir references/13-lettre-sortie.md.",
+    "rubriques": [
+      {"nom": "Motif de recours", "alias": [], "obligatoire": true},
+      {"nom": "Diagnostics - Antécédents - Interventions", "alias": ["diagnostics"], "obligatoire": true},
+      {"nom": "Affection psychiatrique actuelle", "alias": [], "obligatoire": true},
+      {"nom": "Contexte psychosocial", "alias": [], "obligatoire": true},
+      {"nom": "Anamnèse psychiatrique", "alias": ["antecedents psychiatriques"], "obligatoire": true},
+      {"nom": "Anamnèse somatique", "alias": [], "obligatoire": false},
+      {"nom": "Status psychique", "alias": [], "obligatoire": true},
+      {"nom": "Synthèse - discussion", "alias": ["synthese"], "obligatoire": true}
+    ],
+    "titres_interdits": {
+      "antecedents psychiatriques": "titre de la lettre : « Anamnèse psychiatrique »",
+      "evaluation du risque suicidaire": "pas de rubrique de risque dans la lettre : plan aigu, status et évolution",
+      "hypotheses diagnostiques et suite proposee": "pas dans la lettre : la synthèse la remplace",
+      "appreciation et prise en charge": "pas dans la lettre : la synthèse la remplace"
+    },
+    "orthographe": {
+      "\\ba l'EPFL\\b": "à l'EPFL",
+      "\\ba sa disposition\\b": "à sa disposition",
+      "\\bpresence\\b": "présence",
+      "\\bcephal": "céphalées (accent)",
+      "\\breservée?\\b": "réservé(e) (accent)",
+      "\\bscenaris": "scénarisées (accent)",
+      "\\bevoluant\\b": "évoluant",
+      "\\bmaniere\\b": "manière",
+      "\\banamanese\\b": "anamnèse",
+      "\\bdane\\b": "dans",
+      "\\bil y un\\b": "il y a un",
+      "\\bcompte tenue\\b": "compte tenu",
+      "\\ba grandit\\b": "a grandi",
+      "\\bau sein de ses parents\\b": "auprès de ses parents",
+      "\\brelations distances\\b": "relations distantes",
+      "\\bâge biologique\\b": "faisant son âge",
+      "\\beuthymique\\b": "« La thymie est neutre » (répertoire)",
+      "\\bdiscours est provoqué\\b": "« Le discours est peu spontané » (répertoire)",
+      "\\bne présente d'": "mot manquant : « ne présente pas d' »",
+      "\\bagée?\\b": "âgé(e) (accent)",
+      "\\bLa patiente est suivi\\b": "suivie (accord)",
+      "rester à sa disposition en cas de besoin": "doublon avec la phrase finale « Nous nous tenons à sa disposition. »",
+      "[,;:.](?=[A-Za-zÀ-ÿ])": "espace manquante après la ponctuation"
+    }
   }
 }

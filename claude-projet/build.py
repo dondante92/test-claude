@@ -17,7 +17,7 @@ SORTIE = ICI.parent / "livrables" / "claude-projet"
 if SORTIE.exists():
     shutil.rmtree(SORTIE)
 SORTIE.mkdir(parents=True)
-sources = sorted((SKILL / "references").glob("*.md")) + [SKILL / "scripts" / n for n in (
+sources = sorted(p for p in (SKILL / "references").glob("*.md") if not p.name.startswith("13-")) + [SKILL / "scripts" / n for n in (
     "controle.py", "regles.json", "fiche_modele.json", "remplir_releve.py", "releve_modele.json", "releve_positions.json")] + [
     SKILL / "releve" / "releve_vierge.pdf"]
 for source in sources:
