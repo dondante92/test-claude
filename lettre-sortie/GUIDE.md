@@ -8,6 +8,12 @@ Vous collez une lettre déjà écrite. Vous recevez :
 
 Les règles viennent de l'analyse de 11 lettres signées (`note-clinique-epfl/references/13-lettre-sortie.md`) et des canevas déjà validés pour la note et la synthèse.
 
+## Option A0 : plugin ChatGPT (les GPT personnalisés ne peuvent plus être créés depuis fin octobre 2026 et s'arrêtent le 11 décembre 2026)
+
+1. ChatGPT → **Plugins** → créer un plugin (Plugin Creator).
+2. Joindre **`lettre-sortie-epfl.zip`** (la compétence : `SKILL.md`, `references/`, `scripts/`) et demander de l'utiliser telle quelle, avec l'exécution de code.
+3. Test : « exécute python3 scripts/controle.py texte exemple.txt --type lettre » sur une lettre : le résultat du script doit s'afficher.
+
 ## Option A : GPT ChatGPT (recommandée : les scripts tournent, la page colorée est un vrai fichier)
 
 1. chatgpt.com → GPTs → **+ Créer** → onglet **Configurer**.

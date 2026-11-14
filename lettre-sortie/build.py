@@ -33,4 +33,14 @@ with zipfile.ZipFile(paquet, "w", zipfile.ZIP_DEFLATED) as z:
     for chemin in [ICI / "GUIDE.md", ICI / "instructions-gpt.txt", ICI / "instructions-claude.txt"] + sorted(FICHIERS.iterdir()):
         z.write(chemin, chemin.relative_to(ICI))
 print(f"{len(list(FICHIERS.iterdir()))} fichiers de règles")
+
+# Compétence (skill) pour un plugin ChatGPT ou Claude : SKILL.md + references/ + scripts/
+competence = ICI / "lettre-sortie-epfl.zip"
+with zipfile.ZipFile(competence, "w", zipfile.ZIP_DEFLATED) as z:
+    z.write(ICI / "SKILL.md", "lettre-sortie-epfl/SKILL.md")
+    for n in REFERENCES:
+        z.write(FICHIERS / n, f"lettre-sortie-epfl/references/{n}")
+    for n in SCRIPTS:
+        z.write(FICHIERS / n, f"lettre-sortie-epfl/scripts/{n}")
+print(f"Écrit : {competence}")
 print(f"Écrit : {paquet}")
